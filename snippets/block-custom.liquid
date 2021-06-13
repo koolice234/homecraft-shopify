@@ -1,0 +1,151 @@
+{%- case type -%}
+	{%- when 'sidebarStyle' -%}
+    {%- comment -%}
+      **
+      * Content style
+      *
+    {%- endcomment-%}
+    {%- assign bannerCount = bannerCount | plus: 1 -%}
+    {%- capture blockID -%}.block-{{block.id}}{%- endcapture -%}
+    {%- capture block_css -%}
+      {%- render 'css-resp', classID: blockID, nextClassID: ' .featured_block-content-inner', css_value: block.settings.align, css_property: 'text-align' -%}
+    {%- endcapture -%}{%- assign section_css = section_css | append: block_css -%}
+
+    {%- for block in section.blocks offset: forloop.index -%}
+      {%- unless block.type contains 'style_' -%}{%- break -%}{%- endunless -%}
+      {%- assign blockType = block.type | remove: 'style_' -%}
+
+      {%- capture itemID -%}
+        {%- case block.type -%}
+          {%- when 'style_content' %} .featured_block-content-inner .block_content-text-
+          {%- when 'style_button' %} .featured_block-content-inner .btn-content
+        {%- endcase -%}
+      {%- endcapture -%}
+
+      {%- capture block_css -%}
+        {%- render 'snippet-block-style', type: blockType, block: block, itemClass: itemID, sectionID: sectionID, blockID: blockID -%}
+      {%- endcapture -%}{%- assign section_css = section_css | append: block_css -%}
+    {%- endfor -%}
+    {%- comment -%}* * * * *{%- endcomment-%}
+
+	{%- when 'article_recommend' -%}
+    {%- comment -%}
+      **
+      * Recommendation
+      *
+    {%- endcomment-%}
+    {%- if blog.articles.size > 1 -%}
+      {%- liquid
+        assign _enable_slider = true
+        assign _layout        = settings.page_layout
+        assign _items_resp    = section.settings.items_resp | default: '3,1'
+        assign _total         = section.settings.total | times: 1
+      -%}
+
+      {%- capture gridClass -%}{%- render 'set-item-per-row', value: _items_resp -%}{%- endcapture -%}
+
+      {%- capture section_class -%}
+        {{- -}}section_content-wrapper
+        {%- render 'bgset' ,class: 'bg-image' ,image: section.settings.section_bg_image -%}
+      {%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+
+      <div id="articleRecommendation" class="{{ section_class }}">
+        {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+
+          {%- unless section.settings.sectionHeading_text_1 == blank and section.settings.sectionHeading_text_2 == blank -%}
+            <div class="section_content-head">
+              {%- include 'snippet-theme', type: 'sectionHeading' -%}
+            </div>
+          {%- endunless -%}
+
+          <div class="section_content-body">
+            <div class="row{% if _enable_slider %} slide_ui-element{% endif %}">
+              {%- for _article in blog.articles limit: _total -%}
+                {%- if _article.handle == article.handle -%}{%- continue -%}{%- endif -%}
+
+                <section class="blog-section {{gridClass}}">
+                  {%- render 'article-item', article: _article, showExcerpt: false -%}
+                </section>
+              {%- endfor -%}
+            </div>
+
+            {%- if _enable_slider -%}
+              {%- render 'set-item-per-row', value: _items_resp, type: 'slider', itemClass: 'blog-section', gutter: '30', nav: true, dot: true -%}
+            {%- endif -%}
+          </div>
+
+        {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+      </div>
+    {%- endif -%}
+
+  {%- when 'productGridV2' -%}
+    {%- liquid
+      assign __card_bg_color        = '#FFFFFF'
+      assign __card_border_radius   = '4px'
+      assign __card_padding         = ''
+    -%}
+    {%- capture firstValues -%}
+      {%- unless __card_bg_color == 'rgba(0,0,0,0)' -%}background-color: {{__card_bg_color}};{%- endunless -%}
+      {%- render  'css-resp', type: 'value', showFirst: true, css_value: __card_border_radius, css_property: 'border-radius' -%}
+      {%- render  'css-resp', type: 'value', showFirst: true, css_value: __card_padding, css_property: 'padding' -%}
+    {%- endcapture -%}
+    {%- render 'css-resp', classID: sectionID, nextClassID: ' .featured_product__item', css_values: firstValues -%}
+    {%- unless __card_border_radius == blank -%}{{- sectionID}} .featured_product__item-action{border: none;border-radius: 0 0 4px 4px;}{%- endunless -%}
+
+    {{- sectionID }} .section_content-body .tns-inner:after,
+    {{- sectionID }} .section_content-body > .row:after,
+    {{- sectionID }} .section_content-body .product-section{border: none;}
+    {%- if template contains 'collection' -%}
+      {{- sectionID }} .section_content-head, .collection-toolbar_wrapper{background: #FFFFFF;}
+      {{- sectionID }} .section_content-body{background: #F7F8FA;}
+    {%- endif -%}
+
+  {%- when 'paragraph' -%}
+    {%- assign number = number | default: 2 -%}
+    {%- for i in (1..number) -%}
+      {%- liquid
+        assign _text = 'text_' | append: i
+        assign _text = block.settings[_text]
+      -%}
+      {%- unless _text == blank -%}
+        <div class="{{ class | default: 'text-content'}} text-{{i}}">{{_text}}</div>
+      {%- endunless -%}
+    {%- endfor -%}
+
+  {%- when 'countdown' -%}
+
+    {%- unless countdownDate == blank -%}
+      {%- assign dateCount = countdownDate | split: '/' -%}
+      {%- capture dateCount -%}{{dateCount[2]}}-{{dateCount[0]}}-{{dateCount[1]}}{%- endcapture -%}{% comment %}Date format: MM/DD/YYYY{% endcomment %}
+      {%- assign dateCount = dateCount | date: '%s' -%}
+      {%- assign dateNow = "now" | date: '%s' -%}
+
+      {%- if dateCount > dateNow -%}
+        <div class="countdown-block">
+          <div class="countdown-time" data-date="{{countdownDate}}" data-hide-label="{%- unless hideLabel == blank -%}{{hideLabel}}{%- else -%}true{%- endunless -%}">
+            <span class="count-day">
+              <span class="date-value" data-index="1">0</span>
+              <span class="date-value" data-index="2">0</span>
+              <span class="date-label">{{- "date_format.day" | t -}}</span>
+            </span>
+            <span class="count-hrs">
+              <span class="date-value" data-index="1">0</span>
+              <span class="date-value" data-index="2">0</span>
+              <span class="date-label">{{- "date_format.hour" | t -}}</span>
+            </span>
+            <span class="count-min">
+              <span class="date-value" data-index="1">0</span>
+              <span class="date-value" data-index="2">0</span>
+              <span class="date-label">{{- "date_format.minute" | t -}}</span>
+            </span>
+            <span class="count-sec">
+              <span class="date-value" data-index="1">0</span>
+              <span class="date-value" data-index="2">0</span>
+              <span class="date-label">{{- "date_format.second" | t -}}</span>
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endunless -%}
+
+{%- endcase -%}

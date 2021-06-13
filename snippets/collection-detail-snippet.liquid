@@ -1,0 +1,92 @@
+{%- assign currentCollection = currentCollection | defautl: collection -%}
+{%- case type -%}
+  	{%- when 'subcollection' -%}
+  		{%- comment -%}
+  			--------------
+  			-
+  			-	SUBCOLLECTION BY ACF APP
+  			-
+  			--------------
+  		{%- endcomment-%}
+		{%- liquid
+			assign _c_f_Subcollection 			= currentCollection.metafields.c_f.subcollection | split: '|'
+			assign _c_f_Subcollection_title 	= currentCollection.metafields.c_f.subcollection_title
+			assign subCollection_layout 		= '4,2'
+		-%}
+		{%- if _c_f_Subcollection.size > 0 -%}
+			{%- capture gridClass -%}{%- render 'set-item-per-row', value: subCollection_layout -%}{%- endcapture -%}
+
+			<div class="subcollection f-break-mobile">
+				<div class="subcollection-wrapper">
+					{%- unless _c_f_Subcollection_title == blank -%}
+						<p class="subcollection-title">{{ _c_f_Subcollection_title }}</p>
+					{%- endunless -%}
+
+					<div class="subcollection-content">
+						<div class="row">
+							{%- for mc in _c_f_Subcollection limit: 4 -%}
+								{%- assign c = collections[mc] -%}
+
+								{%- if c and c.id != blank -%}
+					            	<div class="collection-item {{ gridClass }}">
+					            		<div class="collection-image">
+					            			<a href="{{ c.url }}">
+					            				{%- render 'image-style', image: c.image, imagePadding: '100%', image_css: 'object-fit: contain;' -%}
+					            			</a>
+					            		</div>
+					            		<div class="collection-title text-center">
+					            			<strong><a href="{{ c.url }}">{{ c.title | escape }}</a></strong>
+					            		</div>
+					            	</div>
+								{%- endif -%}
+							{%- endfor -%}
+						</div>
+					</div>
+
+				</div>
+			</div>
+		{%- endif -%}
+
+
+
+  		{%- comment -%}
+  			--------------
+  			-
+  			-	HIGHLIGHT PRODUCT BY ACF App
+  			-
+  			--------------
+  		{%- endcomment-%}
+		{%- liquid
+			assign _c_f_highlightProduct 		= currentCollection.metafields.c_f.highlight_product | split: '|'
+			assign _c_f_highlightProduct_title 	= currentCollection.metafields.c_f.highlight_product_title
+			assign highlightProduct_layout 		= '4,2'
+		-%}
+
+		{%- if _c_f_highlightProduct.size > 0 -%}
+			{%- capture gridClass -%}{%- render 'set-item-per-row', value: highlightProduct_layout -%}{%- endcapture -%}
+			<div class="highlightProduct f-break-mobile">
+
+				<div class="highlightProduct-wrapper">
+
+					{%- unless _c_f_highlightProduct_title == blank -%}
+						<p class="highlightProduct-title">{{ _c_f_highlightProduct_title }}</p>
+					{%- endunless -%}
+
+					<div class="highlightProduct-content" data-slide-wrapper>
+						<div class="row slide_ui-element">
+							{%- for p in _c_f_highlightProduct -%}
+								{%- assign hprod = all_products[p] -%}
+								{%- unless hprod.available -%}{%- continue -%}{%- endunless -%}
+
+								<section class="product-section {{gridClass}}">
+									{%- render 'product-item', product: hprod, catalogMode: true -%}
+								</section>
+							{%- endfor -%}
+						</div>
+						{%- render 'set-item-per-row', value: highlightProduct_layout, type: 'slider', itemClass: 'product-section', gutter: 0, dot: true -%}
+					</div>
+
+				</div>
+			</div>
+		{%- endif -%}
+{%- endcase -%}

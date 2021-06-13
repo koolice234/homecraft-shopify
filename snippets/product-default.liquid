@@ -1,0 +1,56 @@
+{%- liquid
+  assign sectionType    = 'product'
+-%}
+{%- capture productLayoutStyle -%}{%- render 'product-layout-template', type: 'style' -%}{%- endcapture -%}
+{%- assign productLayoutStyle = productLayoutStyle | times: 1 -%}
+
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|layout-{{- productLayoutStyle -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+{%- capture content -%}
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+  <div class="container-wrapper">
+
+    <div class="product-page-header">
+      {%- if productLayoutStyle == 4 -%}<div class="container">{%- endif -%}
+
+      {%- include 'product-detail-header', productLayoutStyle: productLayoutStyle -%}
+
+      {%- if productLayoutStyle == 4 -%}</div>{%- endif -%}
+    </div>
+
+
+    <div class="product-page-body">
+      {%- if productLayoutStyle == 4 -%}<div class="container">{%- endif -%}
+
+        {%- render 'product-detail-snippet', product: product, type: 'bundle' -%}
+
+        
+
+      {%- if productLayoutStyle == 4 -%}</div>{%- endif -%}
+    </div>
+  </div>
+
+  {%- if productLayoutStyle == 1 and settings.hide_product_sb_mobile == false -%}  
+    <div class="mobile-sidebar-popup">
+      <a href="javascript:void(0);" class="popup-link-target sb-btn-show" data-target="#sidebarDrawer">
+        <span class="svg-element-ui">{%- render 'svg', type: 'arrowRight_big' -%}</span>
+      </a>
+    </div>
+  {%- endif -%}
+</div>
+
+{%- render 'product-detail-snippet', product: product, type: 'json' -%}
+
+
+{%- capture sectionCss -%}
+  {{- section_css -}}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+

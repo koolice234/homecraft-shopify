@@ -1,0 +1,325 @@
+{%- if section.blocks.size > 0 -%}
+   {%- liquid
+      assign sectionType = 'bottom-banner'
+   -%}
+   {%- capture content -%}{%- include 'snippet-single-banner', sectionType: sectionType, sectionName: 'home-single-banner' -%}{%- endcapture -%}
+
+   {%- render 'compress', content: content -%}
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "Bottom Banner",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "checkbox",
+            "id": "boxed_layout",
+            "label": "Boxed layout",
+            "default": true
+        },
+        {
+            "type": "text",
+            "id": "slide_height",
+            "label": "Manual height",
+            "info": "E.g: 500px"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "slide",
+            "name": "Banner",
+            "settings": [
+                {
+                    "type": "image_picker",
+                    "id": "image",
+                    "label": "Banner image"
+                },
+                {
+                    "type": "text",
+                    "id": "image_position",
+                    "label": "Image crop",
+                    "info": "E.g: center center or left center"
+                },
+                {
+                    "type": "select",
+                    "id": "direction_content",
+                    "label": "Content direction",
+                    "options": [
+                        {
+                            "value": "horizontal",
+                            "label": "Horizontal"
+                        },
+                        {
+                            "value": "vertical",
+                            "label": "Vertical"
+                        }
+                    ],
+                    "default": "vertical"
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "textarea",
+                    "id": "visible",
+                    "label": "Specific Collection/Product to apply",
+                    "info": "Separate by ';'. E.g: Title 1; Title 2; ..."
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use +Collection show only on Collection pages"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use +Product show only on Product pages"
+                },
+                {
+                    "type": "header",
+                    "content": "Paragraph & Button"
+                },
+                {
+                    "type": "textarea",
+                    "id": "text_1",
+                    "label": "Text 1"
+                },
+                {
+                    "type": "textarea",
+                    "id": "text_2",
+                    "label": "Text 2"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_txt",
+                    "label": "Button label"
+                },
+                {
+                    "type": "url",
+                    "id": "btn_url",
+                    "label": "Button URL"
+                },
+                {
+                    "type": "header",
+                    "content": "Custom Content"
+                },
+                {
+                    "type": "text",
+                    "id": "svg_1",
+                    "label": "SVG 1"
+                },
+                {
+                    "type": "text",
+                    "id": "text_svg_1",
+                    "label": "Text for SVG 1"
+                },
+                {
+                    "type": "text",
+                    "id": "svg_2",
+                    "label": "SVG 2"
+                },
+                {
+                    "type": "text",
+                    "id": "text_svg_2",
+                    "label": "Text for SVG 2"
+                }
+            ]
+        },
+        {
+            "type": "style_content_wrapper",
+            "name": "[+] Content wrapper",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                   "type":"paragraph",
+                    "content": "For Horizontal content, the left value will be disabled"
+                },
+                {
+                    "type": "text",
+                    "id": "position",
+                    "label": "Text block position",
+                    "info": "Left(%):Top(%). E.g: 50%:50%"
+                },
+                {
+                    "type": "text",
+                    "id": "align",
+                    "label": "Text alignment"
+                }
+            ]
+        },
+        {
+            "type": "style_paragraph",
+            "name": "[+] Paragraph",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "header",
+                    "content": "Text 1 settings"
+                },
+                {
+                    "type": "text",
+                    "id": "text_fs_1",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "color",
+                    "id": "text_cl_1",
+                    "label": "Color"
+                },
+                {
+                    "type": "range",
+                    "id": "text_fw_1",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "text_1_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "text",
+                    "id": "text_lh_1",
+                    "label": "Line height",
+                    "info": "E.g: 21px"
+                },
+                {
+                    "type": "header",
+                    "content": "Text 2 settings"
+                },
+                {
+                    "type": "text",
+                    "id": "text_fs_2",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "color",
+                    "id": "text_cl_2",
+                    "label": "Color"
+                },
+                {
+                    "type": "range",
+                    "id": "text_fw_2",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "text_2_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "text",
+                    "id": "text_lh_2",
+                    "label": "Line height",
+                    "info": "E.g: 21px"
+                }
+            ]
+        },
+        {
+            "type": "style_button",
+            "name": "[+] Button",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_fs",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "color",
+                    "id": "btn_bg_cl",
+                    "label": "Background Color"
+                },
+                {
+                    "type": "color",
+                    "id": "btn_cl",
+                    "label": "Text Color"
+                },
+                {
+                    "type": "range",
+                    "id": "btn_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "btn_padding",
+                    "label": "Padding",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_radius",
+                    "label": "Button rounded corners",
+                    "info": "E.g: 8px 8px 8px 8px"
+                }
+            ]
+        },
+        {
+            "type": "style_svg",
+            "name": "[+] SVG Content",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "color",
+                    "id": "svg_cl",
+                    "label": "Color"
+                },
+                {
+                    "type": "text",
+                    "id": "svg_fs",
+                    "label": "Font size",
+                    "info": "E.g: 20px"
+                },
+                {
+                    "type": "range",
+                    "id": "svg_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "svg_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

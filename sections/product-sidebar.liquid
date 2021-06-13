@@ -1,0 +1,412 @@
+{%- include 'sidebar' -%}
+
+{% schema %}
+{
+  "name": "Sidebar",
+  "tag": "aside",
+  "class": "custom-static-sidebar",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Created by 'Product sidebar' section"
+    },
+    {
+      "type": "text",
+      "id": "section_padding",
+      "label": "Section Padding",
+      "info": "Order: Top Right Bottom Left, E.g: 5px 20px 5px 20px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_recommend",
+      "name": "Product Recommendations",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "E.g: Related products"
+        },
+        {
+           "type":"range",
+           "id":"limit",
+           "label":"Limit",
+           "min":1,
+           "max":10,
+           "step":1,
+           "default":2
+        },
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Block margin",
+          "info": "Order: Top Right Bottom Left, E.g: 5px 20px 5px 20px"
+        }
+      ]
+    },
+    {
+      "type": "iconbox",
+      "name": "Icon box",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Block margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Icon box 1"
+        },
+        {
+          "type": "text",
+          "id": "svg_1",
+          "label": "SVG",
+          "info": "Blank to use image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image"
+        },
+        {
+          "type": "textarea",
+          "id": "title_1",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Icon box 2"
+        },
+        {
+          "type": "text",
+          "id": "svg_2",
+          "label": "SVG",
+          "info": "Blank to use image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image"
+        },
+        {
+          "type": "textarea",
+          "id": "title_2",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Icon box 3"
+        },
+        {
+          "type": "text",
+          "id": "svg_3",
+          "label": "SVG",
+          "info": "Blank to use image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "Image"
+        },
+        {
+          "type": "textarea",
+          "id": "title_3",
+          "label": "Title"
+        }
+      ]
+    },
+    {
+      "type": "payment",
+      "name": "Payment support",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Block margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "text",
+          "id": "items_resp",
+          "label": "Max number of content per row",
+          "default": "3",
+          "info": "E.g: 4,3,2"
+        }
+      ]
+    },
+    {
+      "type": "payment_item",
+      "name": "Payment item",
+      "settings": [
+        {
+          "type":"select",
+          "id":"default",
+          "label":"Default icon",
+          "options":[
+            {"value": "custom", "label": "Custom"}
+            ,{"value":"payment_visa", "label": "Visa"}
+            ,{"value":"payment_mastercard", "label": "Mastercard"}
+            ,{"value":"payment_maestro", "label": "Maestro"}
+            ,{"value":"payment_paypal", "label": "Paypal"}
+            ,{"value":"payment_skrill", "label": "Skrill"}
+            ,{"value":"payment_wepay", "label": "Wepay"}
+            ,{"value":"payment_moneygram", "label": "Moneygram"}
+            ,{"value":"payment_bluepay", "label": "Bluepay"}
+            ,{"value":"payment_american_express", "label": "American_express"}
+          ],
+          "default": "custom"
+        },
+        {
+          "type":"image_picker",
+          "id":"image",
+          "label":"Image",
+          "info": "Blank to use SVG"
+        },
+        {
+          "type":"textarea",
+          "id":"svg",
+          "label":"SVG"
+        }
+      ]
+    },
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "banner",
+          "label": "Banner image"
+        },
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Block margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Banner content"
+        },
+        {
+          "type": "textarea",
+          "id": "text_1",
+          "label": "Heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text_2",
+          "label": "Subheading"
+        },
+        {
+          "type": "text",
+          "id": "btn_label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "btn_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "range",
+          "id": "btn_style",
+          "label": "Button style",
+          "min": 1,
+          "max": 3,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "align",
+          "label": "Text alignment",
+          "info": "E.g: center or right"
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "name": "HTML",
+      "settings": [
+        {
+          "type": "html",
+          "id": "content",
+          "label": "Custom HTML"
+        },
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Block margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        }
+      ]
+    },
+    {
+      "type": "style_content",
+      "name": "[+] Heading & Subheading",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Heading settings"
+        },
+        {
+          "type": "text",
+          "id": "content_fs_1",
+          "label": "Font size",
+          "info": "E.g: 24px"
+        },
+        {
+          "type": "color",
+          "id": "content_cl_1",
+          "label": "Color"
+        },
+        {
+          "type": "range",
+          "id": "content_fw_1",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "content_margin_1",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+        },
+        {
+          "type": "text",
+          "id": "content_lh_1",
+          "label": "Line height",
+          "info": "E.g: 26px"
+        },
+        {
+          "type": "header",
+          "content": "Subheading settings"
+        },
+        {
+          "type": "text",
+          "id": "content_fs_2",
+          "label": "Font size",
+          "info": "E.g: 24px"
+        },
+        {
+          "type": "color",
+          "id": "content_cl_2",
+          "label": "Color"
+        },
+        {
+          "type": "range",
+          "id": "content_fw_2",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "content_margin_2",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+        },
+        {
+          "type": "text",
+          "id": "content_lh_2",
+          "label": "Line height",
+          "info": "E.g: 26px"
+        }
+      ]
+    },
+    {
+      "type": "style_button",
+      "name": "[+] Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "btn_fs",
+          "label": "Font size",
+          "info": "E.g: 18px"
+        },
+        {
+          "type": "range",
+          "id": "btn_fw",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "btn_padding",
+          "label": "Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 13px 50px"
+        },
+        {
+          "type": "text",
+          "id": "btn_margin",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 13px 50px"
+        },
+        {
+          "type": "color",
+          "id": "btn_cl",
+          "label": "Text color"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg_cl",
+          "label": "Background color"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_cl",
+          "label": "Hover: Text color"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_bg_cl",
+          "label": "Hover: Background color"
+        },
+        {
+          "type": "range",
+          "id": "btn_border_width",
+          "label": "Border width",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 1,
+          "unit": "px"
+        },
+        {
+          "type": "color",
+          "id": "btn_border_cl",
+          "label": "Border color"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_border_cl",
+          "label": "Hover: Border color"
+        },
+        {
+          "type": "text",
+          "id": "btn_radius",
+          "label": "Rounded corners",
+          "info": "E.g: 42px"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

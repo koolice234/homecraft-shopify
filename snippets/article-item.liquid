@@ -1,0 +1,46 @@
+{%- if template contains 'about' -%}
+  {%- assign inAboutPage = true -%}
+{%- endif -%}
+
+<article class="featured_blog__item">
+  <header>
+    <figure class="featured_blog__item-image">
+      <a href="{{ article.url }}">
+        {%- render 'image-style', image: article.image -%}
+      </a>
+    </figure>
+    {%- if article.tags.size > 0 -%}
+      <div class="featured_blog__item-label label_ui-group">
+        {%- for tag in article.tags -%}
+          <span class="label_ui label_ui-tag">{{- tag -}}</span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </header>
+
+
+  <footer>
+    {%- if template contains 'blog' and style == '2' -%}
+      <div class="featured_blog__item-info">
+        <span class="featured_blog__item-publish">{{ article.published_at | date: "%B %d, %Y" }}</span>
+        <span class="featured_blog__item-author">{{ article.author }}</span>
+      </div>
+      <p class="featured_blog__item-title h2">
+        <a href="{{ article.url }}">{{ article.title }}</a>
+      </p>
+
+    {%- else -%}
+      <p class="featured_blog__item-title h6">
+        <a href="{{ article.url }}"{% if inAboutPage %} class="text-1"{% endif %}>{{ article.title }}</a>
+      </p>
+      <div class="featured_blog__item-info{% if inAboutPage %} text-2{% endif %}">
+        <span class="featured_blog__item-publish">{{ article.published_at | date: "%B %d, %Y" }}</span>
+        <span class="featured_blog__item-author">{{ article.author }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if showExcerpt -%}
+      <div class="featured_blog__item-excerpt{% if inAboutPage %} text-3{% endif %}">{{ article.excerpt_or_content }}</div>
+    {%- endif -%}
+  </footer>
+</article>

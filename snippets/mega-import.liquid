@@ -1,0 +1,164 @@
+{%- liquid
+  assign search_terms = search_terms | default: search.terms
+  unless request.design_mode
+    assign arn_f = true
+    assign megaTrigger = search_terms
+  endunless
+    assign arn_f = false
+-%}
+
+{%- liquid
+  assign enable_mega_menu = section.settings.enable_mega_menu
+  assign mainMenu         = section.settings.nav_link
+  assign subMenu          = section.settings.nav_link_sub
+-%}
+
+{%- if search_terms contains 'hmob' -%}
+  {%- assign type = 'mobile' -%}
+{%- endif -%}
+
+
+{%- case type -%}
+  {%- when 'precss' -%}{%- comment -%}* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *{%- endcomment -%}
+
+    {%- if enable_mega_menu -%}
+      {%- unless mainMenu == blank and subMenu == blank -%}
+        {%- liquid
+          assign subMenu    = linklists[subMenu].links | map: 'title' | join: 'xxxxxx' | handle | split: 'xxxxxx'
+          assign mainMenu    = linklists[mainMenu].links | map: 'title' | join: 'xxxxxx' | handle | split: 'xxxxxx' | concat: subMenu
+          assign megaTrigger  = section.blocks | where: 'type', 'mega_trigger'
+        -%}
+
+        {%- for mb in megaTrigger -%}
+          {%- liquid
+            assign mHandle = mb.settings.trigger | handle
+          -%}
+
+          {%- unless mainMenu contains mHandle -%}{%- continue -%}{%- endunless -%}
+
+          {%- capture divIncluded -%}.lazyload-include[data-handle="{{mHandle}}"] > div{%- endcapture -%}
+          {%- capture blockID -%}.block-{{mb.id}}{%- endcapture -%}
+
+          {%- render 'css-resp', classID: divIncluded, css_value: mb.settings.height, css_property: 'min-height' -%}
+          {%- render 'css-resp', classID: blockID, css_value: mb.settings.block_padding, css_property: 'padding' -%}
+
+        {%- endfor -%}
+
+      {%- endunless -%}
+    {%- endif -%}
+
+  {%- when 'mobile' -%}{%- comment -%}* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *{%- endcomment -%}
+    {%- render 'header-menu-mobile', section: section -%}
+
+  {%- else -%}{%- comment -%}* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *{%- endcomment -%}
+
+    {%- if arn_f -%}[||]{%- endif -%}
+
+    {%- comment -%}
+      * * * * * * * * * * * * * * * * * * * *
+      *
+      *     MEGA MENU
+      *
+      * * * * * * * * * * * * * * * * * * * *
+    {%- endcomment-%}
+    {%- if enable_mega_menu -%}
+
+      {%- for block in section.blocks -%}
+        {%- if block.type != 'mega_trigger' -%}{%- continue -%}{%- endif -%}
+
+        {%- liquid
+          assign currentIndex = forloop.index
+          assign mHandle      = block.settings.trigger | strip | handle
+        -%}
+
+        {%- unless arn_f -%}
+          {%- assign megaTrigger = trigger -%}
+        {%- endunless -%}
+
+
+        {%- if megaTrigger != mHandle -%}{%- continue -%}{%- endif -%}
+
+        {%- assign groupMegaTrigger = groupMegaTrigger | append: '|' | append: mHandle -%}
+
+
+        <div class="mega-block block-{{block.id}}"{{block.shopify_attributes}}>
+          <div class="row">
+
+            {%- for m_block in section.blocks offset: currentIndex -%}
+
+              {%- if m_block.type contains 'ms_' or m_block.settings.nested -%}{%- continue -%}
+              {%- else -%}{%- unless m_block.type contains 'm_' -%}{%- break -%}{%- endunless -%}{%- endif -%}
+
+              {%- assign blockNextIndex = currentIndex | plus: forloop.index -%}
+
+              {%- render 'mega-block-items', type: 'megaBlock', section: section, block: m_block, index: blockNextIndex, search_terms: search_terms -%}
+
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+
+
+    {%- comment -%}
+      * * * * * * * * * * * * * * * * * * * *
+      *
+      *     DROPDOWN MENU
+      *
+      * * * * * * * * * * * * * * * * * * * *
+    {%- endcomment-%}
+    {%- if arn_f -%}
+      {%- assign megaTrigger = search_terms | split: ' ' | join: '_' -%}
+    {%- else -%}
+      {%- assign megaTrigger = trigger -%}
+    {%- endif -%}
+
+    {%- if megaTrigger contains '_dd' -%}
+      <div class="block-dropdown">
+
+
+        {%- comment -%}
+          **********
+          *
+          * MAIN MENU
+          *
+          *****
+        {%- endcomment-%}
+        {%- for mLink in linklists[mainMenu].links -%}
+          {%- assign mTrigger = mLink.title | handle | append: '_dd' -%}
+
+          {%- if mTrigger != megaTrigger or mLink.links.size == 0 -%}{%- continue -%}{%- endif -%}
+
+          <ul class="dropdown dropdown-menu">
+            {%- for l in mLink.links -%}
+              {%- render 'nav-link', l: l, class: '' -%}
+            {%- endfor -%}
+          </ul>
+        {%- endfor -%}
+
+
+        {%- comment -%}
+          **********
+          *
+          * SUB MENU
+          *
+          *****
+        {%- endcomment-%}
+        {%- unless subMenu == blank -%}            
+          {%- for mLink in linklists[subMenu].links -%}
+            {%- assign mTrigger = mLink.title | handle | append: '_dd' -%}
+
+            {%- if mTrigger != megaTrigger or mLink.links.size == 0 -%}{%- continue -%}{%- endif -%}
+
+            <ul class="dropdown dropdown-menu">
+              {%- for l in mLink.links -%}
+                {%- render 'nav-link', l: l, class: '' -%}
+              {%- endfor -%}
+            </ul>
+          {%- endfor -%}
+        {%- endunless -%}
+      </div>
+    {%- endif -%}
+
+    {%- if arn_f -%}[||]{%- endif -%}
+{%- endcase -%}

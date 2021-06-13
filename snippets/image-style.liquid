@@ -1,0 +1,97 @@
+{%- if isp or image != blank -%}
+
+	{%- if image.src contains 'no-image' -%}{%- assign image = 'default-image.jpg' | asset_url -%}{%- endif -%}
+
+	{%- if image_size == blank -%}
+		{%- assign width = width | default: '100,280,360,540,1080,1296' | split: ',' -%}
+		{%- capture image_width -%}
+			{%- for w in width -%}
+				{%- assign number = w | strip | times: 1 -%}
+		        {%- if number <= image.width -%}
+		            {%- unless forloop.first -%},{%- endunless -%}
+		            {{- number -}}
+		            {%- assign image_size = number | append: 'x' -%}
+		        {%- else -%}
+	            	{%- unless forloop.first -%},{%- endunless -%}
+	            	{{- image.width -}}
+		            {%- assign image_size = image.width | append: 'x' -%}
+		            {%- break -%}
+		        {%- endif -%}
+			{%- endfor -%}
+
+			{%- if image.width > number -%},{{- image.width -}}{%- endif -%}
+		{%- endcapture -%}
+	{%- endif -%}
+
+	{%- unless disableAbsolute -%}
+		{%- capture imageClass -%}overlay-ui w-100 h-100{%- endcapture -%}
+	{%- else -%}
+		{%- assign disablePadding = true -%}
+	{%- endunless -%}
+
+	{%- liquid
+		assign _lazyload 	= true
+		assign _imgRatio 	= image.aspect_ratio
+		assign imageRatio 	= 1 | divided_by: _imgRatio | times: 100 | append: '%'
+		assign image_url   = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.'
+		assign image_url2   = image2 | img_url: '1x1' | replace: '_1x1.', '_{width}x.'
+	-%}
+
+	{%- unless disablePadding -%}
+		{%- assign imagePadding = imagePadding | default: imageRatio -%}
+	{%- endunless -%}
+
+	{%- capture image_width -%}[{{ image_width | remove: 'x' }}]{%- endcapture -%}
+
+	{%- if set_width != blank -%}
+		{%- assign image_width = set_width -%}
+	{%- endif -%}
+
+		{%- capture imageRatio_height -%}" style="
+			{% comment %} Set Padding 	{% endcomment %}{%- unless imagePadding == blank -%}padding-top: {{- imagePadding -}};{%- endunless -%}
+			{% comment %} Set Width 	{% endcomment %}{%- if setWidth -%}width: {% unless manualWidth == blank %} {{ manualWidth }} {% else %}{{image.width}}px{% endunless %};{%- endif -%}
+		{%- endcapture -%}
+
+		{%- capture imageRatio_css -%}{% unless image_css == blank %}" style="{{ image_css }}{% endunless %}{%- endcapture -%}
+
+		{%- capture imgZoom -%}{% if enableZoom %} arn-data-zoom="{{ image | img_url: '2048x', scale: 2 }}"{% endif %}{%- endcapture -%}
+
+		{%- if heightByRatio -%}
+		{%- render 'bgset', class: 'bg__lazy', image: image, isp: isp -%}{{imageRatio_height}}" data-sizes="auto
+		{%- else -%}
+
+		<span class="image__style{{customClass}}{{imageRatio_height}} " data-origin-width="{{image.width}}">
+			{%- if _lazyload -%}
+				<img class="{{imageClass}} lazyload {{ image_class }}{{imageRatio_css}} "
+					data-srcset="{{ image_url }}"
+					data-widths="{{ image_width}}"
+					data-aspectratio="{{ _imgRatio }}"
+					data-sizes="auto"
+					data-parent-fit="cover"
+					{% if lazyExpand %} data-expand="-20"{% endif %}
+					alt="{{ image.alt }}"{{ imgZoom }}/>
+				<noscript><img class="{{imageClass}} {{ image_class }}{{imageRatio_css}}" src="{{ image | img_url: image_size }}"/></noscript>
+			{%- else -%}
+				<img class="{{imageClass}} {{ image_class }}" src="{{ image | img_url: image_size }}" alt="{{ image.alt }}"/>
+			{%- endif -%}
+		</span>
+		{%- endif -%}
+<style>
+</style>
+{%- endif -%}
+{% comment %}
+{%- if image.width < 181 and originQuality-%}{%- assign image_size = image.width | append: 'x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 180  -%}{%- assign image_size = '100x'  -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 280  -%}{%- assign image_size = '280x'  -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 360  -%}{%- assign image_size = '360x'  -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 540  -%}{%- assign image_size = '540x'  -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 720  -%}{%- assign image_size = '720x'  -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 900  -%}{%- assign image_size = '900x'  -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 1080 -%}{%- assign image_size = '1080x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 1296 -%}{%- assign image_size = '1296x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 1512 -%}{%- assign image_size = '1512x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 1728 -%}{%- assign image_size = '1728x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 1919 -%}{%- assign image_size = '1920x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 2048 -%}{%- assign image_size = '2048x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{%- if image.width > 2048 and originQuality-%}{%- assign image_size = image.width | append: 'x' -%}{%- assign image_width = image_width | append: ',' | append: image_size -%}{%- endif -%}
+{% endcomment %}

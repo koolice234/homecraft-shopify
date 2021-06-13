@@ -1,0 +1,585 @@
+{%- capture content -%}
+{%- if section.settings.boxed_layout -%}{%- assign _layout = 'boxed' -%}{%- else -%}{%- assign _layout = 'full' -%}{%- endif -%}
+{%- liquid
+  assign sectionType    = 'footer'
+  assign _lazyload      = settings.use_lazyload
+  assign _mobileMenu    = section.blocks | where: 'type', 'menu'
+  assign _grid_layout   = section.settings.grid_layout
+  unless _grid_layout contains ','
+    assign _grid_layout = _grid_layout | append: ', 100%' 
+  endunless
+-%}
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|layout-{{- _layout -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+{%- unless request.design_mode -%}
+<link rel="stylesheet" href="{{ 'footer.css' | asset_url }}" as="style" onload="[...document.querySelectorAll(`[data-section-type='footer']`)].map(i=>i.style.opacity = null);">
+{%- endunless -%}
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}{% unless request.design_mode %}" style="opacity: 0;{% endunless %}">
+	{%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+
+    {%- if _mobileMenu.size > 0 -%}
+      {%- comment -%}
+        **
+        * Mobile Footer Navigation
+        *
+      {%- endcomment-%}
+      <div class="card_footer-mobile">
+        <div class="card_footer-nav">
+          <a href="javascript:void(0);" class="navElement" data-target="#footerNav_mobile">
+            <span class="svg-element-ui">{%- render 'svg', type: 'hamburger' -%}</span>
+            <span>{{- 'general.footer.footer_menu_title' | t -}}</span>
+          </a>
+        </div>
+      </div>
+
+
+      <div class="card_footer-mobile" id="footerNav_mobile">
+        <div class="card_footer-mobile--menu animation-fade">
+          <span class="footerNav_mobile-close sb-btn-close" data-target="#footerNav_mobile">{%- render 'svg', type: 'close' -%}</span>
+          {%- for block in _mobileMenu -%}
+            {%- liquid
+              assign __title  = block.settings.title
+              assign __menu   = block.settings.menu
+            -%}
+            <div class="card_footer-mobile-menu animation-fade-index-{% increment fadeCount %}">
+              {%- unless __title == blank -%}
+                <p class="card_footer-title">{{ __title }}</p>
+              {%- endunless -%}
+              <ul class="menu_list-wrapper">
+                {%- if __menu != blank -%}
+                  {%- for l in linklists[__menu].links -%}
+                    {%- render 'nav-link', l: l -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  <li class="menu_list-item"><a href="javascript:void(0);">Lorem ipsum </a></li>
+                  <li class="menu_list-item"><a href="javascript:void(0);">At lectus urna</a></li>
+                  <li class="menu_list-item"><a href="javascript:void(0);">Ac feugiat</a></li>
+                  <li class="menu_list-item"><a href="javascript:void(0);">Vel eros donec ac odio</a></li>
+                  <li class="menu_list-item"><a href="javascript:void(0);">Tristique nulla</a></li>
+                {%- endif -%}
+              </ul>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+
+    {%- for block in section.blocks -%}
+      {%- assign index = forloop.index -%}
+
+      {%- comment -%}
+        **********
+        *
+        * Check first block is not ROW
+        *
+        *****
+      {%- endcomment-%}
+      {%- if forloop.first and block.type != 'row' -%}
+        {%- assign block = section -%}
+        {%- assign index = 0 -%}
+
+      {%- elsif block.type != 'row' -%}
+        {%- continue -%}
+      {%- endif -%}
+
+      {%- capture blockID %} .section_content-wrapper.d-grid.block-{{block.id}}{%- endcapture -%}
+
+
+      {%- comment -%} 
+        **
+        * Row settings
+        *
+      {%- endcomment-%}
+      {%- if block.type == 'row' -%}
+        {%- assign blockVisible = block.settings.visible | replace: '1', 'null' | replace: '0', 'none' -%}
+        {%- capture block_css -%}
+          {%- capture firstValues -%}
+            {%- liquid
+              render 'css-resp', type: 'value', showFirst: true, css_value: block.settings.padding, css_property: 'padding'
+              render 'css-resp', type: 'value', showFirst: true, css_value: block.settings.margin, css_property: 'margin'
+              render 'css-resp', type: 'value', showFirst: true, css_value: block.settings.grid_spc, css_property: 'grid-gap'
+              render 'css-resp', type: 'value', showFirst: true, css_value: block.settings.grid_layout, css_property: 'grid-template-columns'
+              render 'css-resp', type: 'value', showFirst: true, css_value: blockVisible, css_property: 'display'
+            -%}
+          {%- endcapture -%}
+
+          {%- liquid
+            assign __grid_layout   = block.settings.grid_layout
+            unless __grid_layout contains ','
+              assign __grid_layout = __grid_layout | append: ', 100%'
+            endunless
+            render 'css-resp', classID: sectionID, nextClassID: blockID, css_values: firstValues
+            render 'css-resp', classID: sectionID, nextClassID: blockID, showLast: true, css_value: block.settings.padding
+            render 'css-resp', classID: sectionID, nextClassID: blockID, showLast: true, css_value: block.settings.margin, css_property: 'margin'
+            render 'css-resp', classID: sectionID, nextClassID: blockID, showLast: true, css_value: block.settings.grid_spc, css_property: 'grid-gap'
+            render 'css-resp', classID: sectionID, nextClassID: blockID, showLast: true, css_value: __grid_layout, css_property: 'grid-template-columns'
+            render 'css-resp', classID: sectionID, nextClassID: blockID, showLast: true, css_value: blockVisible, css_property: 'display'
+          -%}
+        {%- endcapture -%}
+        {%- assign section_css = section_css | append: block_css -%}
+      {%- endif -%}
+
+
+      {%- comment -%}
+        **
+        * Row Content
+        *
+      {%- endcomment-%}
+      {%- liquid
+        assign styleButtonExist = false
+      -%}
+      <div class="section_content-wrapper d-grid block-{{block.id}}"{{block.shopify_attributes}}>
+        {%- for block in section.blocks offset: index -%}
+          {%- if block.type == 'row' -%}{%- break -%}{%- endif -%}
+
+          {%- if block.type contains 'style' -%}
+
+            {%- if block.type == 'style_button' -%}
+              {%- if styleButtonExist -%}
+                {%- continue -%}
+              {%- else -%}
+                {%- assign styleButtonExist = true -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- capture block_css -%}{%- render 'snippet-footer', sectionID: sectionID, blockID: blockID, block: block -%}{%- endcapture -%}
+            {%- assign section_css = section_css | append: block_css -%}
+
+          {%- else -%}
+
+            {%- assign styleButtonExist = true -%}
+            {%- render 'snippet-footer', sectionID: sectionID, blockID: blockID, block: block -%}
+
+            {%- if block.type == 'text' or block.type == 'newsletter' -%}
+              {%- assign parentBlock = block -%}
+              {%- assign nextIndex = index | plus: forloop.index -%}
+
+              {%- for block in section.blocks offset: nextIndex -%}
+                {%- if block.type != 'style_button' -%}{%- break -%}{%- endif -%}
+
+                {%- capture _blockID -%}{{ blockID }} .card_footer-{{parentBlock.id}}{%- endcapture -%}
+                {%- capture block_css -%}
+                  {%- render 'snippet-footer', sectionID: sectionID, blockID: _blockID, block: block -%}
+                {%- endcapture -%}
+                {%- assign section_css = section_css | append: block_css -%}
+
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+    {%- endfor -%}
+
+	{%- if _layout == 'boxed' -%}</div>{%- endif -%}
+</div>
+
+{%- capture sectionCss -%}
+  {%- liquid
+    render 'snippet-theme', type: 'sectionCSS', ID: sectionID
+    render 'css-resp', classID: sectionID, nextClassID: ' .section_content-wrapper.d-grid', css_value: _grid_layout, css_property: 'grid-template-columns'
+    render 'css-resp', classID: sectionID, nextClassID: ' .section_content-wrapper.d-grid', css_value: section.settings.grid_spc, css_property: 'grid-gap'
+    echo section_css
+  -%}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+
+{% schema %}
+{
+   "name": "Footer Widget",
+   "tag": "section",
+   "settings": [
+      {
+         "type": "checkbox",
+         "id": "boxed_layout",
+         "label": "Boxed layout",
+         "default": true
+      },
+      {
+         "type": "text",
+         "id": "section_padding",
+         "label": "Section Padding",
+         "placeholder": "E.g: 5px 20px 5px 20px",
+         "info": "Order: Top Right Bottom Left"
+      },
+      {
+         "type":"text",
+         "id":"grid_layout",
+         "label":"Column Grid layout",
+         "default": "25% 25% 25% 25%, 100%",
+         "placeholder": "E.g: 70% 30% or 100%"
+      },
+      {
+         "type":"text",
+         "id":"grid_spc",
+         "label":"Item spacing",
+         "default": "8px",
+         "placeholder": "E.g: 10px"
+      }
+   ],
+   "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+          {
+            "type":"text",
+            "id":"title",
+            "label":"Title",
+            "info": "Default is Menu title"
+          },
+          {
+             "type":"checkbox",
+             "id":"hide_title",
+             "label":"Hide title"
+          },
+          {
+             "type":"link_list",
+             "id":"menu",
+             "label":"Menu"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Information",
+        "settings": [
+          {
+            "type":"text",
+            "id":"title",
+            "label":"Title"
+          },
+          {
+            "type":"richtext",
+            "id":"text_content_1",
+            "label":"Content 1"
+          },
+          {
+            "type":"richtext",
+            "id":"text_content_2",
+            "label":"Content 2"
+          },
+          {
+             "type":"text",
+             "id":"btn_label",
+             "label":"Button label"
+          },
+          {
+             "type":"url",
+             "id":"btn_url",
+             "label":"Button URL"
+          },
+          {
+             "type":"range",
+             "id":"btn_style",
+             "label":"Button style",
+             "min":1,
+             "max":3,
+             "step":1,
+             "default":1
+          }
+        ]
+      },
+      {
+        "type": "text_width_social",
+        "name": "Information with Social",
+        "limit": 1,
+        "settings": [
+          {
+            "type":"text",
+            "id":"title",
+            "label":"Title"
+          },
+          {
+            "type":"richtext",
+            "id":"text_content_1",
+            "label":"Content 1"
+          },
+          {
+            "type":"richtext",
+            "id":"text_content_2",
+            "label":"Content 2"
+          }
+        ]
+      },
+      {
+         "type": "newsletter",
+         "name": "Newsletter",
+         "settings": [
+            {
+               "type": "text",
+               "id": "main_text_1",
+               "label": "Text 1",
+               "default": "Join our newsletter"
+            },
+            {
+               "type": "textarea",
+               "id": "main_text_2",
+               "label": "Text 2"
+            },
+            {
+               "type": "header",
+               "content": "Form settings"
+            },
+            {
+               "type": "select",
+               "id": "form_type",
+               "label": "Form type:",
+               "options": [
+                  {
+                     "value": "mailchimp",
+                     "label": "Mailchimp"
+                  },
+                  {
+                     "value": "klaviyo",
+                     "label": "Klaviyo"
+                   },
+                   {
+                     "value":"shopify",
+                     "label":"Shopify"
+                   }
+               ],
+               "default": "mailchimp"
+            },
+            {
+               "type": "textarea",
+               "id": "form_url",
+               "label": "Form URL"
+            },
+            {
+              "type":"select",
+              "id":"form_style",
+              "label":"Form style",
+              "options":[
+              {
+                "value":"1",
+                "label": "Style 1"
+              },
+              {
+                "value":"2",
+                "label": "Style 2"
+              }
+              ],
+              "default": "1"
+            },
+            {
+               "type": "paragraph",
+               "content": "Mailchimp: [Where do I get my MailChimp Form Action](https://www.arenacommerce.com/blogs/faq/shopify-theme-how-to-get-a-mailchimp-form-action-url)"
+            },
+            {
+               "type": "paragraph",
+               "content": "KLAVIYO: [Sign up](https://www.klaviyo.com/partner/signup?utm_source=0010V00002PVTlf&utm_medium=partner)"
+            },
+            {
+               "type": "text",
+               "id": "btn_txt",
+               "label": "Button label",
+               "default": "Subscribe"
+            },
+            {
+               "type": "range",
+               "id": "btn_style",
+               "label": "Button style",
+               "min": 1,
+               "max": 3,
+               "step": 1,
+               "default": 1
+            }
+         ]
+      },
+      {
+        "type": "row",
+        "name": "[+] Row",
+        "limit": 3,
+        "settings": [
+          {
+             "type":"text",
+             "id":"title",
+             "label":"Block label",
+             "default": "==== ROW ===="
+          },
+          {
+             "type":"text",
+             "id":"grid_layout",
+             "label":"Column Grid layout",
+             "placeholder": "E.g: 70% 30% or 100%"
+          },
+          {
+             "type":"text",
+             "id":"grid_spc",
+             "label":"Item spacing",
+             "placeholder": "E.g: 10px"
+          },
+          {
+             "type":"text",
+             "id":"margin",
+             "label":"Margin",
+             "placeholder": "E.g: 5px 20px 5px 20px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type":"text",
+             "id":"padding",
+             "label":"Padding",
+             "placeholder": "E.g: 5px 20px 5px 20px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type":"text",
+             "id":"visible",
+             "label":"Visibility responsive",
+             "info": "1: Show; 0: Hide. E.g: 1,0"
+          }
+        ]
+      },
+      {
+        "type": "style",
+        "name": "[+] Color style",
+        "settings": [
+          {
+             "type":"color",
+             "id":"background_color",
+             "label":"Background color"
+          },
+          {
+            "type": "text",
+            "id": "border_radius",
+            "label": "Border Radius",
+            "placeholder": "E.g: 4px"
+          },
+          {
+             "type":"color",
+             "id":"heading_color",
+             "label":"Heading color"
+          },
+          {
+             "type":"range",
+             "id":"heading_font_weight",
+             "label":"Heading Font Weight",
+             "min":0,
+             "max":900,
+             "step":100,
+             "default":0
+          },
+          {
+             "type":"text",
+             "id":"heading_font_size",
+             "label":"Heading Font Size",
+             "placeholder": "E.g: 18px"
+          },
+          {
+             "type":"color",
+             "id":"text_1_color",
+             "label":"Text 1 color"
+          },
+          {
+             "type":"color",
+             "id":"text_2_color",
+             "label":"Text 2 color"
+          },
+          {
+             "type":"color",
+             "id":"link_color",
+             "label":"Link color"
+          },
+          {
+             "type":"color",
+             "id":"hover_link_color",
+             "label":"Hover Link color"
+          }
+        ]
+      },
+      {
+         "type": "style_button",
+         "name": "[+] Button style",
+         "settings": [
+            {
+               "type": "text",
+               "id": "btn_fs",
+               "label": "Font size",
+               "placeholder": "E.g: 18px"
+            },
+            {
+               "type": "range",
+               "id": "btn_fw",
+               "label": "Font weight",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0,
+               "info": "0 is auto"
+            },
+            {
+               "type": "text",
+               "id": "btn_padding",
+               "label": "Padding",
+               "placeholder": "E.g: 13px 50px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "text",
+               "id": "btn_margin",
+               "label": "Margin",
+               "placeholder": "E.g: 13px 50px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "color",
+               "id": "btn_cl",
+               "label": "Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_bg_cl",
+               "label": "Background color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_cl",
+               "label": "Hover: Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_bg_cl",
+               "label": "Hover: Background color"
+            },
+            {
+               "type": "range",
+               "id": "btn_border_width",
+               "label": "Border width",
+               "min": 1,
+               "max": 10,
+               "step": 1,
+               "default": 1,
+               "unit": "px"
+            },
+            {
+               "type": "color",
+               "id": "btn_border_cl",
+               "label": "Border color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_border_cl",
+               "label": "Hover: Border color"
+            },
+            {
+               "type": "text",
+               "id": "btn_radius",
+               "label": "Rounded corners",
+               "placeholder": "E.g: 42px"
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

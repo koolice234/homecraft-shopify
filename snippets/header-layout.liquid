@@ -1,0 +1,31 @@
+{%- liquid
+	assign _headerSticky = settings.enable_header_sticky
+	assign _headerOverlay = settings.enable_header_overlay
+-%}
+{%- capture headerClass -%}
+	{%- if _headerSticky 		-%}|header-sticky{%- endif -%}
+	{%- if _headerOverlay		-%}|header-overlay{%- endif -%}
+	{%- if request.design_mode 	-%}|headerADM{%- endif -%}
+{%- endcapture -%}{%- assign headerClass = headerClass | strip | split: '|' | join: ' ' -%}
+
+<header id="header-style" class="{{headerClass | strip }}">
+	{%- if settings.enable_announbar -%}{%- section 'announcement-bar' -%}{%- endif -%}
+	
+	{%- case settings.header_desk_style -%}
+	  	{%- when '1' -%}{%- section 'header-1' -%}
+	  	{%- when '2' -%}{%- section 'header-2' -%}
+	  	{%- when '3' -%}{%- section 'header-3' -%}
+	  	{%- when '4' -%}{%- section 'header-4' -%}
+	  	{%- when '5' -%}{%- section 'header-5' -%}
+	{%- endcase -%}
+
+	{%- case settings.header_mobi_style -%}
+	  	{%- when '1' -%}{%- section 'header-mobile-1' -%}
+	  	{%- when '2' -%}{%- section 'header-mobile-2' -%}
+	  	{%- when '3' -%}{%- section 'header-mobile-3' -%}
+	  	{%- when '4' -%}{%- section 'header-mobile-4' -%}
+	  	{%- when '5' -%}{%- section 'header-mobile-5' -%}
+	  	{%- when '6' -%}{%- section 'header-mobile-6' -%}
+	{%- endcase -%}	
+
+</header>

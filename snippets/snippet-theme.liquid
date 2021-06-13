@@ -1,0 +1,468 @@
+{%- capture content -%}
+{%- case type -%}
+  	{%- when 'section_id' -%}
+	    {%- if section.settings.title contains '[:' -%}
+	      {%- assign __section_id = section.settings.title | split: '[:' | last -%}
+	      {%- capture __section_id -%}{{ __section_id | split: ']' | first | strip }}{%- endcapture -%}
+	      <div id="{{__section_id}}"></div>
+	    {%- endif -%}
+
+	{%- when 'sectionHeading' -%}
+
+		{%- liquid
+		 	assign sectionHeading_align = section.settings.sectionHeading_align | default: 'auto'
+		-%}
+
+		{%- capture sectionHeadingContent -%}
+			{%- for i in (1..2) -%}
+				{%- liquid
+				 	assign sectionHeading_text 				= 'sectionHeading_text_' | append: i
+				 	assign sectionHeading_cl 				= 'sectionHeading_cl_' | append: i
+				 	assign sectionHeading_text 				= section.settings[sectionHeading_text]
+				 	assign sectionHeading_cl 				= section.settings[sectionHeading_cl] | default: 'rgba(0,0,0,0)'
+				-%}
+				{%- capture sectionHeadingID -%}{{- sectionID }} .section_title-text-{{i}}{%- endcapture -%}
+
+
+				{%- unless sectionHeading_text == blank -%}
+
+					{%- capture block_css -%}
+						{%- unless sectionHeading_cl == 'rgba(0,0,0,0)' -%}{{- sectionHeadingID }}{color: {{sectionHeading_cl}};}{%- endunless -%}
+					{%- endcapture -%}
+					{%- assign section_css = section_css | append: block_css -%}
+
+					<div class="section_title-text-{{i}}">
+						{%- if i == 1 -%}{{- headingIcon -}}{%- endif -%}
+						{{- sectionHeading_text -}}
+					</div>
+				{%- endunless -%}
+			{%- endfor -%}
+		{%- endcapture -%}
+
+		{%- if sectionHeadingContent != blank or countdownDate != blank -%}
+			<div class="section_title-wrapper{% unless sectionHeading_align == 'auto' %} text-{{sectionHeading_align}}{% endunless %}">
+				{%- unless sectionHeadingContent == blank -%}
+					<div class="section_title-inner">{{sectionHeadingContent}}</div>
+				{%- endunless -%}
+	          	{%- render 'block-custom', type: 'countdown', countdownDate: countdownDate -%}
+			</div>
+		{%- endif -%}
+
+	{%- when 'sectionCSS' -%}
+		{%- liquid
+			assign _lazyload 		  = true
+			assign _bg_color          = section.settings.section_bg_color | default: 'rgba(0,0,0,0)'
+		-%}
+
+		{%- capture blockCSS -%}
+			{%- if _bg_color != 'rgba(0,0,0,0)' -%}background-color: {{_bg_color}};{%- endif -%}
+		{%- endcapture -%}
+
+		{%- render 'css-resp', classID: ID, css_values: blockCSS -%}
+		{%- render 'css-resp', classID: ID, css_value: section.settings.section_padding -%}
+
+		{%- unless section.settings.section_bg_image == blank -%}
+			{%- liquid
+				assign _bg_image 			= section.settings.section_bg_image | img_url: 'master'
+				assign _bg_size 			= section.settings.section_bg_size
+				assign _bg_repeat 			= section.settings.section_bg_repeat
+				assign _bg_position 		= section.settings.section_bg_position
+				assign _bg_fixed 			= section.settings.section_bg_fixed
+			-%}
+
+			{%- capture blockCSS -%}
+				{%- if _bg_fixed 				 -%}background-attachment: fixed;{%- endif -%}
+				{%- unless _lazyload 			 -%}background-image: url({{_bg_image}});{%- endunless -%}
+				{%- unless _bg_size 	== blank -%}background-size: {{		_bg_size		}};{%- endunless -%}
+				{%- unless _bg_repeat 	== blank -%}background-repeat: {{	_bg_repeat		}};{%- endunless -%}
+				{%- unless _bg_position == blank -%}background-position: {{	_bg_position	}};{%- endunless -%}
+			{%- endcapture -%}
+
+			{%- if section.settings.section_bg_layout == 'boxed' -%}
+				{%- assign ID = ID | append: ' ' -%}
+			{%- endif -%}
+			{%- capture ID -%}{{ID}}.bg-image{%- endcapture -%}
+			{%- render 'css-resp', classID: ID, css_values: blockCSS -%}
+		{%- endunless -%}
+
+	{%- when 'themeCSS' -%}
+
+		{%- capture section_css -%}
+			<style>
+				:root{--breadcrumb-color: {{settings.breadcrumb_color}};}
+			</style>
+
+			{%- comment -%}
+				**
+				* Section Heading CSS
+				*
+			{%- endcomment-%}
+			{%- capture blockID -%}.section_title-wrapper{%- endcapture -%}
+			{%- render 'css-resp', classID: blockID, css_value: settings.sectionHeading_margin, css_property: 'margin' -%}
+
+			{%- for i in (1..2) -%}
+				{%- liquid
+				 	assign sectionHeading_text_fs = 'sectionHeading_' | append: i | append: '_fs'
+				 	assign sectionHeading_text_lh = 'sectionHeading_' | append: i | append: '_lh'
+
+				 	assign f_sectionHeading_text_fs = settings[sectionHeading_text_fs] | split: ',' | first
+				 	assign f_sectionHeading_text_lh = settings[sectionHeading_text_lh] | split: ',' | first
+				 	assign sectionHeading_text_fs 	= settings[sectionHeading_text_fs] | replace_first: f_sectionHeading_text_fs, 'null'
+				 	assign sectionHeading_text_lh 	= settings[sectionHeading_text_lh] | replace_first: f_sectionHeading_text_lh, 'null'
+				-%}
+				{%- capture firstValue -%}
+					font-size: {{f_sectionHeading_text_fs}};
+					line-height: {{f_sectionHeading_text_lh}};
+				{%- endcapture -%}
+
+				{%- capture itemID -%}{{blockID}} .section_title-text-{{i}}{%- endcapture -%}
+
+				{%- render 'css-resp', classID: itemID, css_values: firstValue -%}
+				{%- render 'css-resp', classID: itemID, css_value: sectionHeading_text_fs, css_property: 'font-size' -%}
+				{%- render 'css-resp', classID: itemID, css_value: sectionHeading_text_lh, css_property: 'line-height' -%}
+
+			{%- endfor -%}
+
+
+			{%- comment -%}
+				**
+				* Button 1, 2, 3
+				*
+			{%- endcomment-%}
+			{%- for i in (1..3) -%}
+				{%- capture itemID -%}.btn-{{i}}{%- if i == 2 and template contains 'product' -%}, .product-info-row .shopify-payment-button__button{%- endif -%}{%- endcapture -%}
+				{%- liquid
+					assign btnFS 		= 'btn' | append: i | append: '_fs'
+					assign btnRadius 	= 'btn' | append: i | append: '_radius'
+					assign btnPadding 	= 'btn' | append: i | append: '_padding'
+
+					assign f_btnFS		= settings[btnFS] 		| split: ',' | first | strip
+					assign f_btnRadius	= settings[btnRadius] 	| split: ',' | first | strip
+					assign f_btnPadding	= settings[btnPadding] 	| split: ',' | first | strip
+					assign btnFS		= settings[btnFS] 		| replace_first: f_btnFS, 'null'
+					assign btnRadius	= settings[btnRadius] 	| replace_first: f_btnRadius, 'null'
+					assign btnPadding	= settings[btnPadding] 	| replace_first: f_btnPadding, 'null'
+				-%}
+				{%- capture firstValue -%}
+					font-size: {{f_btnFS}};
+					border-radius: {{f_btnRadius}};
+					padding: {{f_btnPadding}};
+				{%- endcapture -%}
+
+				{%- render 'css-resp', classID: itemID, css_values: firstValue -%}
+				{%- render 'css-resp', classID: itemID, css_value: btnPadding -%}
+				{%- render 'css-resp', classID: itemID, css_value: btnFS, css_property: 'font-size' -%}
+				{%- render 'css-resp', classID: itemID, css_value: btnRadius, css_property: 'border-radius' -%}
+			{%- endfor -%}
+
+			{%- assign currencyItem = '4,3,2'| replace: ',', ', 1fr;' | append: ', 1fr'  -%}
+			{%- render 'css-resp', classID: '#currencyModal ul.d-grid, #languageModal ul.d-grid', css_value: currencyItem, css_property: 'grid-template-columns', css_value_before: 'repeat', css_split: ';' -%}
+
+			{%- comment -%}
+				**
+				* Custom Style
+				*
+			{%- endcomment-%}
+			{%- assign defaultLoading = 'loading.gif' | asset_url -%}
+			{%- assign loadingGif = settings.page_loading | img_url: 'medium' -%}
+			{%- if loadingGif contains 'no-image' -%}
+				{%- assign loadingGif = defaultLoading -%}
+			{%- endif -%}
+
+			<style>
+				body, .smooth-container { scroll-behavior: smooth }
+				body.lazy-loading:before {background-image: url({{ loadingGif }});}
+				select {background-image: url({{ 'bg-select.svg' | asset_url }});}
+				.bg__lazy:not(.lazyloaded){
+					{%- if settings.card_image_preload == blank -%}
+						background-image: url('{{ 'default-image.jpg' | asset_url }}');
+					{%- else -%}
+						background-image: url('{{ settings.card_image_preload | img_url: '280x' }}');
+					{%- endif -%}
+				}
+
+
+				.lazy-active:not(.lazyloaded),
+				.lazyqueue-active:not(.lazyloaded){position: fixed; opacity: 0.01;top: 0;left: 0;width: 100%;display: block!important;width: 1px!important;height: 1px!important;}
+
+				.add-to-wishlist.arn_added .wlcp-target-label,
+				.add-to-compare.arn_added .wlcp-target-label{
+					text-indent: -99999px;
+					line-height: 0;
+					display: inherit;
+					overflow: hidden;
+				}
+
+				.add-to-wishlist.arn_added .wlcp-target-label:after{
+					content: "{{ 'products.product.added_to_wishlist' | t }}";
+					display: inherit;
+					text-indent: 0;
+					line-height: initial;
+				}
+				.add-to-compare.arn_added .wlcp-target-label:after{
+					content: "{{ 'products.product.added_to_compare' | t }}";
+					display: inherit;
+					text-indent: 0;
+					line-height: initial;
+				}
+				.product-media .tns-item:not(.tns-slide-active),
+				.home-slideshow .slide-item:not(.tns-slide-active) .content-sale-label{opacity: 0;}
+			</style>
+
+
+			{%- capture hiddenClass -%}
+				{%- capture growaveSettings -%}{{- settings.wishlist_app -}}{{- settings.review_app -}}{%- endcapture -%}
+				{%- unless growaveSettings contains 'growave' -%}|#ssw-async-html{%- endunless -%}
+
+				{% capture the_snippet_content %}{% render 'socialshopwave-helper' %}{% endcapture %}
+				{% if the_snippet_content contains 'Liquid error' or settings.review_app != 'growave' %}|#ssw-widget-review-bar{% endif %}
+
+				{% capture the_snippet_fave_icon %}{%- if settings.wishlist_app == 'growave' -%}{% render 'ssw-widget-faveicon' with product.id %}{%- else -%}Liquid error{%- endif -%}{% endcapture %}
+				{%- if the_snippet_fave_icon contains 'Liquid error' -%}|#ssw-fave-list-widget{%- endif -%}
+			{%- endcapture -%}
+
+			{%- if hiddenClass.size > 0 -%}
+				{{ hiddenClass | remove_first: '|' | split: '|' | join: ',' }}{display: none!important;}
+			{%- endif -%}
+		{%- endcapture -%}
+
+		{%- liquid
+			assign section_css = section_css | strip_newlines | remove: '<style>' | remove: '</style>'
+			unless section_css == blank
+				style
+					render 'compress', content: section_css
+				endstyle
+			endunless
+		-%}
+
+	{%- when 'root' -%}
+	    {%- assign font_body_base_size = settings.body_font_size | times: 0.625 -%}
+		<style>
+			:root{
+			--bg-white: #ffffff;
+			--body-base-size: {{ font_body_base_size | times: 6.25 }}%;
+			--body-bg-color: {{settings.body_bg_color}};
+			--body-border-color: {{settings.main_border_color}};
+			--body-color: {{settings.body_text_color}};
+			--body-font-size: {{settings.body_font_size | divided_by: font_body_base_size }}rem;
+			--body-font-weight: {{settings.body_font_weight}};
+			--body-link: {{settings.body_link_color}};
+			--body-link-hover: {{settings.body_link_color_hover}};
+			--border-radius-default: {{settings.border_radius}};
+			--breadcrumb-color: {{settings.breadcrumb_color}};
+			--btn1-bg-cl: {{settings.btn1_bg_cl}};
+			--btn1-border-cl: {{settings.btn1_border_cl}};
+			--btn1-border-width: {{settings.btn1_border_width}}px;
+			--btn1-cl: {{settings.btn1_cl}};
+			--btn1-fw: {{settings.btn1_fw}};
+			--btn1-hover-bg-cl: {{settings.btn1_hover_bg_cl}};
+			--btn1-hover-border-cl: {{settings.btn1_hover_border_cl}};
+			--btn1-hover-cl: {{settings.btn1_hover_cl}};
+			--btn2-bg-cl: {{settings.btn2_bg_cl}};
+			--btn2-border-cl: {{settings.btn2_border_cl}};
+			--btn2-border-width: {{settings.btn2_border_width}}px;
+			--btn2-cl: {{settings.btn2_cl}};
+			--btn2-fw: {{settings.btn2_fw}};
+			--btn2-hover-bg-cl: {{settings.btn2_hover_bg_cl}};
+			--btn2-hover-border-cl: {{settings.btn2_hover_border_cl}};
+			--btn2-hover-cl: {{settings.btn2_hover_cl}};
+			--btn3-bg-cl: {{settings.btn3_bg_cl}};
+			--btn3-border-cl: {{settings.btn3_border_cl}};
+			--btn3-border-width: {{settings.btn3_border_width}}px;
+			--btn3-cl: {{settings.btn3_cl}};
+			--btn3-fw: {{settings.btn3_fw}};
+			--btn3-hover-bg-cl: {{settings.btn3_hover_bg_cl}};
+			--btn3-hover-border-cl: {{settings.btn3_hover_border_cl}};
+			--btn3-hover-cl: {{settings.btn3_hover_cl}};
+			--footer-copyright-border-top: #F0F2F5;
+			--footer-copyright-cl: #103178;
+			--footer-heading-cl: #103178;
+			--footer-heading-fs: 18px;
+			--footer-heading-fw: 600;
+			--footer-link-cl: #103178;
+			--footer-link-hover-cl: #FF9923;
+			--footer-md-heading-cl: #103178;
+			--footer-md-text-cl: #5B6C8F;
+			--footer-text-cl: #5B6C8F;
+			--gutter-ct: 13px;
+			--gutter-lg: 30px;
+			--gutter-md: 25px;
+			--gutter-sm: 20px;
+			--gutter-xlg: 40px;
+			--gutter-xs: 15px;
+			--gutter-xxs: 10px;
+			--header-bg-cart-number-desk: #103178;
+			--header-bg-cart-number-mobile: #103178;
+			--header-bg-desk: #ffffff;
+			--header-bg-mobile: #ffffff;
+			--header-border-color-desk: 16, 49, 120;
+			--header-border-color-desk-opacity: 0.1;
+			--header-border-color-mobile: 16, 49, 120;
+			--header-icons-color-desk: #ff9923;
+			--header-icons-color-mobile: #ff9923;
+			--header-text-cart-number-desk: #ffffff;
+			--header-text-cart-number-mobile: #ffffff;
+			--header-text-color-desk: #5b6c8f;
+			--header-text-color-mobile: #5b6c8f;
+			--heading-1-weight: {{settings.heading_weight_1}};
+			--heading-2-weight: {{settings.heading_weight_2}};
+			--heading-3-weight: {{settings.heading_weight_3}};
+			--heading-4-weight: {{settings.heading_weight_4}};
+			--heading-5-weight: {{settings.heading_weight_5}};
+			--heading-6-weight: {{settings.heading_weight_6}};
+			--heading-size-h1: {{settings.heading_size_1 | divided_by: font_body_base_size }}rem;
+			--heading-size-h2: {{settings.heading_size_2 | divided_by: font_body_base_size }}rem;
+			--heading-size-h3: {{settings.heading_size_3 | divided_by: font_body_base_size }}rem;
+			--heading-size-h4: {{settings.heading_size_4 | divided_by: font_body_base_size }}rem;
+			--heading-size-h5: {{settings.heading_size_5 | divided_by: font_body_base_size }}rem;
+			--heading-size-h6: {{settings.heading_size_6 | divided_by: font_body_base_size }}rem;
+			--hot-lb-bgcl: {{settings.hot_label_bg_color}};
+			--hot-lb-cl: {{settings.hot_label_color}};
+			--main-color-rgba: 16, 49, 120;
+			--main-color: {{settings.main_color}};
+			--main-text-color: #fff;
+			--nav-link-color: #103178;
+			--nav-link-hover: #ff9923;
+			--nav-size: 1.7rem;
+			--nav-weight: 600;
+			--new-lb-bgcl: {{settings.new_label_bg_color}};
+			--new-lb-cl: {{settings.new_label_color}};
+			--price-color: {{settings.price_color}};
+			--price-compare-color: {{settings.price_compare_color}};
+			--price-sale-color: {{settings.price_sale_color}};
+			--product-item-name: {{settings.product_card_title_fs}};
+			--product-item-price: {{settings.product_card_price_sale_fs}};
+			--product-price-compare: {{settings.product_card_price_fs}};
+			--rating-star-color: {{settings.rating_star_color}};
+			--rating-star-empty-color: {{settings.rating_star_empty_color}};
+			--sale-lb-bgcl: {{settings.sale_label_bg_color}};
+			--sale-lb-cl: {{settings.sale_label_color}};
+			--section-heading-align: center;
+			--section-heading-cl: {{settings.sectionHeading_1_cl}};
+			--section-heading-fs: 4rem;
+			--section-heading-fw: {{settings.sectionHeading_1_fw}};
+			--section-heading-lh: {{settings.sectionHeading_1_lh}};
+			--section-subheading-cl: {{settings.sectionHeading_2_cl}};
+			--section-subheading-fs: 2.4rem;
+			--section-subheading-fw: {{settings.sectionHeading_2_fw}};
+			--section-subheading-lh: {{settings.sectionHeading_2_lh}};
+			--special-border: {{settings.special_border_color}};
+			--topbar-bg-color: #F0F2F5;
+			--topbar-border: 16, 49, 120;
+			--topbar-color: #5B6C8F;
+    		{%- render 'theme-font', type: 'root' -%}
+    	}
+		</style>
+
+	{%- when 'script' -%}
+		{%- liquid
+			assign swatch_button = settings.swatch_button | downcase | split: ','
+			assign swatch_color = settings.swatch_color | downcase | split: ','
+			assign swatch_image = settings.swatch_image | downcase | split: ','
+		-%}
+		{%- capture _swatch_button -%}{%- for swt in swatch_button -%}{{- swt | strip -}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{%- endcapture -%}
+		{%- capture _swatch_color  -%}{%- for swt in swatch_color  -%}{{- swt | strip -}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{%- endcapture -%}
+		{%- capture _swatch_image  -%}{%- for swt in swatch_image  -%}{{- swt | strip -}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{%- endcapture -%}
+
+	    <script id="themeJSON">
+	        var theme = {
+	            template : {{ template | json }}
+				,live : {% unless request.design_mode %}true{% else %}false{% endunless %}
+	            ,collectionLink: "{{ collection.url | default: routes.all_products_collection_url }}"
+	            ,collectionPagination : {{cart.attributes.pagination | json }}
+	            ,currency : {
+	            	enable: {% if settings.currency_type == '3' %}false{% else %}true{% endif %}
+	            	,type : {{settings.currency_type | json}}
+	            	,moneyFormat: {{ shop[settings.currency_format] | json }}
+	            	,moneyFormatWithCurrency: {{ shop.money_with_currency_format | json }}
+	            	,moneyFormat_strip: {{ shop.money_format | strip_html | json }}
+	            	,moneyFormatWithCurrency_strip: {{ shop.money_with_currency_format | strip_html | json }}
+	            	,shopCurrency: {{ shop.currency | json }}
+	            	,currency_format: {{ settings.currency_format | json }}
+	            }
+	            ,cart: {
+	            	ajax: {{ settings.enable_ajax_cart | json }}
+	            	,ajax_change_qty: {{ settings.enable_cart_qty_ajax | json }}
+	            	,action: {{ settings.cart_action | json }}
+	            	,item : {{  'cart.general.item' | t | json }}
+	            	,items : {{  'cart.general.items' | t | json }}
+	            	,empty : {{  'cart.general.empty' | t | json }}
+	            	,available : {{  'products.product.add_to_cart' | t | json }}
+	            	,soldout : {{  'products.product.sold_out' | t | json }}
+	            	,unavailable : {{  'products.product.unavailable' | t | json }}
+	            	,replace : {{  'products.product.replace_item_in_cart' | t | json }}
+	            	,error_add_cart : {{  'products.product.error_add_cart' | t | json }}
+	            	,success_add_cart : {{  'cart.general.popup_noti_success' | t | json }}
+	            }
+	            ,contact: {
+	            	submit_success : {{ 'contact.form.subscribe_success' | t | json }}
+	            }
+	            ,dateLabel: {
+	              day: {{       'date_format.day'    | t | json }}
+	              ,hour: {{     'date_format.hour'   | t | json }}
+	              ,minute: {{   'date_format.minute' | t | json }}
+	              ,second: {{   'date_format.second' | t | json }}
+	              ,days: {{     'date_format.days'    | t | json }}
+	              ,hours: {{    'date_format.hours'   | t | json }}
+	              ,minutes: {{  'date_format.minutes' | t | json }}
+	              ,seconds: {{  'date_format.seconds' | t | json }}
+	            }
+	            ,product: {
+	            	default_image: "{{ 'default-image.jpg' | asset_url }}",
+	            	recent_total: {{settings.recently_total | default: 5 | json}},
+	            	review_type : {{settings.review_app | json }},
+	            	added_to_wishlist: {{ 'products.product.added_to_wishlist' | t | json }},
+	            	added_to_compare: {{ 'products.product.added_to_compare' | t | json }}
+	            }
+	            ,search : {
+	            	type: {{ settings.search_type | json }}
+	            	,limit: {{ settings.search_limit | json }}
+	            	,unavailable_result: {{ settings.search_unavailable_result | json }}
+	              	,no_result: {{  'search.general.no_result' | t | json }}
+	              	,notify_character: {{  'search.general.notify_character' | t | json }}
+	            }
+	            ,routes : {
+	            	root_url : {{routes.root_url | json }}
+	            	,account_url : {{routes.account_url | json }}
+	            	,account_login_url : {{routes.account_login_url | json }}
+	            	,account_logout_url : {{routes.account_logout_url | json }}
+	            	,account_register_url : {{routes.account_register_url | json }}
+	            	,account_addresses_url : {{routes.account_addresses_url | json }}
+	            	,collections_url : {{routes.collections_url | json }}
+	            	,all_products_collection_url : {{routes.all_products_collection_url | json }}
+	            	,search_url : {{routes.search_url | json }}
+	            	,cart_url : {{routes.cart_url | json }}
+	            	,cart_add_url : {{routes.cart_add_url | json }}
+	            	,cart_change_url : {{routes.cart_change_url | json }}
+	            	,cart_clear_url : {{routes.cart_clear_url | json }}
+	            	,product_recommendations_url : {{routes.product_recommendations_url | json }}
+	            }
+	            ,resource : {
+	            	quickview: {
+	            		css: "{{ 'quickview.css' | asset_url }}"
+	            		,js: "{{ 'quickview-import.js' | asset_url }}"
+	            	},
+	            	cart_dialog: {
+	            		css: "{{ 'cart-dialog.css' | asset_url }}"
+	            	},
+	            	cart_drawer: {
+	            		css: "{{ 'cart-drawer.css' | asset_url }}"
+	            	}
+	            }
+	            {% if request.design_mode %}
+		            ,info : {
+		            	name: "MyMedi"
+		            	,email : {{ shop.email | json }}
+		            }
+	            {% endif %}
+	        };
+
+	        if (typeof InstallTrigger !== 'undefined') {
+	        	let links = document.querySelectorAll('link[rel="preload"]');links.length && links.forEach(i=>{i.setAttribute('rel', 'stylesheet');})
+	        }
+	        var f = EventTarget.prototype.addEventListener;EventTarget.prototype.addEventListener1 = function(type, fn, capture) {this.f = f;this.f(type, fn, capture);}
+	    </script>
+{%- endcase -%}
+{%- endcapture -%}
+
+{%- render 'compress', content: content -%}

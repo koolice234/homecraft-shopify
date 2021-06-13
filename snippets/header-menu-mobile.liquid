@@ -1,0 +1,160 @@
+{%- liquid
+ 	assign megaTrigger 			= section.blocks | where: 'type', 'mega_trigger'
+ 	assign _nav_link 			= section.settings.nav_link
+ 	assign enable_mega_menu 	= section.settings.enable_mega_menu
+  	unless request.design_mode
+    	assign arn_f = true
+  	endunless
+-%}
+
+{%- capture megaArray -%}{%- for bM in megaTrigger -%}{%- unless forloop.first -%}|{%- endunless -%}{{ bM.settings.trigger | handle }}{%- endfor -%}{%- endcapture -%}
+{%- assign megaArray = megaArray | split: '|' -%}
+
+{%- unless enable_mega_menu -%}
+	{%- assign megaArray =  -%}
+{%- endunless -%}
+
+{%- if arn_f -%}[||]{%- endif -%}
+{%- if _nav_link != blank and linklists[_nav_link].links.size > 0 -%}
+
+	<button aria-label="Close modal" data-dialog-close class="menuMobile-close">
+		{%- render 'svg', type: 'close' -%}
+	</button>
+
+	<div class="mobile-layer main-layer active">
+		<div class="header-row header-row-1 animation-fade-index-{% increment headerRowCount %}">
+			<div class="mobile-menu-wrapper">
+				<ul class="menu-mobile">
+					{%- for l in linklists[_nav_link].links -%}
+
+						{%- assign lHandle = l.title | handle -%}
+						{%- assign l_url = l.url | default: 'javascript:void(0);' -%}
+						{%- if l_url == '#' -%}{%- assign l_url = 'javascript:void(0);' -%}{%- endif -%}
+
+
+						<li class="menu-mobile-link">
+							<a href="{{ l_url }}">{{l.title}}</a>
+
+							{%- if megaArray contains lHandle or l.links.size > 0 -%}
+								<span class="svg-element-ui" data-submenu-link="{{lHandle}}">
+									{%- render 'svg', type: 'arrowRight' -%}
+								</span>
+							{%- endif -%}
+
+							{%- unless megaArray contains lHandle -%}
+								{%- if l.links.size > 0 -%}
+									{%- capture subMenu_item -%}
+										<div class="mobile-layer" data-target="{{ lHandle }}">
+											<div class="mobile-layer-title">
+												<span class="svg-element-ui">{%- render 'svg', type: 'arrowRight' -%}</span>
+												<span class="mobile-header-title" data-layer-title>{{ l.title }}</span>
+											</div>
+											<div class="mobile-sub-menu animation-fade-index-{% increment headerRowCount_1 %}">
+												<ul class="menu-mobile">
+													{%- for sl in l.links -%}
+														{%- assign lHandle = sl.title | handle -%}
+														{%- assign l_url = sl.url | default: 'javascript:void(0);' -%}
+														{%- if l_url == '#' -%}{%- assign l_url = 'javascript:void(0);' -%}{%- endif -%}
+
+														<li class="menu-mobile-link">
+															<a href="{{ l_url }}">{{ sl.title }}</a>
+
+															{%- if sl.links.size > 0 -%}
+																<span class="svg-element-ui" data-submenu-link="{{ lHandle }}">
+																	{%- render 'svg', type: 'arrowRight' -%}
+																</span>
+															{%- endif -%}
+														</li>
+
+
+														{%- if sl.links.size > 0 -%}
+															{%- capture subMenu_item -%}
+																<div class="mobile-layer" data-target="{{ lHandle }}">
+																	<div class="mobile-layer-title">
+																		<span class="svg-element-ui">{%- render 'svg', type: 'arrowRight' -%}</span>
+																		<span class="mobile-header-title" data-layer-title>{{ sl.title }}</span>
+																	</div>
+
+																	<div class="mobile-sub-menu animation-fade-index-{% increment headerRowCount_2 %}">
+																		<ul class="menu-mobile">
+																			{%- for ssl in sl.links -%}
+																				{%- assign l_url = ssl.url | default: 'javascript:void(0);' -%}
+																				{%- if l_url == '#' -%}{%- assign l_url = 'javascript:void(0);' -%}{%- endif -%}
+
+																				<li class="menu-mobile-link">
+																					<a href="{{ l_url }}">{{ ssl.title }}</a>
+																				</li>
+																			{%- endfor -%}
+																		</ul>
+																	</div>
+																</div>
+															{%- endcapture -%}
+															{%- assign subsubMenu = subsubMenu | append: subMenu_item -%}
+														{%- endif -%}
+													{%- endfor -%}
+												</ul>
+											</div>
+										</div>
+									{%- endcapture -%}
+									{%- assign subMenu = subMenu | append: subMenu_item -%}
+								{%- endif -%}
+							{%- endunless -%}
+						</li>
+					{%- endfor -%}
+				</ul>
+			</div>
+		</div>
+
+		<div class="header-row header-row-2 animation-fade-index-{% increment headerRowCount %}">
+			<div class="mobile-search-box">
+				{%- render 'search' -%}
+			</div>
+		</div>
+		<div class="header-row header-row-3 animation-fade-index-{% increment headerRowCount %}">
+			{%- render 'header-snippets', type: 'language_currency' -%}
+		</div>
+	</div>
+
+	{%- comment -%}
+		**
+		* Mega Menu
+		*
+	{%- endcomment-%}
+	{{subMenu}}
+	{{subsubMenu}}
+
+	{%- if enable_mega_menu -%}
+	    {%- for block in section.blocks -%}
+		    {%- if block.type != 'mega_trigger' -%}{%- continue -%}{%- endif -%}
+
+		    {%- liquid
+		    	assign currentIndex = forloop.index
+		    	assign mHandle      = block.settings.trigger | strip | handle
+		    -%}
+
+	      	<div class="mobile-layer mega-block block-{{block.id}}" data-target="{{ mHandle }}">
+	      		<a href="javascript:void(0);" class="mobile-layer-title">
+	      			<span class="svg-element-ui">{%- render 'svg', type: 'arrowRight' -%}</span>
+	      			<span class="mobile-header-title">{{ block.settings.trigger }}</span>
+	      		</a>
+
+
+	          	<div class="mobile-sub-menu block-{{block.id}} animation-fade-index-0 row">
+		            {%- for m_block in section.blocks offset: currentIndex -%}
+
+			            {%- if m_block.type contains 'ms_' or m_block.settings.nested -%}{%- continue -%}
+			            {%- else -%}{%- unless m_block.type contains 'm_' -%}{%- break -%}{%- endunless -%}{%- endif -%}
+
+			            {%- assign blockNextIndex = currentIndex | plus: forloop.index -%}
+
+			            {%- render 'mega-block-items', type: 'megaBlock', section: section, block: m_block, index: blockNextIndex, search_terms: 'hmob' -%}
+
+		            {%- endfor -%}
+	          	</div>
+	      	</div>
+	    {%- endfor -%}
+	{%- endif -%}
+
+{%- endif -%}
+
+{%- if arn_f -%}[||]{%- endif -%}

@@ -1,0 +1,700 @@
+{%- if template.name == 'search' and template.suffix == 'sb' -%}
+  [||]{%- include 'sidebar', sectionType: 'sidebar' -%}[||]
+
+{%- else -%}
+{%- liquid
+  assign _lazyload      = true
+  assign _layout        = settings.page_layout
+  assign sectionType    = 'blog-page'
+  assign recommendPos   = section.settings.recommend_pos
+
+  assign visible_method = section.settings.visible_method
+  assign visible_handle = section.settings.visible_handle | downcase | split: ','
+  assign enableSidebar  = true
+  assign currentPage    = article.handle | split: '/' | last
+-%}
+
+{%- case visible_method -%}
+    {%- when 'none'   -%}{%- assign enableSidebar = false -%}
+    {%- when 'select' -%}{%- unless visible_handle contains currentPage -%}{%- assign enableSidebar = false -%}{%- endunless -%}
+    {%- when 'except' -%}{%- if     visible_handle contains currentPage -%}{%- assign enableSidebar = false -%}{%- endif -%}
+{%- endcase -%}
+
+{%- capture gridClass -%}{%- render 'set-item-per-row', value: _items_resp -%}{%- endcapture -%}
+
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|article-page
+  {%- if enableSidebar -%}|sidebar-section-true{%- endif -%}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+{%- capture content -%}
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}"> 
+  
+    {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+      <div class="layout-grid{% if enableSidebar %} d-grid{% endif %}">
+        <div class="section_content-wrapper">
+          <div class="section_content-body">
+
+            <div class="article">
+              {%- if article.tags.size > 0 -%}
+                <div class="label_ui-group">{%- for tag in article.tags -%}<span class="label_ui label_ui-tag">{{- tag -}}</span>{%- endfor -%}</div>
+              {%- endif -%}
+              <h1 class="article-title">{{ article.title }}</h1>
+
+              <div class="article-info">
+                <span class="article-publish">{{ article.published_at | date: "%B %d, %Y" }}</span>
+                <span class="article-author">{{ article.author }}</span>
+              </div>
+
+              {%- if article.image -%}
+                <div class="article-image">
+                  {% render 'image-style' ,image: article.image %}
+                </div>
+              {%- endif -%}
+
+              <div class="article-body">{{ article.content }}</div>
+
+              {%- render 'social-sharing' -%}
+            </div>
+
+            {%- if recommendPos == '1' -%}
+              <div class="recommend-wrapper{% unless enableSidebar %} f-break{% endunless %}">
+                {%- include 'block-custom', type: 'article_recommend', blog: blog, article: article -%}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%}
+              **
+              * Comments
+              *
+            {%- endcomment-%}
+            {%- if blog.comments_enabled? -%}
+              <div class="article-bottom">
+                <div id="comments">
+                  <h3>{{- 'blogs.article.comment' | t -}}</h3>
+
+                  
+                  {%- comment -%}
+                    **
+                    * List all comments
+                    *
+                  {%- endcomment-%}
+                  <ul id="comment-list">
+                    {%- for comment in article.comments -%}
+                      <li>
+                        <div class="d-flex">
+                          <div class="comment-details">
+                            <p class="comment-author">{{ comment.author }}</p>
+                            <span class="comment-date">{{ comment.created_at | date: "%B %d, %Y" }}</span>
+                          </div>
+                          <div class="comment">{{ comment.content }}</div>
+                        </div>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+
+                  
+                  {%- comment -%}
+                    **
+                    * Comment Form
+                    *
+                  {%- endcomment-%}
+                  <div id="comment-form">
+                    {%- liquid
+                      assign formTitle           =  'blogs.comments.title' | t
+                      assign formSubtitle        =  'blogs.comments.subtitle' | t
+                      assign formText_1          =  'blogs.comments.name' | t
+                      assign formText_2          =  'blogs.comments.email' | t
+                      assign formText_3          =  'blogs.comments.message' | t
+                      assign formButton          =  'blogs.comments.submit' | t
+                      assign moderated           =  'blogs.comments.moderated' | t
+                      assign success_moderated   =  'blogs.comments.success_moderated' | t
+                      assign success             =  'blogs.comments.success' | t
+                      assign form_error          =  'blogs.comments.error' | t
+                    -%}
+                    {%- form article -%}
+                      <h3>{{ formTitle }}</h3>
+                      <p>{{ formSubtitle }}</p>
+
+                      
+                      {%- comment -%}
+                        **
+                        * Check if a comment has been submitted in the last request, and if yes display an appropriate message
+                        *
+                      {%- endcomment-%}
+                      {%- if form.posted_successfully? -%}
+                        {%- if blog.moderated? -%}<div class="notice">{{success_moderated}}</div>
+                        {%- else -%}<div class="notice">{{ success }}</div>
+                        {%- endif -%}
+                      {%- endif -%}
+
+                      {%- if form.errors -%}<div class="notice error">{{ form_error }}</div>{%- endif -%}
+
+                      <div class="form-control">
+                        <div class="row">
+                          <div class="col-md-6 col-12">
+                            <div class="form-row">
+                              <label for="comment_author">{{ formText_1 }}</label>
+                              <input type="text" id="comment_author" name="comment[author]" size="40" value="{{form.author}}" class="{% if form.errors contains 'author' %}input-error{% endif %}" />
+                            </div>
+                          </div>
+                          <div class="col-md-6 col-12">
+                            <div class="form-row">
+                              <label for="comment_email">{{ formText_2 }}</label>
+                              <input type="text" id="comment_email" name="comment[email]" size="40" value="{{form.email}}" class="{% if form.errors contains 'email' %}input-error{% endif %}" />
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="form-row">
+                              <label for="comment_body">{{ formText_3 }}</label>
+                              <textarea id="comment_body" name="comment[body]" cols="40" rows="5" class="{% if form.errors contains 'body' %}input-error{% endif %}">{{form.body}}</textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {%- if blog.moderated? -%}<p class="hint">{{ moderated }}</p>{%- endif -%}
+                      <div class="form-button">
+                        <button type="submit" class="btn btn-1">{{ formButton }}</button>
+                      </div>
+                    {%- endform -%}
+                  </div>
+                  
+                  {%- comment -%}
+                    **
+                    * END Comment Form
+                    *
+                  {%- endcomment-%}
+
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- if enableSidebar -%}
+            {%- include 'sidebar', sectionType: 'sidebar' -%}
+          {% comment %}{%- if request.design_mode -%}
+          {%- else -%}
+            <div class="lazyload" data-expand="9999" data-include="{{routes.search_url}}?view=sb&q=asb"></div>
+          {%- endif -%}{% endcomment %}
+
+          <div class="mobile-sidebar-popup">
+            <a href="javascript:void(0);" class="popup-link-target sb-btn-show" data-target="#sidebarDrawer">
+              <span class="svg-element-ui">{%- render 'svg', type: 'arrowRight_big' -%}</span>
+            </a>
+          </div>
+        {%- endif -%}
+      </div> 
+    {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+  
+  {%- if recommendPos == '2' -%}  
+    {%- include 'block-custom', type: 'article_recommend', blog: blog, article: article -%}
+  {%- endif -%}
+</div>
+
+
+
+{%- capture sectionCss -%}
+  {{- section_css -}}
+  {%- if blog.articles.size > 1 -%}
+    {%- unless section.settings.section_bg_image == blank -%}
+      {%- liquid
+        assign _bg_size       = section.settings.section_bg_size
+        assign _bg_repeat     = section.settings.section_bg_repeat
+        assign _bg_position   = section.settings.section_bg_position
+      -%}
+
+      {%- capture blockCSS -%}
+        {%- unless _lazyload             -%}background-image: url({{section.settings.section_bg_image | img_url: 'master'}});{%- endunless -%}
+        {%- unless _bg_size     == blank -%}background-size: {{   _bg_size    }};{%- endunless -%}
+        {%- unless _bg_repeat   == blank -%}background-repeat: {{ _bg_repeat    }};{%- endunless -%}
+        {%- unless _bg_position == blank -%}background-position: {{ _bg_position  }};{%- endunless -%}
+      {%- endcapture -%}
+      {%- render 'css-resp', classID: '#articleRecommendation.bg-image', css_values: blockCSS -%}
+    {%- endunless -%}
+    {%- render 'css-resp', classID: '#articleRecommendation', css_value: section.settings.recommend_padding -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article page",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Sidebar settings"
+    },
+    {
+      "type": "select",
+      "id": "visible_method",
+      "label": "Enable Sidebar for",
+      "options": [
+        {
+          "value": "all",
+          "label": "All pages"
+        },
+        {
+          "value": "none",
+          "label": "Disable"
+        },
+        {
+          "value": "select",
+          "label": "Select pages"
+        },
+        {
+          "value": "except",
+          "label": "Except pages"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "textarea",
+      "id": "visible_handle",
+      "label": "Pages handle",
+      "placeholder": "E.g: medi-blog, news,..."
+    },
+    {
+      "type": "text",
+      "id": "grid_layout",
+      "label": "Column Grid layout",
+      "default": "80% 20%",
+      "placeholder": "E.g: 70% 30% or 100%"
+    },
+    {
+      "type": "text",
+      "id": "grid_gap",
+      "label": "Column Grid spacing",
+      "placeholder": "E.g: 15px",
+      "default": "30px, 15px"
+    },
+    {
+      "type": "text",
+      "id": "section_padding",
+      "label": "Sidebar Padding",
+      "placeholder": "E.g: 5px 20px 5px 20px",
+      "info": "Order: Top Right Bottom Left"
+    },
+    {
+       "type":"header",
+       "content":"Article Recommendation"
+    },
+    {
+       "type":"select",
+       "id":"recommend_pos",
+       "label":"Position",
+       "options":[
+         {
+           "value":"1",
+           "label":"Above Comments"
+         },
+         {
+           "value":"2",
+           "label":"After Comments"
+         }
+       ],
+       "default": "1"
+    },
+    {
+       "type"  :"text",
+       "id"    :"items_resp",
+       "label":"Max number of content per row",
+       "default": "3,1",
+       "placeholder": "E.g: 3,1"
+    },
+    {
+       "type":"text",
+       "id":"total",
+       "label":"Total items",
+       "default": "6",
+       "placeholder": "E.g: 6"
+    },
+    {
+       "type"  :"text",
+       "id"    :"recommend_padding",
+       "label" :"Padding",
+       "placeholder": "E.g: 5px 20px 5px 20px",
+       "info": "Order: Top Right Bottom Left"
+    },
+    {
+      "type":"image_picker",
+      "id":"section_bg_image",
+      "label":"Background image"
+    },
+    {
+      "type":"select",
+      "id"   :"section_bg_size",
+      "label":"Background image fit",
+      "default": "cover",
+      "options":[
+        {"value":"auto","label":"Auto"},
+        {"value":"cover","label":"Cover"},
+        {"value":"contain","label":"Contain"}
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_bg_repeat",
+      "label": "Background Image Repeat:",
+      "default": "no-repeat",
+      "options": [
+        {"value":"no-repeat","label":"No Repeat"},
+        {"value":"repeat","label":"Repeat"},
+        {"value":"repeat-x","label":"Repeat X"},
+        {"value":"repeat-y","label":"Repeat Y"}
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_bg_position",
+      "label": "Background Image Position:",
+      "default": "center center",
+      "options": [
+        {"value":"left top","label":"Left Top"},
+        {"value":"center top","label":"Center Top"},
+        {"value":"right top","label":"Right Top"},
+        {"value":"left center","label":"Left Center"},
+        {"value":"center center","label":"Center Center"},
+        {"value":"right center","label":"Right Center"},
+        {"value":"left bottom","label":"Left Bottom"},
+        {"value":"center bottom","label":"Center Bottom"},
+        {"value":"right bottom","label":"Right Bottom"}
+      ]
+    },
+    {
+       "type":"text",
+       "id":"sectionHeading_text_1",
+       "label":"Heading",
+       "default": "Related Posts"
+    },
+    {
+       "type":"text",
+       "id":"sectionHeading_text_2",
+       "label":"Subheading"
+    },
+    {
+       "type":"select",
+       "id":"sectionHeading_align",
+       "label":"Text alignment",
+       "options":[
+          {"value":"auto","label":"Auto"},
+          {"value":"left","label":"Left"},
+          {"value":"center","label":"Center"},
+          {"value":"right","label":"Right"}
+       ],
+       "default":"auto"
+    },
+    {
+       "type":"color",
+       "id":"sectionHeading_cl_1",
+       "label":"Heading color",
+       "info": "Blank to inherit"
+    },
+    {
+       "type":"color",
+       "id":"sectionHeading_cl_2",
+       "label":"Subheading color",
+       "info": "Blank to inherit"
+    }
+  ],
+  "blocks": [
+    {
+       "type": "category",
+       "name": "Category",
+       "settings": [
+          {
+             "type": "link_list",
+             "id": "category",
+             "label": "Category"
+          },
+          {
+             "type": "text",
+             "id": "heading",
+             "label": "Category's Heading",
+             "info": "Default is Menu title"
+          },
+          {
+             "type": "textarea",
+             "id": "visible",
+             "label": "Specific Collection to apply",
+             "placeholder": "E.g: Collection's title, Collection's title 2, ...",
+             "info": "Blank to apply for all collections"
+          },
+          {
+             "type": "text",
+             "id": "margin",
+             "label": "Block margin",
+             "placeholder": "E.g: 5px 20px 5px 20px",
+             "info": "Order: Top Right Bottom Left"
+          }
+       ]
+    },
+    {
+       "type": "banner",
+       "name": "Banner",
+       "settings": [
+          {
+             "type": "image_picker",
+             "id": "banner",
+             "label": "Banner image"
+          },
+          {
+             "type": "textarea",
+             "id": "visible",
+             "label": "Specific Collection to apply",
+             "placeholder": "E.g: Collection's title, Collection's title 2, ...",
+             "info": "Blank to apply for all collections"
+          },
+          {
+             "type": "text",
+             "id": "margin",
+             "label": "Block margin",
+             "placeholder": "E.g: 5px 20px 5px 20px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type": "header",
+             "content": "Banner content"
+          },
+          {
+             "type": "textarea",
+             "id": "text_1",
+             "label": "Heading"
+          },
+          {
+             "type": "textarea",
+             "id": "text_2",
+             "label": "Subheading"
+          },
+          {
+             "type": "text",
+             "id": "btn_label",
+             "label": "Button label"
+          },
+          {
+             "type": "url",
+             "id": "btn_url",
+             "label": "Button URL"
+          },
+          {
+             "type": "range",
+             "id": "btn_style",
+             "label": "Button style",
+             "min": 1,
+             "max": 3,
+             "step": 1,
+             "default": 1
+          },
+          {
+             "type": "text",
+             "id": "align",
+             "label": "Text alignment",
+             "placeholder": "E.g: center or right"
+          }
+       ]
+    },
+    {
+      "type": "product_recommend",
+      "name": "Product Recommendations",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "placeholder": "E.g: Related products"
+        },
+        {
+           "type":"range",
+           "id":"limit",
+           "label":"Limit",
+           "min":1,
+           "max":10,
+           "step":1,
+           "default":4
+        },
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Block margin",
+          "placeholder": "E.g: 5px 20px 5px 20px",
+          "info": "Order: Top Right Bottom Left"
+        }
+      ]
+    },
+    {
+       "type": "style_content",
+       "name": "[+] Heading & Subheading",
+       "settings": [
+          {
+             "type": "header",
+             "content": "Heading settings"
+          },
+          {
+             "type": "text",
+             "id": "content_fs_1",
+             "label": "Font size",
+             "placeholder": "E.g: 24px"
+          },
+          {
+             "type": "color",
+             "id": "content_cl_1",
+             "label": "Color"
+          },
+          {
+             "type": "range",
+             "id": "content_fw_1",
+             "label": "Font weight",
+             "min": 0,
+             "max": 900,
+             "step": 100,
+             "default": 0,
+             "info": "0 is auto"
+          },
+          {
+             "type": "text",
+             "id": "content_margin_1",
+             "label": "Margin",
+             "placeholder": "E.g: 5px 8px 5px 8px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type": "text",
+             "id": "content_lh_1",
+             "label": "Line height",
+             "placeholder": "E.g: 26px"
+          },
+          {
+             "type": "header",
+             "content": "Subheading settings"
+          },
+          {
+             "type": "text",
+             "id": "content_fs_2",
+             "label": "Font size",
+             "placeholder": "E.g: 24px"
+          },
+          {
+             "type": "color",
+             "id": "content_cl_2",
+             "label": "Color"
+          },
+          {
+             "type": "range",
+             "id": "content_fw_2",
+             "label": "Font weight",
+             "min": 0,
+             "max": 900,
+             "step": 100,
+             "default": 0,
+             "info": "0 is auto"
+          },
+          {
+             "type": "text",
+             "id": "content_margin_2",
+             "label": "Margin",
+             "placeholder": "E.g: 5px 8px 5px 8px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type": "text",
+             "id": "content_lh_2",
+             "label": "Line height",
+             "placeholder": "E.g: 26px"
+          }
+       ]
+    },
+    {
+       "type": "style_button",
+       "name": "[+] Button",
+       "settings": [
+          {
+             "type": "text",
+             "id": "btn_fs",
+             "label": "Font size",
+             "placeholder": "E.g: 18px"
+          },
+          {
+             "type": "range",
+             "id": "btn_fw",
+             "label": "Font weight",
+             "min": 0,
+             "max": 900,
+             "step": 100,
+             "default": 0,
+             "info": "0 is auto"
+          },
+          {
+             "type": "text",
+             "id": "btn_padding",
+             "label": "Padding",
+             "placeholder": "E.g: 13px 50px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type": "text",
+             "id": "btn_margin",
+             "label": "Margin",
+             "placeholder": "E.g: 13px 50px",
+             "info": "Order: Top Right Bottom Left"
+          },
+          {
+             "type": "color",
+             "id": "btn_cl",
+             "label": "Text color"
+          },
+          {
+             "type": "color",
+             "id": "btn_bg_cl",
+             "label": "Background color"
+          },
+          {
+             "type": "color",
+             "id": "btn_hover_cl",
+             "label": "Hover: Text color"
+          },
+          {
+             "type": "color",
+             "id": "btn_hover_bg_cl",
+             "label": "Hover: Background color"
+          },
+          {
+             "type": "range",
+             "id": "btn_border_width",
+             "label": "Border width",
+             "min": 1,
+             "max": 10,
+             "step": 1,
+             "default": 1,
+             "unit": "px"
+          },
+          {
+             "type": "color",
+             "id": "btn_border_cl",
+             "label": "Border color"
+          },
+          {
+             "type": "color",
+             "id": "btn_hover_border_cl",
+             "label": "Hover: Border color"
+          },
+          {
+             "type": "text",
+             "id": "btn_radius",
+             "label": "Rounded corners",
+             "placeholder": "E.g: 42px"
+          }
+       ]
+      }
+    ]
+}
+{% endschema %}

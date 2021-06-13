@@ -1,0 +1,67 @@
+{%- if template.name == 'search' and template.suffix == 'mm' -%}
+	{%- render 'mega-import', type: '', section: section -%}
+
+{%- else -%}
+
+{%- capture content -%}
+
+{%- if section.settings.boxed_layout -%}{%- assign _layout = 'boxed' -%}{%- else -%}{%- assign _layout = 'full' -%}{%- endif -%}
+{%- liquid
+  assign sectionType 			= 'header'
+  assign _header_style 		= settings.header_desk_style
+  assign enable_mega_menu = section.settings.enable_mega_menu
+-%}
+
+{%- if enable_mega_menu -%}
+  {%- assign megaTrigger = section.blocks | where: 'type', 'mega_trigger' -%}
+  {%- capture megaArray -%}{%- for bM in megaTrigger -%}{%- unless forloop.first -%}|{%- endunless -%}{{ bM.settings.trigger | handle }}{%- endfor -%}{%- endcapture -%}
+  {%- assign megaArray = megaArray | split: '|' -%}
+{%- endif -%}
+
+{%- capture mg_css -%}
+  <style>
+    {%- if request.design_mode -%}
+      header .horizontal-menu li.adm-active .lazyload-include {
+        visibility: visible;
+        opacity: 1;
+        transform: translate(0,0);
+        display: block;
+      }
+    {%- else -%}
+      .dropdown-menu-item[data-include]:not(.lazyloaded):before,
+      .block-mega-menu-item[data-include]:not(.lazyloaded):before {background-image: url({{ 'loading.gif' | asset_url }});}
+    {%- endif -%}
+  </style>
+{%- endcapture -%}
+
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|layout-{{- _layout -}}
+  {{- -}}|header-desktop
+  {{- -}}|h-desk-{{_header_style}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+	<div class="header-content{% if _layout == 'boxed' %} container{% endif %}">
+
+		{%- capture deskStyle -%}desk_{{_header_style}}{%- endcapture -%}
+		{%- include 'header-style', style: deskStyle -%}
+
+	</div>
+</div>
+
+{%- if request.design_mode -%}
+  {%- render 'header-snippets', type: 'menu-mobile', section: section -%}
+{%- endif -%}
+
+{%- capture section_css -%}
+  {{- section_css | remove: '<style>' | remove: '</style>' -}}
+  {%- render 'mega-import', type: 'precss', section: section -%}
+  {{- mg_css | remove: '<style>' | remove: '</style>' -}}
+{%- endcapture -%}
+{%- unless section_css == blank -%}{% style %}{{section_css}}{% endstyle %}{%- endunless -%}
+
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+
+{%- endif -%}

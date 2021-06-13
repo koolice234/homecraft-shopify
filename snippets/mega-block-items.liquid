@@ -1,0 +1,452 @@
+{%- assign search_terms = search_terms | default: search.terms -%}
+{%- if search_terms == 'hmob' -%}{% comment %}Check menu mobile{% endcomment %}
+  {%- assign ismm = true -%}
+{%- endif -%}
+
+{%- case type -%}
+  {%- when 'megaBlock' -%}
+
+    {%- comment -%}
+      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      *
+      * FIND NESTED BLOCK
+      *
+      * * * * *
+    {%- endcomment-%}
+    {%- liquid
+      assign hasNested = false
+      if index > 0
+        for nBlock in section.blocks offset: index
+          if nBlock.type contains 'm_' and nBlock.settings.nested
+            assign hasNested = true
+            assign blockNested = nBlock
+            assign nestedIndex = index | plus: forloop.index
+            break
+          elsif nBlock.type contains 'ms_'
+            continue
+          else
+            break
+          endif
+        endfor
+      endif
+    -%}
+    {% comment %}* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * {% endcomment %}
+
+    {%- capture blockClass -%}mega-block-item block-{{block.id}}{%- endcapture -%}
+    {%- capture blockID -%}{% if ismm %}#menuMobile{% else %}header{% endif %}{{blockClass | replace: ' ', '.' | prepend: ' .' }}{%- endcapture -%}
+
+    {%- liquid
+      assign width = block.settings.width
+    -%}
+
+    {%- if ismm -%}
+
+      {%- if width contains ',' -%}
+        {%- assign width = width | split: ',' -%}
+        {%- if width.size > 2 -%}
+          {%- capture temptWidth -%}
+            {%- assign widthLast1 = width.size | minus: 1 -%}
+            {%- assign widthLast2 = width.size | minus: 2 -%}
+            {{- width[widthLast2] -}}, {{- width[widthLast1] -}}
+          {%- endcapture -%}
+          {%- assign width = temptWidth -%}
+        {%- else -%}
+          {%- assign width = width | last -%}
+        {%- endif -%}
+
+
+      {%- else -%}
+        {%- assign width = '12/12' -%}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- capture blockWidth -%}
+      {%- if width == blank -%}
+        {{- 'col' -}}
+      {%- elsif width contains '/12' -%}
+        {%- assign width = width | remove: '/12' | strip -%}
+        {%- render 'set-width', type: 'width', number: width -%}
+      {%- elsif width contains '%' -%}
+        {{- 'col-padding' -}}
+        {%- capture blockCss -%}
+          {%- if hasNested -%}
+            {%- capture nestID -%}{% if ismm %}#menuMobile{% else %}header{% endif %} .nest-{{block.id}}{%- endcapture -%}
+            {%- render 'css-resp', classID: nestID, css_value: width, css_property: 'max-width' -%}
+            {%- render 'css-resp', classID: nestID, css_value: width, css_property: 'width' -%}
+          {%- else -%}
+            {%- render 'css-resp', classID: blockID, css_value: width, css_property: 'max-width' -%}
+            {%- render 'css-resp', classID: blockID, css_value: width, css_property: 'width' -%}
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- assign block_css = block_css | append: blockCss -%}
+      {%- endif -%}
+    {%- endcapture -%}
+
+
+    {%- comment -%}
+      **********
+      *
+      * WRAP THE NESTED BLOCK (IF EXIST)
+      *
+      *****
+    {%- endcomment-%}
+    {%- if hasNested -%}
+      <div class="mega-block-nested nest-{{block.id}} {{blockWidth}}">
+    {%- endif -%}
+
+    {%- if hasNested or nestedBlock -%}{% comment %} Reset Block width if nested exist {% endcomment %}
+      {%- assign blockWidth = nil -%}
+    {%- endif -%}
+
+
+
+    {%- comment -%}
+      **********
+      *
+      * BORDER
+      *
+      *****
+    {%- endcomment-%}
+    {%- capture blockBorder -%}
+      {%- liquid
+        assign border_top         = block.settings.border_top | default: 'none'
+        assign border_right       = block.settings.border_right | default: 'none'
+        assign border_bottom      = block.settings.border_bottom | default: 'none'
+        assign border_left        = block.settings.border_left | default: 'none'
+      -%}
+      {%- if border_top      != 'none' -%}|border-{{border_top    }}top{%- endif -%}
+      {%- if border_right    != 'none' -%}|border-{{border_right  }}right{%- endif -%}
+      {%- if border_bottom   != 'none' -%}|border-{{border_bottom }}bottom{%- endif -%}
+      {%- if border_left     != 'none' -%}|border-{{border_left   }}left{%- endif -%}
+    {%- endcapture -%}
+    {%- assign blockBorder = blockBorder | split: '|' | join: ' ' | remove: 'show' | replace: 'large', 'lg-' | replace: 'small', 'sm-' -%}
+    {%- if ismm -%}
+      {%- assign blockBorder = blockBorder | remove: 'border-lg-top' | remove: 'border-lg-right' | remove: 'border-lg-bottom' | remove: 'border-lg-left' | remove: 'sm-' -%}
+    {%- endif -%}
+
+    {%- assign blockWidth = blockWidth | append: blockBorder -%}
+
+
+
+    {%- comment -%}
+      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      *
+      *                                         CURRENT BLOCK
+      *
+      *
+      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    {%- endcomment-%}
+
+    {%- case block.type -%}
+
+      {%- when 'm_menu' -%}{% comment %}* * * * * * * * * * * * * * * * * * * * * * * * *{% endcomment %}
+        {%- liquid
+          assign menu             = block.settings.menu
+          assign show_title       = block.settings.show_title
+        -%}
+
+        <div class="{{blockClass}} {{blockWidth}}"{{block.shopify_attributes}}>
+          <div class="mega-block-menu menu_list-ui">
+
+            {%- if show_title -%}
+              <div class="menu_list-header">
+                <p class="text-1">{%- if menu == blank -%}Sample Menu{%- else -%}{{ linklists[menu].title }}{%- endif -%}</p>
+              </div>
+            {%- endif -%}
+
+            <div class="menu_list-body">
+              <ul class="menu_list-wrapper">
+                {%- if menu == blank -%}
+                  {%- for i in (1..4) -%}
+                    {%- render 'nav-link', type: 'empty' -%}
+                  {%- endfor -%}
+                {%- else -%}
+                  {%- for l in linklists[menu].links -%}
+                    {%- render 'nav-link', l: l, class: 'menu_list-item text-2' -%}
+                  {%- endfor -%}
+                {%- endif -%}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      {%- when 'm_banner' -%}{% comment %}* * * * * * * * * * * * * * * * * * * * * * * * *{% endcomment %}
+        {%- liquid
+          assign image         = block.settings.image
+          assign image_link    = block.settings.image_link | default: 'javascript:void(0);'
+          assign image_txt     = block.settings.image_txt
+        -%}
+
+        <div class="{{blockClass}} {{blockWidth}}"{{block.shopify_attributes}}>
+          <div class="mega-block-banner">
+            <figure class="banner_section-figure">
+              <a href="{{image_link}}">{%- render 'image-style', image: image -%}</a>
+            </figure>
+
+            {%- unless image_txt == blank -%}
+              <div class="banner_section-content">
+                <a href="{{image_link}}" class="">{{image_txt}}</a>
+              </div>
+            {%- endunless -%}
+          </div>
+        </div>
+
+      {%- when 'm_banner_2' -%}{% comment %}* * * * * * * * * * * * * * * * * * * * * * * * *{% endcomment %}
+
+        {%- liquid
+          assign image                = block.settings.image
+          assign banner_label         = block.settings.banner_label
+          assign content_1            = block.settings.content_1
+          assign content_2            = block.settings.content_2
+          assign button_label         = block.settings.button_label
+          assign button_url           = block.settings.button_url | default: 'javascript:void(0);'
+          assign button_style         = block.settings.btn_style
+          assign product              = block.settings.product
+          assign productSelect        = all_products[product].selected_or_first_available_variant
+          assign product_to_show      = block.settings.product_to_show
+        -%}
+
+        {%- capture checkContent -%}
+          {%- if banner_label != 'none' -%}yyyes{%- endif -%}
+          {{- content_1 -}}
+          {{- content_2 -}}
+          {{- product -}}
+          {{- button_label -}}
+        {%- endcapture -%}
+
+
+
+        {%- comment -%}
+          **********
+          *
+          * CURRENT BANNER
+          *
+          *****
+        {%- endcomment-%}
+        <div class="{{blockClass}} {{blockWidth}}"{{block.shopify_attributes}}>
+          <div class="mega-block-banner-with-overlay">
+
+            <figure class="banner_section-figure">
+              {%- unless image == blank -%}
+                  {%- render 'image-style', image: image -%}
+              {%- else -%}
+                {%- render 'svgset', type: 'lifestyle' -%}
+              {%- endunless -%}
+            </figure>
+
+            {%- unless checkContent == blank -%}
+              <div class="banner_section-content overlay-ui">
+                <div class="banner_section-content-inner">
+                  {%- comment -%}
+                    **
+                    * Label
+                    *
+                  {%- endcomment-%}
+                  {%- unless banner_label == 'none' -%}
+                    {%- capture labelContent -%}products.label.{{banner_label}}{%- endcapture -%}
+                    <div class="banner_section-label">
+                      <span class="label_ui label_ui-{{banner_label}}">{{ labelContent | t }}</span>
+                    </div>
+                  {%- endunless -%}
+
+                  {%- comment -%}
+                    **
+                    * Text content
+                    *
+                  {%- endcomment-%}
+                  {%- unless content_1 == blank -%}<div class="banner_section-text text-1">{{ content_1 }}</div>{%- endunless -%}
+                  {%- unless content_2 == blank -%}<div class="banner_section-text text-2">{{ content_2 }}</div>{%- endunless -%}
+
+
+                  {%- comment -%}
+                    **
+                    * Product
+                    *
+                  {%- endcomment-%}
+                  {%- if product != blank and productSelect.available -%}
+                    {%- liquid
+                      assign priceOri  = productSelect.price
+                      assign priceCom  = productSelect.compare_at_price
+                      if button_url == 'javascript:void(0);'
+                        assign button_url = productSelect.url
+                      endif
+                    -%}
+
+                    <div class="banner_section-product">
+                      {%- if product_to_show == 'price' -%}
+                        <p class="banner_section-price banner_section-price-1">{%- render 'money-format', price: priceOri -%}</p>
+                        {%- if priceCom > priceOri -%}
+                          <del class="banner_section-price-compare banner_section-price-2">{%- render 'money-format', price: priceCom -%}</del>
+                        {%- endif -%}
+                      {%- elsif priceCom > priceOri -%}
+                        <p class="banner_section-price banner_section-price-1">-{{ productSelect.compare_at_price | minus: productSelect.price | times: 100.0 | divided_by: productSelect.compare_at_price | floor }}%</p>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+
+                  {%- comment -%}
+                    **
+                    * Button
+                    *
+                  {%- endcomment-%}
+                  {%- unless button_label == blank -%}
+                    <div class="banner_section-button">
+                      {%- capture button_style -%}btn-{{button_style}}{%- endcapture -%}
+                      {%- render 'button', type: 'custom', label: button_label, url: button_url, class: button_style -%}
+                    </div>
+                  {%- endunless -%}
+                </div>
+              </div>
+            {%- endunless -%}
+          </div>
+        </div>
+
+      {%- when 'm_collection' -%}{% comment %}* * * * * * * * * * * * * * * * * * * * * * * * *{% endcomment %}
+        {%- liquid
+          assign collection   = block.settings.collection
+          assign total        = block.settings.total
+          assign items_resp   = block.settings.items_resp
+          assign show_title   = block.settings.show_title
+        -%}
+        {%- if ismm -%}
+          {%- assign items_resp = items_resp | split: ',' | last -%}
+        {%- endif -%}
+
+        {%- capture gridClass -%}{%- render 'set-item-per-row', value: items_resp -%}{%- endcapture -%}
+
+        <div class="{{blockClass}} {{blockWidth}}"{{block.shopify_attributes}}>
+          {%- if show_title and collection != blank -%}
+            <div class="mega-block-header">
+              <p class="h{{block.settings.title_size}}">{{ collections[collection].title }}</p>
+            </div>
+          {%- endif -%}
+
+
+          <div class="mega-block-collection">
+            <div class="row no-gutters slide_ui-element1">
+              {%- if collection != blank -%}
+                {%- for _product in collections[collection].products limit: total -%}
+                  <section class="product-section {{gridClass}}">
+                    {%- render 'product-item', product: _product, catalogMode: true -%}
+                  </section>
+                {%- endfor -%}
+              {%- else -%}
+                {%- for i in (1..total) -%}
+                  <section class="product-section {{gridClass}}">
+                    {%- render 'svgset', type: 'empty-product', index: i -%}
+                  </section>
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+            {%- render 'set-item-per-row', value: items_resp, type: 'slider', itemClass: 'product-section', gutter: 0 -%}
+          </div>
+        </div>
+
+      {%- when 'm_product' -%}
+        {%- liquid
+          assign show_border = block.settings.show_border
+          assign _product    = block.settings.product
+          assign product     = all_products[_product]
+        -%}
+
+        {%- if _product != blank -%}
+          <div class="{{blockClass}} {{blockWidth}}"{{block.shopify_attributes}}>
+            <div class="featured_product-special{% if show_border %} show-border{% endif %}">
+              <section class="featured_product-special-item">
+                {%- render 'product-item', product: product, catalogMode: true, showInventory: true, salePercent: true, countdownPosition: 'top' -%}
+              </section>
+            </div>
+          </div>
+        {%- endif -%}
+
+    {%- endcase -%}
+
+
+    {% comment %}
+      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    {% endcomment %}
+
+    {%- comment -%}
+      **********
+      *
+      * Block CSS
+      *
+      *****
+    {%- endcomment-%}
+    {%- capture blockCss -%}
+      {%- liquid
+        assign __block_margin   = block.settings.margin
+        assign __border_radius  = block.settings.border_radius
+        assign __block_padding  = block.settings.block_padding
+      -%}
+
+       {%- if ismm -%}
+        {%- capture mobileValue -%}{%- render 'mega-block-items', type: 'value_mobile', value: __block_margin -%}{%- endcapture -%}
+        {%- assign __block_margin = mobileValue -%}
+        {%- capture mobileValue -%}{%- render 'mega-block-items', type: 'value_mobile', value: __border_radius -%}{%- endcapture -%}
+        {%- assign __border_radius  = mobileValue -%}
+        {%- capture mobileValue -%}{%- render 'mega-block-items', type: 'value_mobile', value: __block_padding -%}{%- endcapture -%}
+        {%- assign __block_padding  = mobileValue -%}
+      {%- endif -%}
+
+
+      {%- render 'css-resp', classID: blockID, css_value: __block_margin, css_property: 'margin' -%}
+      {%- render 'css-resp', classID: blockID, css_value: __border_radius, css_property: 'border-radius' -%}
+      {%- render 'css-resp', classID: blockID, css_value: __block_padding, css_property: 'padding' -%}
+    {%- endcapture -%}
+    {%- assign block_css = block_css | append: blockCss -%}
+
+    {%- unless block_css == blank -%}
+      {% style %}{{block_css}}{% endstyle %}
+    {%- endunless -%}
+    {%- unless checkContent == blank -%}
+      {%- render 'mega-block-items', type: 'bannerStyle', blockID: blockID, section: section, index: index, ismm: ismm -%}
+    {%- endunless -%}
+
+
+
+    {%- comment -%}
+      **********
+      *
+      * RENDER NESTED BLOCK
+      *
+      *****
+    {%- endcomment-%}
+    {%- if hasNested -%}
+        {%- render 'mega-block-items', type: 'megaBlock', block: blockNested, nestedBlock: true, index: nestedIndex -%}
+      </div>
+    {%- endif -%}
+
+  {%- when 'bannerStyle' -%}
+    {%- for styleBlock in section.blocks offset: index -%}
+      {%- unless styleBlock.type contains 'ms_' -%}{%- break -%}{%- endunless -%}
+      <style{{styleBlock.shopify_attributes}}>
+        {%- case styleBlock.type -%}
+          {%- when 'ms_button'  -%}{%- render 'mega-block-style', block: styleBlock, ismm: ismm, classID: blockID, nextClassID: ' .btn', type: 'button' -%}
+          {%- when 'ms_text'    -%}{%- render 'mega-block-style', block: styleBlock, ismm: ismm, classID: blockID, nextClassID: ' .banner_section-text.text-', type: 'textStyle' -%}
+          {%- when 'ms_product' -%}{%- render 'mega-block-style', block: styleBlock, ismm: ismm, classID: blockID, nextClassID: ' .banner_section-price-', type: 'textStyle' -%}
+        {%- endcase -%}
+      </style>
+    {%- endfor -%}
+
+  {%- when 'value_mobile' -%}
+    {%- if value contains ',' -%}
+      {%- assign valueArray = value | split: ',' -%}
+
+      {%- case valueArray.size -%}
+          {%- when 1 -%}{{valueArray | last }}
+          {%- when 2 -%}{{valueArray | last }}
+          {%- else -%}
+            {%- assign value_plast = valueArray.size | minus: 2 -%}
+            {%- assign value_last = valueArray.size | minus: 1 -%}
+            {{- valueArray[value_plast] -}}, 
+            {{- valueArray[value_plast] -}}, 
+            {{- valueArray[value_plast] -}}, 
+            {{- valueArray[value_plast] -}}, 
+            {{- valueArray[value_last] -}}
+      {%- endcase -%}
+    {%- else -%}
+      {{ value }}
+    {%- endif -%}
+
+{%- endcase -%}

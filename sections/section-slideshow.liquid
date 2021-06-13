@@ -1,0 +1,1338 @@
+{%- capture content -%}
+   {%- include 'snippet-slideshow', sectionName: 'home-slideshow' -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+{% schema %}
+{
+   "name": "Slideshow",
+   "tag": "section",
+   "settings": [
+      {
+         "type": "paragraph",
+         "content": "Created by 'Slideshow' section"
+      },
+      {
+         "type":"header",
+         "content":"paragraph"
+      },
+      {
+         "type": "text",
+         "id": "title",
+         "label": "Section Label [:id]",
+         "default": "Slideshow"
+      },
+      {
+         "type": "header",
+         "content": "LAYOUT"
+      },
+      {
+         "type": "checkbox",
+         "id": "boxed_layout",
+         "label": "Boxed layout"
+      },
+      {
+         "type": "header",
+         "content": "Slideshow settings"
+      },
+      {
+         "type": "text",
+         "id": "slide_height",
+         "label": "Slide height",
+         "default": "700px",
+         "info": "E.g: 700px"
+      },
+      {
+         "type":"paragraph",
+         "content":"[What mean of comma?](https:\/\/support.arenacommerce.com\/a\/solutions\/articles\/6000243911)"
+      },
+      {
+         "type": "select",
+         "id": "effect",
+         "label": "Slider effect",
+         "options": [
+            {
+               "value": "fade",
+               "label": "Fade"
+            },
+            {
+               "value": "slide",
+               "label": "Slide"
+            }
+         ],
+         "default": "slide"
+      },
+      {
+         "type": "checkbox",
+         "id": "loop",
+         "label": "Loop"
+      },
+      {
+         "type": "text",
+         "id": "autoplay",
+         "label": "Auto switch slide (in s)",
+         "info": "E.g: 5"
+      },
+      {
+         "type": "checkbox",
+         "id": "navigation",
+         "label": "Show navigation",
+         "default": true
+      }
+   ],
+   "blocks": [
+      {
+         "type": "slide",
+         "name": "Slide image",
+         "limit": 6,
+         "settings": [
+            {
+               "type": "image_picker",
+               "id": "image",
+               "label": "Slide Image"
+            },
+            {
+               "type":"color",
+               "id":"image_color",
+               "label":"Background color",
+               "default": "#EDEDED"
+            },
+            {
+               "type": "text",
+               "id": "image_position",
+               "label": "Image crop",
+               "info": "E.g: center center or left center"
+            },
+            {
+               "type": "header",
+               "content": "Paragraph & Button"
+            },
+            {
+               "type": "textarea",
+               "id": "text_1",
+               "label": "Text 1"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Text 2"
+            },
+            {
+               "type": "text",
+               "id": "btn_txt",
+               "label": "Button label"
+            },
+            {
+               "type": "url",
+               "id": "btn_url",
+               "label": "Button URL"
+            },
+            {
+               "type": "header",
+               "content": "Product to sell"
+            },
+            {
+               "type": "product",
+               "id": "product_to_sell",
+               "label": "Product item"
+            },
+            {
+               "type": "checkbox",
+               "id": "show_product_price",
+               "label": "Show Price",
+               "default": true
+            },
+            {
+               "type": "checkbox",
+               "id": "show_product_label",
+               "label": "Show Product label"
+            },
+            {
+               "type": "text",
+               "id": "sale_text",
+               "label": "Customize popup content",
+               "info": "Only for product sale."
+            },
+            {
+               "type": "header",
+               "content": "Custom Content"
+            },
+            {
+               "type": "text",
+               "id": "svg_1",
+               "label": "SVG 1"
+            },
+            {
+               "type": "text",
+               "id": "text_svg_1",
+               "label": "Text for SVG 1"
+            },
+            {
+               "type": "text",
+               "id": "svg_2",
+               "label": "SVG 2"
+            },
+            {
+               "type": "text",
+               "id": "text_svg_2",
+               "label": "Text for SVG 2"
+            }
+         ]
+      },
+      {
+         "type": "style_content_wrapper",
+         "name": "[+] Content wrapper",
+         "settings": [
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            },
+            {
+               "type":"paragraph",
+               "content":"[What mean of comma?](https:\/\/support.arenacommerce.com\/a\/solutions\/articles\/6000243911)"
+            },
+            {
+               "type": "text",
+               "id": "position",
+               "label": "Text block position",
+               "info": "Left(%):Top(%). E.g: 50%:50%."
+            },
+            {
+               "type": "text",
+               "id": "align",
+               "label": "Text alignment",
+               "info": "E.g: left or center"
+            }
+         ]
+      },
+      {
+         "type": "style_paragraph",
+         "name": "[+] Paragraph",
+         "settings": [
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            },
+            {
+               "type":"paragraph",
+               "content":"[What mean of comma?](https:\/\/support.arenacommerce.com\/a\/solutions\/articles\/6000243911)"
+            },
+            {
+               "type": "header",
+               "content": "Text 1 settings"
+            },
+            {
+               "type": "text",
+               "id": "text_fs_1",
+               "label": "Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "color",
+               "id": "text_cl_1",
+               "label": "Color"
+            },
+            {
+               "type": "range",
+               "id": "text_fw_1",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "text",
+               "id": "text_1_margin",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "text",
+               "id": "text_lh_1",
+               "label": "Line height",
+               "info": "E.g: 21px"
+            },
+            {
+               "type": "select",
+               "id": "text_anim_1",
+               "label": "Animation",
+               "options": [
+                  {
+                     "value": "none",
+                     "label": "None"
+                  },
+                  {
+                     "value": "bounce",
+                     "label": "bounce"
+                  },
+                  {
+                     "value": "rubberBand",
+                     "label": "rubberBand"
+                  },
+                  {
+                     "value": "swing",
+                     "label": "swing"
+                  },
+                  {
+                     "value": "tada",
+                     "label": "tada"
+                  },
+                  {
+                     "value": "backInDown",
+                     "label": "backInDown"
+                  },
+                  {
+                     "value": "backInLeft",
+                     "label": "backInLeft"
+                  },
+                  {
+                     "value": "backInRight",
+                     "label": "backInRight"
+                  },
+                  {
+                     "value": "backInUp",
+                     "label": "backInUp"
+                  },
+                  {
+                     "value": "bounceIn",
+                     "label": "bounceIn"
+                  },
+                  {
+                     "value": "bounceInDown",
+                     "label": "bounceInDown"
+                  },
+                  {
+                     "value": "bounceInLeft",
+                     "label": "bounceInLeft"
+                  },
+                  {
+                     "value": "bounceInRight",
+                     "label": "bounceInRight"
+                  },
+                  {
+                     "value": "bounceInUp",
+                     "label": "bounceInUp"
+                  },
+                  {
+                     "value": "fadeIn",
+                     "label": "fadeIn"
+                  },
+                  {
+                     "value": "fadeInDown",
+                     "label": "fadeInDown"
+                  },
+                  {
+                     "value": "fadeInLeft",
+                     "label": "fadeInLeft"
+                  },
+                  {
+                     "value": "fadeInRight",
+                     "label": "fadeInRight"
+                  },
+                  {
+                     "value": "fadeInUp",
+                     "label": "fadeInUp"
+                  },
+                  {
+                     "value": "flipInX",
+                     "label": "flipInX"
+                  },
+                  {
+                     "value": "flipInY",
+                     "label": "flipInY"
+                  },
+                  {
+                     "value": "jackInTheBox",
+                     "label": "jackInTheBox"
+                  },
+                  {
+                     "value": "rollIn",
+                     "label": "rollIn"
+                  },
+                  {
+                     "value": "zoomIn",
+                     "label": "zoomIn"
+                  },
+                  {
+                     "value": "zoomInDown",
+                     "label": "zoomInDown"
+                  },
+                  {
+                     "value": "zoomInUp",
+                     "label": "zoomInUp"
+                  },
+                  {
+                     "value": "slideInDown",
+                     "label": "slideInDown"
+                  },
+                  {
+                     "value": "slideInLeft",
+                     "label": "slideInLeft"
+                  },
+                  {
+                     "value": "slideInRight",
+                     "label": "slideInRight"
+                  },
+                  {
+                     "value": "slideInUp",
+                     "label": "slideInUp"
+                  }
+               ],
+               "default": "fadeIn"
+            },
+            {
+               "type": "text",
+               "id": "text_anim_timeset_1",
+               "label": "Animation settings",
+               "info": "delay(ms) | duration(ms). E.g: 1000 | 1500"
+            },
+            {
+               "type": "header",
+               "content": "Text 2 settings"
+            },
+            {
+               "type": "text",
+               "id": "text_fs_2",
+               "label": "Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "color",
+               "id": "text_cl_2",
+               "label": "Color"
+            },
+            {
+               "type": "range",
+               "id": "text_fw_2",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "text",
+               "id": "text_2_margin",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "text",
+               "id": "text_lh_2",
+               "label": "Line height",
+               "info": "E.g: 21px"
+            },
+            {
+               "type": "select",
+               "id": "text_anim_2",
+               "label": "Animation",
+               "options": [
+                  {
+                     "value": "none",
+                     "label": "None"
+                  },
+                  {
+                     "value": "bounce",
+                     "label": "bounce"
+                  },
+                  {
+                     "value": "rubberBand",
+                     "label": "rubberBand"
+                  },
+                  {
+                     "value": "swing",
+                     "label": "swing"
+                  },
+                  {
+                     "value": "tada",
+                     "label": "tada"
+                  },
+                  {
+                     "value": "backInDown",
+                     "label": "backInDown"
+                  },
+                  {
+                     "value": "backInLeft",
+                     "label": "backInLeft"
+                  },
+                  {
+                     "value": "backInRight",
+                     "label": "backInRight"
+                  },
+                  {
+                     "value": "backInUp",
+                     "label": "backInUp"
+                  },
+                  {
+                     "value": "bounceIn",
+                     "label": "bounceIn"
+                  },
+                  {
+                     "value": "bounceInDown",
+                     "label": "bounceInDown"
+                  },
+                  {
+                     "value": "bounceInLeft",
+                     "label": "bounceInLeft"
+                  },
+                  {
+                     "value": "bounceInRight",
+                     "label": "bounceInRight"
+                  },
+                  {
+                     "value": "bounceInUp",
+                     "label": "bounceInUp"
+                  },
+                  {
+                     "value": "fadeIn",
+                     "label": "fadeIn"
+                  },
+                  {
+                     "value": "fadeInDown",
+                     "label": "fadeInDown"
+                  },
+                  {
+                     "value": "fadeInLeft",
+                     "label": "fadeInLeft"
+                  },
+                  {
+                     "value": "fadeInRight",
+                     "label": "fadeInRight"
+                  },
+                  {
+                     "value": "fadeInUp",
+                     "label": "fadeInUp"
+                  },
+                  {
+                     "value": "flipInX",
+                     "label": "flipInX"
+                  },
+                  {
+                     "value": "flipInY",
+                     "label": "flipInY"
+                  },
+                  {
+                     "value": "jackInTheBox",
+                     "label": "jackInTheBox"
+                  },
+                  {
+                     "value": "rollIn",
+                     "label": "rollIn"
+                  },
+                  {
+                     "value": "zoomIn",
+                     "label": "zoomIn"
+                  },
+                  {
+                     "value": "zoomInDown",
+                     "label": "zoomInDown"
+                  },
+                  {
+                     "value": "zoomInUp",
+                     "label": "zoomInUp"
+                  },
+                  {
+                     "value": "slideInDown",
+                     "label": "slideInDown"
+                  },
+                  {
+                     "value": "slideInLeft",
+                     "label": "slideInLeft"
+                  },
+                  {
+                     "value": "slideInRight",
+                     "label": "slideInRight"
+                  },
+                  {
+                     "value": "slideInUp",
+                     "label": "slideInUp"
+                  }
+               ],
+               "default": "fadeIn"
+            },
+            {
+               "type": "text",
+               "id": "text_anim_timeset_2",
+               "label": "Animation settings",
+               "info": "delay(ms) | duration(ms). E.g: 1000 | 1500"
+            }
+         ]
+      },
+      {
+         "type": "style_button",
+         "name": "[+] Button",
+         "settings": [
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            },
+            {
+               "type":"paragraph",
+               "content":"[What mean of comma?](https:\/\/support.arenacommerce.com\/a\/solutions\/articles\/6000243911)"
+            },
+            {
+               "type": "text",
+               "id": "btn_fs",
+               "label": "Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "color",
+               "id": "btn_cl",
+               "label": "Text Color"
+            },
+            {
+               "type": "color",
+               "id": "btn_bg_cl",
+               "label": "Background Color"
+            },
+            {
+               "type": "color",
+               "id": "btn_border_cl",
+               "label": "Border Color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_cl",
+               "label": "Hover: Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_bg_cl",
+               "label": "Hover: Background color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_border_cl",
+               "label": "Hover: Border color"
+            },
+            {
+               "type": "range",
+               "id": "btn_fw",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "text",
+               "id": "btn_padding",
+               "label": "Padding",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "text",
+               "id": "btn_radius",
+               "label": "Button rounded corners",
+               "info": "E.g: 8px 8px 8px 8px"
+            },
+            {
+               "type": "select",
+               "id": "btn_anim",
+               "label": "Animation",
+               "options": [
+                  {
+                     "value": "none",
+                     "label": "None"
+                  },
+                  {
+                     "value": "bounce",
+                     "label": "bounce"
+                  },
+                  {
+                     "value": "rubberBand",
+                     "label": "rubberBand"
+                  },
+                  {
+                     "value": "swing",
+                     "label": "swing"
+                  },
+                  {
+                     "value": "tada",
+                     "label": "tada"
+                  },
+                  {
+                     "value": "backInDown",
+                     "label": "backInDown"
+                  },
+                  {
+                     "value": "backInLeft",
+                     "label": "backInLeft"
+                  },
+                  {
+                     "value": "backInRight",
+                     "label": "backInRight"
+                  },
+                  {
+                     "value": "backInUp",
+                     "label": "backInUp"
+                  },
+                  {
+                     "value": "bounceIn",
+                     "label": "bounceIn"
+                  },
+                  {
+                     "value": "bounceInDown",
+                     "label": "bounceInDown"
+                  },
+                  {
+                     "value": "bounceInLeft",
+                     "label": "bounceInLeft"
+                  },
+                  {
+                     "value": "bounceInRight",
+                     "label": "bounceInRight"
+                  },
+                  {
+                     "value": "bounceInUp",
+                     "label": "bounceInUp"
+                  },
+                  {
+                     "value": "fadeIn",
+                     "label": "fadeIn"
+                  },
+                  {
+                     "value": "fadeInDown",
+                     "label": "fadeInDown"
+                  },
+                  {
+                     "value": "fadeInLeft",
+                     "label": "fadeInLeft"
+                  },
+                  {
+                     "value": "fadeInRight",
+                     "label": "fadeInRight"
+                  },
+                  {
+                     "value": "fadeInUp",
+                     "label": "fadeInUp"
+                  },
+                  {
+                     "value": "flipInX",
+                     "label": "flipInX"
+                  },
+                  {
+                     "value": "flipInY",
+                     "label": "flipInY"
+                  },
+                  {
+                     "value": "jackInTheBox",
+                     "label": "jackInTheBox"
+                  },
+                  {
+                     "value": "rollIn",
+                     "label": "rollIn"
+                  },
+                  {
+                     "value": "zoomIn",
+                     "label": "zoomIn"
+                  },
+                  {
+                     "value": "zoomInDown",
+                     "label": "zoomInDown"
+                  },
+                  {
+                     "value": "zoomInUp",
+                     "label": "zoomInUp"
+                  },
+                  {
+                     "value": "slideInDown",
+                     "label": "slideInDown"
+                  },
+                  {
+                     "value": "slideInLeft",
+                     "label": "slideInLeft"
+                  },
+                  {
+                     "value": "slideInRight",
+                     "label": "slideInRight"
+                  },
+                  {
+                     "value": "slideInUp",
+                     "label": "slideInUp"
+                  }
+               ],
+               "default": "fadeIn"
+            },
+            {
+               "type": "text",
+               "id": "btn_anim_timeset",
+               "label": "Animation settings",
+               "info": "delay(ms) | duration(ms). E.g: 1000 | 1500"
+            }
+         ]
+      },
+      {
+         "type": "style_product",
+         "name": "[+] Product",
+         "settings": [
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            },
+            {
+               "type":"paragraph",
+               "content":"[What mean of comma?](https:\/\/support.arenacommerce.com\/a\/solutions\/articles\/6000243911)"
+            },
+            {
+               "type": "text",
+               "id": "product_margin",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "select",
+               "id": "product_anim",
+               "label": "Animation",
+               "options": [
+                  {
+                     "value": "none",
+                     "label": "None"
+                  },
+                  {
+                     "value": "bounce",
+                     "label": "bounce"
+                  },
+                  {
+                     "value": "rubberBand",
+                     "label": "rubberBand"
+                  },
+                  {
+                     "value": "swing",
+                     "label": "swing"
+                  },
+                  {
+                     "value": "tada",
+                     "label": "tada"
+                  },
+                  {
+                     "value": "backInDown",
+                     "label": "backInDown"
+                  },
+                  {
+                     "value": "backInLeft",
+                     "label": "backInLeft"
+                  },
+                  {
+                     "value": "backInRight",
+                     "label": "backInRight"
+                  },
+                  {
+                     "value": "backInUp",
+                     "label": "backInUp"
+                  },
+                  {
+                     "value": "bounceIn",
+                     "label": "bounceIn"
+                  },
+                  {
+                     "value": "bounceInDown",
+                     "label": "bounceInDown"
+                  },
+                  {
+                     "value": "bounceInLeft",
+                     "label": "bounceInLeft"
+                  },
+                  {
+                     "value": "bounceInRight",
+                     "label": "bounceInRight"
+                  },
+                  {
+                     "value": "bounceInUp",
+                     "label": "bounceInUp"
+                  },
+                  {
+                     "value": "fadeIn",
+                     "label": "fadeIn"
+                  },
+                  {
+                     "value": "fadeInDown",
+                     "label": "fadeInDown"
+                  },
+                  {
+                     "value": "fadeInLeft",
+                     "label": "fadeInLeft"
+                  },
+                  {
+                     "value": "fadeInRight",
+                     "label": "fadeInRight"
+                  },
+                  {
+                     "value": "fadeInUp",
+                     "label": "fadeInUp"
+                  },
+                  {
+                     "value": "flipInX",
+                     "label": "flipInX"
+                  },
+                  {
+                     "value": "flipInY",
+                     "label": "flipInY"
+                  },
+                  {
+                     "value": "jackInTheBox",
+                     "label": "jackInTheBox"
+                  },
+                  {
+                     "value": "rollIn",
+                     "label": "rollIn"
+                  },
+                  {
+                     "value": "zoomIn",
+                     "label": "zoomIn"
+                  },
+                  {
+                     "value": "zoomInDown",
+                     "label": "zoomInDown"
+                  },
+                  {
+                     "value": "zoomInUp",
+                     "label": "zoomInUp"
+                  },
+                  {
+                     "value": "slideInDown",
+                     "label": "slideInDown"
+                  },
+                  {
+                     "value": "slideInLeft",
+                     "label": "slideInLeft"
+                  },
+                  {
+                     "value": "slideInRight",
+                     "label": "slideInRight"
+                  },
+                  {
+                     "value": "slideInUp",
+                     "label": "slideInUp"
+                  }
+               ],
+               "default": "fadeIn"
+            },
+            {
+               "type": "text",
+               "id": "product_anim_timeset",
+               "label": "Animation settings",
+               "info": "delay(ms) | duration(ms). E.g: 1000 | 1500"
+            },
+            {
+               "type": "header",
+               "content": "Price settings"
+            },
+            {
+               "type": "color",
+               "id": "price_cl",
+               "label": "Price color"
+            },
+            {
+               "type": "text",
+               "id": "price_fs",
+               "label": "Price Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "range",
+               "id": "price_fw",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "header",
+               "content": "Price Compare settings"
+            },
+            {
+               "type": "color",
+               "id": "price_compare_cl",
+               "label": "Price Compare color"
+            },
+            {
+               "type": "text",
+               "id": "price_compare_fs",
+               "label": "Price Compare Font size",
+               "info": "E.g: 16px"
+            },
+            {
+               "type": "range",
+               "id": "price_compare_fw",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "header",
+               "content": "Sale label settings"
+            },
+            {
+               "type": "text",
+               "id": "product_label_position",
+               "label": "Sale label position",
+               "info": "Left(%):Top(%). E.g: 50%:50%"
+            },
+            {
+               "type": "text",
+               "id": "sale_size",
+               "label": "Width",
+               "info": "E.g: 120px"
+            },
+            {
+               "type": "text",
+               "id": "sale_fs",
+               "label": "Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "range",
+               "id": "sale_fw",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "color",
+               "id": "sale_bg_color",
+               "label": "Background color"
+            },
+            {
+               "type": "color",
+               "id": "sale_color",
+               "label": "Text color"
+            },
+            {
+               "type": "select",
+               "id": "label_anim",
+               "label": "Animation",
+               "options": [
+                  {
+                     "value": "none",
+                     "label": "None"
+                  },
+                  {
+                     "value": "bounce",
+                     "label": "bounce"
+                  },
+                  {
+                     "value": "rubberBand",
+                     "label": "rubberBand"
+                  },
+                  {
+                     "value": "swing",
+                     "label": "swing"
+                  },
+                  {
+                     "value": "tada",
+                     "label": "tada"
+                  },
+                  {
+                     "value": "backInDown",
+                     "label": "backInDown"
+                  },
+                  {
+                     "value": "backInLeft",
+                     "label": "backInLeft"
+                  },
+                  {
+                     "value": "backInRight",
+                     "label": "backInRight"
+                  },
+                  {
+                     "value": "backInUp",
+                     "label": "backInUp"
+                  },
+                  {
+                     "value": "bounceIn",
+                     "label": "bounceIn"
+                  },
+                  {
+                     "value": "bounceInDown",
+                     "label": "bounceInDown"
+                  },
+                  {
+                     "value": "bounceInLeft",
+                     "label": "bounceInLeft"
+                  },
+                  {
+                     "value": "bounceInRight",
+                     "label": "bounceInRight"
+                  },
+                  {
+                     "value": "bounceInUp",
+                     "label": "bounceInUp"
+                  },
+                  {
+                     "value": "fadeIn",
+                     "label": "fadeIn"
+                  },
+                  {
+                     "value": "fadeInDown",
+                     "label": "fadeInDown"
+                  },
+                  {
+                     "value": "fadeInLeft",
+                     "label": "fadeInLeft"
+                  },
+                  {
+                     "value": "fadeInRight",
+                     "label": "fadeInRight"
+                  },
+                  {
+                     "value": "fadeInUp",
+                     "label": "fadeInUp"
+                  },
+                  {
+                     "value": "flipInX",
+                     "label": "flipInX"
+                  },
+                  {
+                     "value": "flipInY",
+                     "label": "flipInY"
+                  },
+                  {
+                     "value": "jackInTheBox",
+                     "label": "jackInTheBox"
+                  },
+                  {
+                     "value": "rollIn",
+                     "label": "rollIn"
+                  },
+                  {
+                     "value": "zoomIn",
+                     "label": "zoomIn"
+                  },
+                  {
+                     "value": "zoomInDown",
+                     "label": "zoomInDown"
+                  },
+                  {
+                     "value": "zoomInUp",
+                     "label": "zoomInUp"
+                  },
+                  {
+                     "value": "slideInDown",
+                     "label": "slideInDown"
+                  },
+                  {
+                     "value": "slideInLeft",
+                     "label": "slideInLeft"
+                  },
+                  {
+                     "value": "slideInRight",
+                     "label": "slideInRight"
+                  },
+                  {
+                     "value": "slideInUp",
+                     "label": "slideInUp"
+                  }
+               ],
+               "default": "fadeIn"
+            },
+            {
+               "type": "text",
+               "id": "label_anim_timeset",
+               "label": "Animation settings",
+               "info": "delay(ms) | duration(ms). E.g: 1000 | 1500"
+            }
+         ]
+      },
+      {
+         "type": "style_svg",
+         "name": "[+] SVG Content",
+         "settings": [
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            },
+            {
+               "type":"paragraph",
+               "content":"[What mean of comma?](https:\/\/support.arenacommerce.com\/a\/solutions\/articles\/6000243911)"
+            },
+            {
+               "type": "color",
+               "id": "svg_cl",
+               "label": "Color"
+            },
+            {
+               "type": "text",
+               "id": "svg_fs",
+               "label": "Font size",
+               "info": "E.g: 20px"
+            },
+            {
+               "type": "range",
+               "id": "svg_fw",
+               "label": "Font weight (0 is auto)",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0
+            },
+            {
+               "type": "text",
+               "id": "svg_margin",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "select",
+               "id": "svg_anim",
+               "label": "Animation",
+               "options": [
+                  {
+                     "value": "none",
+                     "label": "None"
+                  },
+                  {
+                     "value": "bounce",
+                     "label": "bounce"
+                  },
+                  {
+                     "value": "rubberBand",
+                     "label": "rubberBand"
+                  },
+                  {
+                     "value": "swing",
+                     "label": "swing"
+                  },
+                  {
+                     "value": "tada",
+                     "label": "tada"
+                  },
+                  {
+                     "value": "backInDown",
+                     "label": "backInDown"
+                  },
+                  {
+                     "value": "backInLeft",
+                     "label": "backInLeft"
+                  },
+                  {
+                     "value": "backInRight",
+                     "label": "backInRight"
+                  },
+                  {
+                     "value": "backInUp",
+                     "label": "backInUp"
+                  },
+                  {
+                     "value": "bounceIn",
+                     "label": "bounceIn"
+                  },
+                  {
+                     "value": "bounceInDown",
+                     "label": "bounceInDown"
+                  },
+                  {
+                     "value": "bounceInLeft",
+                     "label": "bounceInLeft"
+                  },
+                  {
+                     "value": "bounceInRight",
+                     "label": "bounceInRight"
+                  },
+                  {
+                     "value": "bounceInUp",
+                     "label": "bounceInUp"
+                  },
+                  {
+                     "value": "fadeIn",
+                     "label": "fadeIn"
+                  },
+                  {
+                     "value": "fadeInDown",
+                     "label": "fadeInDown"
+                  },
+                  {
+                     "value": "fadeInLeft",
+                     "label": "fadeInLeft"
+                  },
+                  {
+                     "value": "fadeInRight",
+                     "label": "fadeInRight"
+                  },
+                  {
+                     "value": "fadeInUp",
+                     "label": "fadeInUp"
+                  },
+                  {
+                     "value": "flipInX",
+                     "label": "flipInX"
+                  },
+                  {
+                     "value": "flipInY",
+                     "label": "flipInY"
+                  },
+                  {
+                     "value": "jackInTheBox",
+                     "label": "jackInTheBox"
+                  },
+                  {
+                     "value": "rollIn",
+                     "label": "rollIn"
+                  },
+                  {
+                     "value": "zoomIn",
+                     "label": "zoomIn"
+                  },
+                  {
+                     "value": "zoomInDown",
+                     "label": "zoomInDown"
+                  },
+                  {
+                     "value": "zoomInUp",
+                     "label": "zoomInUp"
+                  },
+                  {
+                     "value": "slideInDown",
+                     "label": "slideInDown"
+                  },
+                  {
+                     "value": "slideInLeft",
+                     "label": "slideInLeft"
+                  },
+                  {
+                     "value": "slideInRight",
+                     "label": "slideInRight"
+                  },
+                  {
+                     "value": "slideInUp",
+                     "label": "slideInUp"
+                  }
+               ],
+               "default": "fadeIn"
+            },
+            {
+               "type": "text",
+               "id": "svg_anim_timeset",
+               "label": "Animation settings",
+               "info": "delay(ms) | duration(ms). E.g: 1000 | 1500"
+            }
+         ]
+      }
+   ],
+   "presets": [
+      {
+         "name": "Slideshow",
+         "category": "Slideshow",
+         "blocks": [
+            {
+               "type": "slide"
+            },
+            {
+               "type": "slide"
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

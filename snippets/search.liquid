@@ -1,0 +1,66 @@
+{%- capture searchICON -%}
+	{%- liquid
+		assign svgIcon = settings.hicon_svg_search
+		assign imgIcon = settings.hicon_img_search
+	-%}
+
+	{%- if svgIcon != blank 	-%}{%- render 'svg', type: 'custom', name: svgIcon -%}
+	{%- elsif imgIcon != blank 	-%}<img src="{{ imgIcon | img_url: '30x' }}" alt="{{type | capitalize}}">
+	{%- else 					-%}<span class="svg-element-ui">{%- render 'svg', type: 'search' -%}</span>
+	{%- endif -%}
+{%- endcapture -%}
+
+{%- case type -%}
+  	{%- when 'button' -%}
+  		<button type="button" class="search-ui-btn btn" aria-label="{{ type | capitalize }}" data-dialog-trigger="#searchModal">{{searchICON}}</button>
+
+  	{%- when 'searchResultLayout' -%}
+  		<div class="hide">
+  			<ul id="searchResultLayout">
+  				<li class="search-result-item" data-item-type="">
+  					<div class="result-item-image">
+  						<a href="javascript:void(0);" data-item-url>
+  							<figure>
+  								<img src="" alt="Item Image" data-item-image>
+  							</figure>
+  						</a>
+  					</div>
+  					<div class="result-item-info">
+	  					<p class="result-item-title">
+	  						<a href="javascript:void(0);" data-item-url>
+	  							<span data-item-title></span>
+	  						</a>
+	  					</p>
+	  					<p class="result-item-price">
+	  						<span class="price hide" data-item-price>{%- render 'money-format', price: price -%}</span>
+	  						<span class="price soldout hide" data-item-soldout>{{- 'products.product.sold_out' | t -}}</span>
+	  					</p>
+  					</div>
+  				</li>
+  				<li class="search-redirect text-center">
+  					<a href="javascript:void(0);" data-search-submit>( {{- 'search.general.view_all' | t -}} )</a>
+  				</li>
+  			</ul>
+  		</div>
+  	{%- else -%}
+
+		{%- liquid
+		 	assign search_type = search_type | default: settings.search_type | replace: 'all', '*'
+		 	assign search_unavailable_result = search_unavailable_result | default: settings.search_unavailable_result
+		-%}
+
+		<div class="form-search-ui" data-search-container>
+			<form action="{{ routes.search_url }}" method="get" class="{{formClass}}">
+				{%- if onModal -%}<button type="button" class="d-lg-none" aria-label="Close modal" data-dialog-close>{%- render 'svg', type: 'arrowLeft16' -%}</button>{%- endif -%}
+
+				<input type="hidden" name="type" value="{{search_type}}"/>
+				<input type="hidden" name="options[unavailable_products]" value="{{search_unavailable_result}}"/>
+				<input type="hidden" name="options[prefix]" value="last"/>
+				<input name="q" type="text" placeholder="{{ 'search.general.search_placeholder' | t }}" autocomplete="off"{% if onModal %} autofocus{% endif %}/>
+				<button type="submit" class="btn btn-search">{{searchICON}}</button>
+			</form>
+			<div class="form-search--result-list">
+				<ul class="search--result-list" data-search-result></ul>
+			</div>
+		</div>
+{%- endcase -%}

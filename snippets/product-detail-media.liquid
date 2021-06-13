@@ -1,0 +1,96 @@
+{%- liquid
+	assign productSelect 		= product.selected_or_first_available_variant
+	assign product_metafield 	= product.metafields.c_f
+	assign firstImage 			= product.images | first
+	assign ratioImage			= 1 | divided_by: firstImage.aspect_ratio | times: 100 | append: '%'
+-%}
+
+{%- unless product.has_only_default_variant -%}
+	{%- assign disableDefaultVariant = settings.disable_auto_product_selected -%}
+{%- endunless -%}
+
+
+<div class="product-media">
+	<div class="product-main-media">
+		<div class="slide_ui-element" data-main-media>
+			{%- if product.media.size > 0 -%}
+
+				{%- for media in product.media -%}
+					{% comment %}{%- if media.media_type != 'image' -%}{%- continue -%}{%- endif -%}{% endcomment %}
+
+					{%- capture mediaClass -%}
+						{%- if disableDefaultVariant and forloop.first -%}|active							
+						{% elsif productSelect.image != blank and media.src == productSelect.image.src %}|active
+						{% elsif forloop.first and productSelect.image == blank%}|active
+						{% endif %}
+					{%- endcapture -%}
+					{%- if mediaClass contains 'active' -%}{%- assign saveActivePosition = forloop.index -%}{%- endif -%}
+					{% unless mediaClass contains 'active'  %}
+						{%- assign lazyExpand = true -%}
+					{% endunless %}
+
+					<div class="feature-product-media{{mediaClass | strip | replace: '|', ' '}}" data-media-id="{{ media.id }}" data-index="{%- increment mediaCount -%}">
+						{%- unless media.media_type == 'image' -%}<div class="product-media-wrapper" style="position: relative; padding-top: 100%;">{%- endunless -%}
+
+							{%- if media.media_type == 'image' -%}
+								<figure>{%- render 'image-style', image: media, enableZoom: false, lazyExpand: lazyExpand -%}</figure>
+							{%- else -%}
+								{%- case media.media_type  -%}
+									{%- when 'external_video' 	-%}{{ media | external_video_tag: class: "overlay-ui w-100 h-100" }}
+									{%- when 'video' 			-%}{{ media | video_tag: image_size: "1024x", control: true, class: "overlay-ui w-100 h-100" }}
+									{%- when 'model' 			-%}{{ media | model_viewer_tag: image_size: "1024x", class: "overlay-ui w-100 h-100" }}
+								{%- endcase -%}
+							{%- endif -%}
+
+						{%- unless media.media_type == 'image' -%}</div>{%- endunless -%}
+					</div>
+				{%- endfor -%}
+
+			{%- else -%}
+				{%- render 'svgset', type: 'default-image', image_css: 'object-fit: cover;' -%}
+			{%- endif -%}
+		</div>
+	</div>
+	
+	<div class="product-thumbail-media{% if mediaCount < 2 %} hide{% endif %}">
+
+		{%- assign mediaThumbnail_item_per_row = '6,4' -%}
+		{%- capture gridClass -%}{%- render 'set-item-per-row', value: mediaThumbnail_item_per_row -%}{%- endcapture -%}
+
+		<div style="display: none;" class="row slide_ui-element" data-media-thumbnail>
+			{%- for media in product.media -%}
+				{% comment %}{%- if media.media_type != 'image' -%}{%- continue -%}{%- endif -%}{% endcomment %}
+				
+				{% unless saveActivePosition == forloop.index  %}
+					{%- assign lazyExpand = true -%}
+				{% endunless %}
+
+				<div class="thumbnail-media {{gridClass}}{% if saveActivePosition == forloop.index %} active{% endif %}" data-media-thumbnail-id="{{ media.id }}">
+					{%- if media.media_type == 'image'   -%}
+					  	{%- assign thumbImage = media -%}
+					{%- else -%}
+					  	{%- assign thumbImage = media.preview_image -%}
+					{%- endif -%}
+
+					<figure class="media-thumb-{{media.media_type}}">
+						{%- render 'image-style', imagePadding: ratioImage, image: thumbImage, set_width: '[100, 200, 300]', lazyExpand: lazyExpand -%}
+						{%- if media.media_type contains 'video' -%}{%- render 'svg', type: 'svg_play' -%}
+						{%- elsif media.media_type == 'model' -%}{%- render 'svg', type: 'svg_3d' -%}
+						{%- endif -%}
+					</figure>
+				</div>
+			{%- endfor -%}
+		</div>
+		{%- render 'set-item-per-row', value: mediaThumbnail_item_per_row, type: 'slider', itemClass: 'thumbnail-media', gutter: '12', nav: true -%}
+	</div>
+	
+	{%- unless product.has_only_default_variant -%}
+		{%- render 'swatch', product: product, section_id: section.id -%}
+	{%- endunless -%} 
+
+	<style>
+		.swatch-header {
+			display: none !important;
+		}
+	</style>
+</div>

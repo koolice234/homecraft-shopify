@@ -1,0 +1,170 @@
+{%- liquid
+  assign description        = product.description
+  assign reviewApp          = settings.review_app
+  assign enable_multi_tab   = section.settings.enable_multi_tab
+  assign static_page        = section.blocks | where: 'type', 'page'
+-%}
+
+<div class="product-description{% if enable_multi_tab %} product-description-tab-pane{% endif %}">
+  <div class="featured_group_tab-ui">
+    {%- if enable_multi_tab -%}
+      <div class="featured_group_tab-header">
+        <ul class="featured_group_tab-list-link">
+          {%- unless description == blank -%}
+
+            {%- liquid
+              assign firstActive = true
+              assign description_parts = description | split: "<h5"
+            -%}
+
+            {%- if description_parts.first.size > 0 -%}
+              <li class="featured_group_tab-link active"><a class="nav-link" href="#tabs-description" aria-controls="tabs-description">{{ 'products.product.description' | t }}</a></li>
+              {%- if firstActive -%}{%- assign firstActive = false -%}{%- endif -%}
+            {%- endif -%}
+
+            {%- for part in description_parts -%}
+              {%- if part contains "</h5>" -%}
+                {%- liquid
+                  assign remove  = part | split: ">" | first | append: ">"
+                  assign t_title = part | split: "</h5>" | first | strip_html | remove: remove
+                -%}
+
+                <li class="featured_group_tab-link{% if firstActive %} active{% endif %}"><a class="nav-link" href="#tabs-{{ forloop.index }}" aria-controls="tabs-{{ forloop.index }}">{{t_title}}</a></li>
+                {%- if firstActive -%}{%- assign firstActive = false -%}{%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endunless -%}
+
+
+          {%- comment -%}
+            **
+            * Static Page Tab
+            *
+          {%- endcomment-%}
+          {%- if static_page.size > 0 -%}
+            {%- for block in static_page -%}
+              {%- if block.settings.page != blank and pages[block.settings.page].content.size > 0 -%}
+                <li class="featured_group_tab-link"><a class="nav-link" href="#tabs-page_{{block.id}}" aria-controls="tabs-page">{{ block.settings.page_title | default: 'Static Page' }}</a></li>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+
+
+          {%- comment -%}
+            **
+            * Review Tab
+            *
+          {%- endcomment-%}
+
+<!--           {%- unless reviewApp == 'none' -%}
+            <li class="featured_group_tab-link" id="tab_review_tabbed">
+              <a class="nav-link" href="#tab-review" aria-controls="tab-review">{{'products.product.review' | t }}</a>
+            </li>
+          {%- endunless -%} -->
+
+        </ul>
+      </div>
+    {%- endif -%}
+
+    <div class="tab-content">
+      {%- if enable_multi_tab -%}
+        {%- unless description == blank -%}
+
+          {%- liquid
+            assign firstActive = true
+            assign description_parts = description | split: "<h5"
+          -%}
+
+          {%- if description_parts.first.size > 0 -%}
+            <div class="featured_group_tab-pane active" id="tabs-description">
+              {{ product.description | split: '<h5>' | first }}
+            </div>
+            {%- if firstActive -%}{%- assign firstActive = false -%}{%- endif -%}
+          {%- endif -%}
+
+          {%- for part in description_parts -%}
+            {%- if part contains "</h5>" -%}
+              {%- liquid
+                assign fp = part | append: " " | split: "</h5>" | last
+                assign p  = part | append: " " | split: "</h5>" | last | strip_html | replace: "&nbsp;", "" | replace: " ", "" | strip_newlines
+              -%}
+
+              {%- if p != "" or fp contains "<img " or fp contains "<iframe " -%}
+                {%- capture description__content -%}{{ part | split: "</h5>" | last }}{%- endcapture -%}
+                {%- assign description__content = description__content | split: 'src=' | join: 'class="lazyload" data-src=' -%}
+
+                <div class="featured_group_tab-pane{% if firstActive %} active{% endif %}" id="tabs-{{ forloop.index }}">{{ description__content }}</div>
+                {%- if firstActive -%}{%- assign firstActive = false -%}{%- endif -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endunless -%}
+
+
+        {%- comment -%}
+          **
+          * Static Page Tab
+          *
+        {%- endcomment-%}
+        {%- if static_page.size > 0 -%}
+          {%- for block in static_page -%}
+            {%- if block.settings.page != blank and pages[block.settings.page].content.size > 0 -%}
+              <div class="featured_group_tab-pane" id="tabs-page_{{block.id}}">{{ pages[block.settings.page].content }}</div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
+
+
+        {%- comment -%}
+          **
+          * Review Tab
+          *
+        {%- endcomment-%}
+<!--         {%- unless reviewApp == 'none' -%}
+          <div class="featured_group_tab-pane" id="tab-review">
+            {%- render 'review', product: product, type: '' -%}
+          </div>
+        {%- endunless -%} -->
+
+      {%- else -%}
+        <div class="featured_group_tab-pane active" id="tabs-description">
+          {{ product.description }}
+
+          {%- comment -%}
+            **
+            * Static Page Tab
+            *
+          {%- endcomment-%}
+          {%- if static_page.size > 0 -%}
+            {%- for block in static_page -%}
+              {%- if block.settings.page != blank and pages[block.settings.page].content.size > 0 -%}
+                <div class="static-page-block" id="tabs-page_{{block.id}}">{{ pages[block.settings.page].content }}</div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+
+
+          {%- comment -%}
+            **
+            * Review Tab
+            *
+          {%- endcomment-%}
+<!--           {%- unless reviewApp == 'none' -%}
+            <div class="review-block" id="tab-review">
+              {%- render 'review', product: product, type: '' -%}
+            </div>
+          {%- endunless -%} -->
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<!-- {%- unless reviewApp == 'none' -%}
+      <div class="featured_group_tab-pane" id="tab-review">
+          {%- render 'review', product: product, type: '' -%}
+      </div>
+{%- endunless -%} -->

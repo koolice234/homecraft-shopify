@@ -1,0 +1,32 @@
+{%- comment -%}
+  **
+  * Recently view
+  *
+{%- endcomment-%}
+{%- liquid
+  assign _layout = settings.page_layout
+  assign _enable_recently_viewed = settings.enable_recently_viewed
+  assign _recently_viewed_items_resp = settings.recently_viewed_items_resp | default: '5, 2.3'
+  assign _recently_viewed_title = 'products.product.recently_title' | t
+-%}
+
+{%- if _enable_recently_viewed -%}
+  <div id="recentlyView" style="display: none;">
+    {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+      <div class="recent-view-content">
+        <div class="recent-view-header text-center">
+          <h3>{{ _recently_viewed_title }}</h3>
+        </div>
+        <div class="recent-view-body">
+          <div class="slide_ui-element d-grid" data-recent-container></div>
+          {%- render 'set-item-per-row', value: _recently_viewed_items_resp, type: 'slider', itemClass: '', gutter: 0 -%}
+        </div>
+      </div>
+    {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+  </div>
+  <style>
+    #recentlyView .d-grid{grid-gap: 15px;grid-template-columns: repeat(5, 1fr);}
+    #recentlyView .product-cart_button{display: none;}
+    @media (max-width: 768px) {#recentlyView .d-grid{grid-gap: 15px;grid-template-columns: repeat(2, 1fr);}}
+  </style>
+{%- endif -%}

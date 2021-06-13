@@ -1,0 +1,342 @@
+{%- liquid
+	assign sectionType    = 'contact-page'
+	assign _layout        = settings.page_layout
+  assign heading        = section.settings.heading
+  assign subheading     = section.settings.subheading
+  assign text_1         = section.settings.text_1
+  assign text_2         = section.settings.text_2
+  assign btn_url        = section.settings.btn_url | default: 'javascript:void(0);'
+  assign btn_label      = section.settings.btn_label
+  assign btn_style      = section.settings.btn_style
+  assign form_title     = section.settings.form_title
+  assign enable_map     = section.settings.enable_map
+
+  assign _insta_app_embed   = section.settings.insta_app_embed
+  assign _items_resp        = section.settings.items_resp | default: '5,3,2' | replace: ',', ';' | replace: ';', ', 1fr;' | append: ', 1fr'
+  assign _enable_slider     = true
+-%}
+
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|layout-{{- _layout -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+{%- capture contactForm -%}
+  <div class="contact-form">
+    <div class="contact-form-title">
+      <p class="form-title">{{form_title}}</p>
+    </div>
+    {%- render 'subscribe-form', enablePlaceholder: true -%}
+  </div>
+{%- endcapture -%}
+
+{%- capture content -%}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+  {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+    <div class="section_content-wrapper">
+      <div class="page-row">
+        <div class="row">
+          <div class="col-lg-4 col-12">
+            <div class="contact-info-col">
+              <div class="contact-info-row contact-info-row-{% increment Row %}">
+                <div class="contact-heading">
+                  <h1>{{heading}}</h1>
+                  <p>{{subheading}}</p>
+                </div>
+              </div>
+              <div class="contact-info-row contact-info-row-{% increment Row %}">
+                <div class="contact-detail">
+                  <div class="contact-content text-1">{{text_1}}</div>
+                  <div class="contact-content text-2">{{text_2}}</div>
+                  <div class="contact-content button">
+                    <a href="{{btn_url}}" class="btn btn-{{btn_style}}">{{ btn_label }}</a>
+                  </div>
+                </div>
+              </div>
+              <div class="contact-info-row contact-info-row-{% increment Row %}">
+                <div class="contact-social">
+                  {%- render 'social-media-icons' -%}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8 col-12">
+            {%- if enable_map -%}
+              
+              <div class="map-ui w-100 h-100">
+                {%- liquid
+                  assign map_key      = section.settings.map_key
+                  assign map_latlong  = section.settings.map_latlong
+                  assign map_zoom     = section.settings.map_zoom
+                  assign info_store   = section.settings.map_info_store
+                -%}
+                <input type="hidden" name="mapSettings" value="{{map_key}}" data-id="map-canvas" data-zoom="{{map_zoom}}" data-latlong="{{map_latlong}}">
+                <div id="map-canvas"></div>
+
+                {%- unless info_store == blank -%}
+                  <div class="map-overlay overlay-ui">
+                    <div class="store-information">{{info_store}}</div>
+                  </div>
+                {%- endunless -%}
+              </div>
+            {%- else -%}
+              {{contactForm}}
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+
+      {%- if enable_map -%}<div class="page-row">{{contactForm}}</div>{%- endif -%}
+    </div>
+  {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+
+
+  {%- comment -%}
+    **
+    * Instafeed settings
+    *
+  {%- endcomment-%}
+  {%- unless _insta_app_embed and section.blocks.size == 0 -%}
+    {%- capture section_class -%}
+      {{- -}}home-instafeed
+      {{- -}}|layout-{{- _layout -}}
+      {{- -}}|mobile_layout-{{- section.settings.mobile_layout -}}
+    {%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+
+    {%- assign sectionID = '.section-' | append: section.id -%}
+    <div class="{{section_class}}">
+      {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+        <div class="section_content-wrapper">
+
+          <div class="section_content-head">
+            {%- include 'snippet-theme', type: 'sectionHeading' -%}
+          </div>
+
+          <div class="section_content-body" data-slide-wrapper>
+            {%- unless _insta_app_embed == blank -%}
+              {{ _insta_app_embed }}
+            {%- else -%}
+              <div class="d-grid{% if _enable_slider %} slide_ui-element{% endif %}">
+                {%- for block in section.blocks -%}
+                  {%- liquid
+                    assign _image         = block.settings.image
+                  -%}
+
+                  <div class="card_section-item"{{block.shopify_attributes}}>
+                      <div class="card_section-item-inner">
+                        <a href="javascript:void(0);">
+                          {%- unless _image == blank -%}
+                            {%- render 'image-style' ,image: _image -%}
+                          {%- else -%}
+                            {%- include 'svgset' -%}
+                          {%- endunless -%}
+                        </a>
+                      </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+
+              {%- if _enable_slider -%}
+                {%- render 'set-item-per-row' ,type: 'slider'
+                                              ,value: section.settings.items_resp
+                                              ,itemClass: 'card_section-item'
+                                              ,nav: true
+                                              ,gutter: section.settings.grid_spc -%}
+              {%- endif -%}
+            {%- endunless -%}
+          </div>
+        </div>
+      {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+    </div>
+
+    {%- capture sectionCss -%}
+      {%- liquid
+        render 'css-resp', classID: sectionID, nextClassID: ' .d-grid', css_value: _items_resp, css_property: 'grid-template-columns', css_value_before: 'repeat', css_split: ';'
+        render 'css-resp', classID: sectionID, nextClassID: ' .d-grid', css_value: section.settings.grid_spc, css_property: 'grid-gap'
+        render 'css-resp', classID: sectionID, nextClassID: ' #map-canvas', css_value: section.settings.map_height, css_property: 'height'
+    -%}
+    {%- endcapture -%}
+    {%- assign section_css = section_css | append: sectionCss -%}
+  {%- endunless -%}
+
+  {%- comment -%}
+    **
+    * End Instafeed
+    *
+  {%- endcomment-%}
+</div>
+
+{%- capture sectionCss -%}
+  {{- section_css -}}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+{% schema %}
+{
+   "name": "Contact page",
+   "tag": "section",
+   "settings": [
+     {
+        "type":"header",
+        "content":"Heading"
+     },
+     {
+        "type":"text",
+        "id":"heading",
+        "label":"Heading",
+        "default": "How can we<br>help you?"
+     },
+     {
+        "type":"textarea",
+        "id":"subheading",
+        "label":"Subheading",
+        "default": "We are at your disposal 7 days a week!"
+     },
+     {
+        "type":"header",
+        "content":"Contact information"
+     },
+     {
+        "type":"textarea",
+        "id":"text_1",
+        "label":"Text 1",
+        "default": "<h5><strong>0020 500 - MYMEDI - 000</strong></h5>"
+     },
+     {
+        "type":"textarea",
+        "id":"text_2",
+        "label":"Text 2",
+        "default": "Monday - Friday: 9:00-20:00<br>Saturady: 11:00 - 15:00"
+     },
+     {
+        "type":"text",
+        "id":"btn_label",
+        "label":"Button label",
+        "default": "contact@example.com"
+     },
+     {
+        "type":"url",
+        "id":"btn_url",
+        "label":"Button URL"
+     },
+     {
+        "type":"range",
+        "id":"btn_style",
+        "label":"Button style",
+        "min":1,
+        "max":3,
+        "step":1,
+        "default":3
+     },
+     {
+        "type":"header",
+        "content":"Form settings"
+     },
+     {
+        "type":"text",
+        "id":"form_title",
+        "label":"Title",
+        "default": "Fill up the form if you have any question"
+     },
+     {
+        "type":"header",
+        "content":"Instafeed settings"
+     },
+      {
+         "type":"text",
+         "id":"sectionHeading_text_1",
+         "label":"Heading"
+      },
+      {
+         "type":"text",
+         "id":"sectionHeading_text_2",
+         "label":"Subheading"
+      },
+      {
+         "type":"text",
+         "id":"insta_app_embed",
+         "label":"Advanced InstaFeed Embed",
+         "placeholder": "E.g: <div id='XYZ'></div>",
+         "info": "Install [here](https:\/\/social.arenacommerce.com\/install)"
+      },
+      {
+         "type":"paragraph",
+         "content":"All settings below will unavailable when using Advanced InstaFeed Embed"
+      },
+      {
+         "type"  :"text",
+         "id"    :"items_resp",
+         "label":"Max number of content per row",
+         "default": "6,4,3",
+         "placeholder": "E.g: 6,4,3"
+      },
+      {
+         "type":"text",
+         "id":"grid_spc",
+         "label":"Item spacing",
+         "default": "8px",
+         "placeholder": "E.g: 10px"
+      },
+      {
+         "type":"header",
+         "content":"Map settings"
+      },
+      {
+        "type":"checkbox",
+        "id":"enable_map",
+        "label":"Enable Map",
+        "default": true
+      },
+      {
+        "type":"text",
+        "id":"map_key",
+        "label":"Key"
+      },
+      {
+        "type":"text",
+        "id":"map_latlong",
+        "label":"Configure store locator",
+        "default": "34.052235, -118.243683",
+        "info": "[Latitude and Longitude](http:\/\/latlong.net)"
+      },
+      {
+        "type":"range",
+        "id":"map_zoom",
+        "label":"Zoom",
+        "min":8,
+        "max":18,
+        "step":1,
+        "default":13
+      },
+      {
+        "type":"text",
+        "id":"map_height",
+        "label":"Responsive map height",
+        "default": "600px, 300px"
+      },
+      {
+        "type":"richtext",
+        "id":"map_info_store",
+        "label":"Store information"
+      }
+   ],
+   "blocks": [
+     {
+      "type": "content",
+      "name": "Insta Image",
+      "settings": [
+        {
+          "type":"image_picker",
+          "id":"image",
+          "label":"Image"
+        }
+      ]
+    }
+   ]
+}
+{% endschema %}

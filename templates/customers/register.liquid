@@ -1,0 +1,45 @@
+<div class="container text-center">
+	<div id="template">
+	  <div id="customer">
+		  <!-- Create Customer -->
+		  <div id="create-customer">
+		    <div class="page-heading">
+		      <h2 class="title">{{- 'customer.register.title' | t -}}</h2>
+		    </div>
+
+		    {%- form 'create_customer', class: 'form-account' -%}
+		      {{ form.errors | default_errors }}
+
+		      <div class="form-control">
+		        <label for="first_name" class="login">{{- 'customer.register.first_name' | t -}}</label>
+		        <input type="text" value="" name="customer[first_name]" id="first_name"/>
+		      </div>
+
+		      <div class="form-control">
+		        <label for="last_name" class="login">{{- 'customer.register.last_name' | t -}}</label>
+		        <input type="text" value="" name="customer[last_name]" id="last_name"/>
+		      </div>
+
+		      <div class="form-control">
+		        <label for="email" class="login">{{- 'customer.register.email' | t -}}</label>
+		        <input type="email" value="" name="customer[email]" id="email"/>
+		      </div>
+
+		      <div class="form-control">
+		        <label for="password" class="login">{{- 'customer.register.password' | t -}}</label>
+		        <input type="password" value="" name="customer[password]" id="password"/>
+		      </div>
+
+		      <div class="action_bottom">
+		      	<div class="action_line">		      		
+			        <input class="btn btn-2" type="submit" value="Create" />
+			        <span class="note">{{ 'customer.general.or' | t }}</span>
+			        <a href="{{ shop.url }}" class="btn btn-1">{{- 'customer.general.return' | t -}}</a>
+		      	</div>
+		        <p><a href="{{routes.account_login_url}}">{{- 'customer.register.login' | t -}}</a></p>
+		      </div>
+		    {%- endform -%}
+		  </div><!-- /#create-customer -->
+	  </div>
+	</div>
+</div>

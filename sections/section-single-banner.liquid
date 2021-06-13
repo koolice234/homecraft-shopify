@@ -1,0 +1,488 @@
+{%- capture content -%}
+{%- include 'snippet-single-banner', sectionType: 'single-banner', sectionName: 'home-single-banner' -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+
+
+{% schema %}
+{
+    "name": "Single Banner",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "paragraph",
+            "content": "Created by 'Single Banner' section"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Section Label [:id]",
+            "default": "Single Banner"
+        },
+        {
+            "type": "header",
+            "content": "LAYOUT"
+        },
+        {
+            "type": "checkbox",
+            "id": "boxed_layout",
+            "label": "Boxed layout",
+            "default": true
+        },
+        {
+            "type": "text",
+            "id": "slide_height",
+            "label": "Manual height",
+            "info": "E.g: 500px"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "slide",
+            "name": "Banner",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "image_picker",
+                    "id": "image",
+                    "label": "Banner image"
+                },
+                {
+                    "type": "text",
+                    "id": "image_position",
+                    "label": "Image crop",
+                    "info": "E.g: center center or left center"
+                },
+                {
+                    "type": "select",
+                    "id": "direction_content",
+                    "label": "Content direction",
+                    "options": [
+                        {
+                            "value": "horizontal",
+                            "label": "Horizontal"
+                        },
+                        {
+                            "value": "vertical",
+                            "label": "Vertical"
+                        }
+                    ],
+                    "default": "vertical"
+                },
+                {
+                    "type": "header",
+                    "content": "Heading Image"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "content_image",
+                    "label": "Image"
+                },
+                {
+                    "type": "header",
+                    "content": "Paragraph & Button"
+                },
+                {
+                    "type": "textarea",
+                    "id": "text_1",
+                    "label": "Text 1"
+                },
+                {
+                    "type": "textarea",
+                    "id": "text_2",
+                    "label": "Text 2"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_txt",
+                    "label": "Button label"
+                },
+                {
+                    "type": "url",
+                    "id": "btn_url",
+                    "label": "Button URL"
+                },
+                {
+                    "type": "header",
+                    "content": "Product to sell"
+                },
+                {
+                    "type": "product",
+                    "id": "product_to_sell",
+                    "label": "Product item"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_product_price",
+                    "label": "Show Price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_product_label",
+                    "label": "Show Product label"
+                },
+                {
+                    "type": "text",
+                    "id": "sale_text",
+                    "label": "Customize popup content",
+                    "info": "Only for product sale."
+                },
+                {
+                    "type": "header",
+                    "content": "Custom Content"
+                },
+                {
+                    "type": "text",
+                    "id": "svg_1",
+                    "label": "SVG 1"
+                },
+                {
+                    "type": "text",
+                    "id": "text_svg_1",
+                    "label": "Text for SVG 1"
+                },
+                {
+                    "type": "text",
+                    "id": "svg_2",
+                    "label": "SVG 2"
+                },
+                {
+                    "type": "text",
+                    "id": "text_svg_2",
+                    "label": "Text for SVG 2"
+                }
+            ]
+        },
+        {
+            "type": "style_content_wrapper",
+            "name": "[+] Content wrapper",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                   "type":"paragraph",
+                    "content": "For Horizontal content, the left value will be disabled"
+                },
+                {
+                    "type": "text",
+                    "id": "position",
+                    "label": "Text block position",
+                    "info": "Left(%):Top(%). E.g: 50%:50%"
+                },
+                {
+                    "type": "text",
+                    "id": "align",
+                    "label": "Text alignment"
+                }
+            ]
+        },
+        {
+            "type": "style_paragraph",
+            "name": "[+] Paragraph",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "header",
+                    "content": "Text 1 settings"
+                },
+                {
+                    "type": "text",
+                    "id": "text_fs_1",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "color",
+                    "id": "text_cl_1",
+                    "label": "Color"
+                },
+                {
+                    "type": "range",
+                    "id": "text_fw_1",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "text_1_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "text",
+                    "id": "text_lh_1",
+                    "label": "Line height",
+                    "info": "E.g: 21px"
+                },
+                {
+                    "type": "header",
+                    "content": "Text 2 settings"
+                },
+                {
+                    "type": "text",
+                    "id": "text_fs_2",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "color",
+                    "id": "text_cl_2",
+                    "label": "Color"
+                },
+                {
+                    "type": "range",
+                    "id": "text_fw_2",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "text_2_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "text",
+                    "id": "text_lh_2",
+                    "label": "Line height",
+                    "info": "E.g: 21px"
+                }
+            ]
+        },
+        {
+            "type": "style_button",
+            "name": "[+] Button",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_fs",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "color",
+                    "id": "btn_bg_cl",
+                    "label": "Background Color"
+                },
+                {
+                    "type": "color",
+                    "id": "btn_cl",
+                    "label": "Text Color"
+                },
+                {
+                    "type": "range",
+                    "id": "btn_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "btn_padding",
+                    "label": "Padding",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "text",
+                    "id": "btn_radius",
+                    "label": "Button rounded corners",
+                    "info": "E.g: 8px 8px 8px 8px"
+                }
+            ]
+        },
+        {
+            "type": "style_product",
+            "name": "[+] Product",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "text",
+                    "id": "product_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                },
+                {
+                    "type": "header",
+                    "content": "Price settings"
+                },
+                {
+                    "type": "color",
+                    "id": "price_cl",
+                    "label": "Price color"
+                },
+                {
+                    "type": "text",
+                    "id": "price_fs",
+                    "label": "Price Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "range",
+                    "id": "price_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "header",
+                    "content": "Price Compare settings"
+                },
+                {
+                    "type": "color",
+                    "id": "price_compare_cl",
+                    "label": "Price Compare color"
+                },
+                {
+                    "type": "text",
+                    "id": "price_compare_fs",
+                    "label": "Price Compare Font size",
+                    "info": "E.g: 16px"
+                },
+                {
+                    "type": "range",
+                    "id": "price_compare_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "header",
+                    "content": "Sale label settings"
+                },
+                {
+                    "type": "text",
+                    "id": "product_label_position",
+                    "label": "Sale label position",
+                    "info": "Left(%):Top(%). E.g: 50%:50%"
+                },
+                {
+                    "type": "text",
+                    "id": "sale_size",
+                    "label": "Width",
+                    "info": "E.g: 120px"
+                },
+                {
+                    "type": "text",
+                    "id": "sale_fs",
+                    "label": "Font size",
+                    "info": "E.g: 24px"
+                },
+                {
+                    "type": "range",
+                    "id": "sale_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "color",
+                    "id": "sale_bg_color",
+                    "label": "Background color"
+                },
+                {
+                    "type": "color",
+                    "id": "sale_color",
+                    "label": "Text color"
+                }
+            ]
+        },
+        {
+            "type": "style_svg",
+            "name": "[+] SVG Content",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "color",
+                    "id": "svg_cl",
+                    "label": "Color"
+                },
+                {
+                    "type": "text",
+                    "id": "svg_fs",
+                    "label": "Font size",
+                    "info": "E.g: 20px"
+                },
+                {
+                    "type": "range",
+                    "id": "svg_fw",
+                    "label": "Font weight (0 is auto)",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0
+                },
+                {
+                    "type": "text",
+                    "id": "svg_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                }
+            ]
+        },
+        {
+            "type": "style_sub_image",
+            "name": "[+] Sub image",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "image_max_w",
+                    "label": "Image max width",
+                    "info": "E.g: 200px"
+                },
+                {
+                    "type": "text",
+                    "id": "image_margin",
+                    "label": "Margin",
+                    "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Single Banner",
+            "category": "Banner",
+            "blocks": [
+                {
+                    "type": "slide"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

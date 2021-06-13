@@ -1,0 +1,446 @@
+{%- liquid
+	assign productSelect 		= product.selected_or_first_available_variant
+	assign product_metafield 	= product.metafields.c_f
+	assign compare_price 		= productSelect.compare_at_price
+	assign price         		= productSelect.price
+-%}
+
+{%- if productSelect.available and compare_price > price -%}
+	{%- assign showComparePrice = true -%}
+{%- else -%}
+	{%- assign showComparePrice = false -%}
+{%- endif -%}
+
+{%- unless product.has_only_default_variant -%}
+	{%- assign disableDefaultVariant = settings.disable_auto_product_selected -%}
+{%- endunless -%}
+
+{% assign prod_split = product.description | split: "-" %}
+
+{%- case type -%}
+  	{%- when 'title' -%}
+
+  		{%- if settings.show_vendor -%}
+		  	<small class="product-vendor">
+		  		<a href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a>
+		  	</small>
+  		{%- endif -%}
+
+	  	<div class="product-title">
+	  		<h1>{{product.title}}</h1>
+  		</div>
+
+  		{%- unless settings.review_app == 'none' -%}
+	  		<div class="product-review">
+	  			{%- render 'review', product: product, type: 'badge', showBadgeText: true, page: 'product' -%}
+	  		</div>
+  		{%- endunless -%}
+
+	
+
+
+  	{%- when 'price' -%}
+		{%- capture __productPrice -%}
+			<span class="price-sale{% unless showComparePrice %} hide{% endunless %}" >{%- render 'money-format', price: price -%}</span>
+			
+			<span class="price-compare{% unless showComparePrice %} hide{% endunless %}" >{%- render 'money-format', price: compare_price -%}</span>
+			
+			<span class="price{% if productSelect.available == false or compare_price > price %} hide{% endif %}" >{%- render 'money-format', price: price -%}</span>
+			
+			<span class="price soldout{% if productSelect.available %} hide{% endif %}" >{{- 'products.product.sold_out' | t -}}</span>
+			
+		{%- endcapture -%}
+
+		{%- if disableDefaultVariant -%}
+			<div class="product-price product-price-range notranslate">
+				<span class="price">{%- render 'money-format', price: product.price_min -%}</span>
+				{%- if product.price_min < product.price_max -%}
+					<span class="price-label">{{- 'products.product.to' | t -}}</span>
+					<span class="price">{%- render 'money-format', price: product.price_max -%}</span>
+				{%- endif -%}
+			</div>
+		{%- endif -%}
+
+	    <div class="product-price notranslate{% if disableDefaultVariant %} hide{% endif %}" data-product-price>{{__productPrice}}</div>
+
+  	
+
+	{%- when 'wlcp' -%}
+		<div class="product-wlcp-target">
+			<div class="wlcp-target wl-target">
+				{% capture the_snippet_fave %}{%- if settings.wishlist_app == 'growave' -%}{% render 'socialshopwave-widget-fave' %}{%- else -%}Liquid error{%- endif -%}{% endcapture %}
+
+				{% unless the_snippet_fave contains 'Liquid error' %}
+					{{ the_snippet_fave }}
+				{% else %}
+					{%- render 'button', type: 'wishlist_add', product: product -%}
+				{% endunless %}
+			</div>
+			<div class="wlcp-target cp-target">
+				{%- render 'button', type: 'compare_add', product: product -%}
+			</div>
+		</div>
+
+	{%- when 'form' -%}
+		<div class="product-form-cart">
+
+	        {%- form 'product', product, class:'product-form', data-product-form: '', data-product-handle: product.handle -%}
+
+	          	<div id="product-action-{{ product.id }}" class="group-cw options">
+
+					{%- unless product.has_only_default_variant -%}
+	          			{%- render 'swatch-dropdown', product: product, section_id: section.id -%}
+	          		{%- endunless -%} 
+
+		            <div class="variants-wrapper" style="display: none;">
+		            	{%- unless product.has_only_default_variant -%}
+			            	{%- for option in product.options_with_values -%}
+				            	<div class="select-option js-enabled" data-option="{{option.name | handle}}">
+				            		<label for="Option{{ option.position }}">{{ option.name }}</label>
+				            		<select id="Option{{ option.position }}" name="options[{{ option.name | escape }}]">
+	            						<option value="null" selected disabled>{{ 'products.product.select' | t }}</option>
+				            			{%- for value in option.values -%}
+				            				<option value="{{ value | escape }}"{% if option.selected_value == value and disableDefaultVariant != true %} selected{% endif %}>{{ value }}</option>
+				            			{%- endfor -%}
+				            		</select>
+				            	</div>
+			            	{%- endfor -%}
+		            	{%- endunless -%}
+	            		<select name="id">
+	            			<option value="null" selected disabled>{{ 'products.product.select' | t }}</option>
+	            			{%- for variant in product.variants -%}
+		            			<option {% if variant == productSelect and disableDefaultVariant != true %}selected{% endif %}{% unless variant.available %} disabled{% endunless %} value="{{ variant.id }}">
+		            				{{- variant.title -}}
+		            			</option>
+		            		{%- endfor -%}
+	            		</select>
+		            </div>
+	          	</div>
+
+	          	<div class="product-cart{% if disableDefaultVariant != true and productSelect.available != true  %} hide{% endif %}" item-cart>
+
+	          		<div class="product-cart-qty" data-quantity>
+	          			<div class="qty-wrapper">
+	          				<label for="quantity">{{- 'products.product.quantity' | t -}}</label>
+	          				<div class="qty-select">
+	          					<a href="javascript:void(0);" class="qty-minus">-</a>
+	          					<input type="number" name="quantity" value="1" min="1">
+	          					<a href="javascript:void(0);" class="qty-plus">+</a>
+	          				</div>
+	          			</div>
+	          		</div>
+
+		            <div class="product-cart_button">
+
+		            	<button type="submit" id="addToCartBtn" name="add" class="btn add-to-cart btn-1{% if disableDefaultVariant %} btn-require-options{% endif %}"{% unless productSelect.available  %} disabled{% endunless %}>
+		            		<span class="cart-btn-label" item-cart-btn-label>
+		            			{%- unless productSelect.available -%} {{- 'products.product.sold_out' | t -}}
+		            			{%- else -%} {{- 'products.product.add_to_cart' | t -}}
+		            			{%- endunless -%}
+		            		</span>
+		            	</button>
+		            </div>
+
+		            {%- if productLayoutStyle == 3 -%}
+		            	{%- render 'product-detail-snippet', product: product, type: 'wlcp' -%}
+		            {%- endif -%}
+
+		            {%- if section.settings.enable_dynamic_checkout -%}
+		              <div class="dynamic-btn">{{ form | payment_button }}</div>
+		            {%- endif -%}
+
+	          	</div>
+	        {%- endform -%}
+        </div>
+
+		
+
+	{%- when 'sku' -%}
+		{%- if enable -%}
+			<div class="product-detail-info product-sku{% if productSelect.sku == blank %} d-none{% endif %}">
+			    <span class="product-detail-info--heading">{{ 'products.product.sku' | t }}</span>
+			    <span class="product-detail-info--content" item-sku>{{ productSelect.sku }}</span>
+			</div>
+		{%- endif -%}
+
+	{%- when 'tags' -%}
+		{%- if enable -%}
+			{%- capture tagContent -%}
+				{%- for tag in product.tags -%}
+					{%- assign _tag = tag | downcase -%}
+
+					{%- if _tag contains 'label' and _tag contains 'hot' or _tag contains 'label' and _tag contains 'new' -%}
+						{%- continue -%}
+					{%- endif -%}
+
+					{%- capture tag_url -%}/collections/all/{{ tag | handle }}{%- endcapture -%}
+					{{- tag | link_to: tag_url , '[tag_title]' | replace: 'title="[tag_title]"', 'class="tag-item"' -}}
+					{% unless forloop.last %}, {% else %} {% if product.tags.size > 4 %}<span>...</span>{% endif %}{%- endunless -%}
+				{%- endfor -%}
+			{%- endcapture -%}
+
+			{%- unless tagContent -%}
+				<div class="product-detail-info product-tags">
+					<span class="product-detail-info--heading">{{'products.product.tags' | t }} </span>
+					<span class="product-detail-info--content">{{tagContent}}</span>
+				</div>
+			{%- endunless -%}
+		{%- endif -%}
+
+	{%- when 'stock' -%}
+		{%- assign stock_range = section.settings.stock_range | strip | times: 1 -%}
+
+		{%- if stock_range > 0 -%}
+
+			<div class="product-stock-available">
+				<div class="stock-variant{% if productSelect.inventory_quantity > stock_range or disableDefaultVariant %} hide{% endif %}" data-limit-in-stock="{{stock_range}}">
+					<div class="label_ui-group">
+						{%- capture inventoryHTML -%}<span data-variant-inventory>{{productSelect.inventory_quantity}}</span>{%- endcapture -%}
+						{%- assign invenText = 'products.product.in_stock_with_quantity' | t: number: '(number)' -%}
+
+						<span class="label_ui inventory-label-count label_ui-new{% unless productSelect.available %} hide{% endunless %}">{{invenText | replace: '(number)', inventoryHTML }}</span>
+						<span class="label_ui inventory-label-soldout label_ui-hot{% if productSelect.available %} hide{% endif %}">{{ 'products.product.sold_out' | t }}</span>
+					</div>
+				</div>
+			</div>
+		{%- endif -%}
+
+	{%- when 'recommendation' -%}
+		{%- liquid
+			assign __title = 'products.product.related_title' | t
+			assign __title = title | default: __title
+			assign __limit = limit | default: 4
+		-%}
+		<div class="product-recommendation">
+			<div class="recommendation-header">
+				<p class="recommendation-title">{{ __title }}</p>
+			</div>
+			<div class="recommendation-body">
+				<div class="recommendation-products">
+					{%- render 'product-detail-snippet', type: 'recommendation_product', product: product, limit: __limit -%}
+				</div>
+			</div>
+		</div>
+
+	{%- when 'recommendation_product' -%}
+
+		{%- liquid
+			if template contains 'product'
+				assign _collection = product.collections
+				assign _catalogmode = section.settings.enable_catalog
+			else
+				assign _collection = collections
+				assign _catalogmode = true
+			endif
+			assign productCount = 0
+		-%}
+		{%- for collection in _collection -%}
+			{%- if productCount >= limit -%}{%- break -%}{%- endif -%}
+			{%- if collection.handle != 'all' and collection.handle != 'frontpage' and collection.handle != 'all-products' and collection.products.size > 0 -%}
+				{%- assign _products = collection.products -%}
+				{%- for p in _products -%}
+					{%- if p.handle == product.handle -%}{%- continue -%}{%- endif -%}
+					{%- if productCount >= limit -%}{%- break -%}{%- endif -%}
+
+					<section class="product-section{% unless gridClass == blank %} {{gridClass}}{% endunless %}">
+						{%- render 'product-item', product: p, catalogMode: _catalogmode -%}
+					</section>
+					{%- assign productCount = productCount | plus: 1 -%}
+				{%- endfor -%}
+			{%- endif -%}
+		{%- endfor -%}
+
+	{%- when 'share' -%}
+<!-- 		{%- if enable -%}{%- render 'social-sharing' -%}{%- endif -%} -->
+
+	{%- when 'sticky_cart' -%}
+
+		<div id="stickyCart" class="d-lg-none">
+			{%- capture formID -%}stickyCart{{product.id}}{%- endcapture -%}
+
+			{%- form 'product', product, id: formID, class:'product-form', data-product-form: '', data-product-handle: product.handle -%}
+				<select name="id" id="stickyCart_variants" class="{% if product.has_only_default_variant %}hide{% endif %}">
+					{%- for variant in product.variants -%}
+						{%- capture variantOptions -%}
+							{%- for vop in variant.options -%}
+								option{{forloop.index}}="{{ vop }}"
+							{%- endfor -%}
+						{%- endcapture -%}
+						<option value="{{variant.id}}" {{variantOptions}} {% if variant == productSelect %}selected{% endif %}{% unless variant.available %} disabled{% endunless %}>{{variant.title}}</option>
+					{%- endfor -%}
+				</select>
+
+				<button type="submit" name="add" class="btn add-to-cart btn-1"{% unless productSelect.available %} disabled{% endunless %}>
+					<span class="cart-btn-label" item-cart-btn-label>
+						{%- unless productSelect.available -%} {{- 'products.product.sold_out' | t -}}
+						{%- else -%} {{- 'products.product.add_to_cart' | t -}}
+						{%- endunless -%}
+					</span>
+				</button>
+			{%- endform -%}
+			<style>
+				#preview-bar-iframe, #mobile-bar{display: none!important;}
+				#stickyCart{position: fixed;bottom: 0; left: 0; z-index: 100; width: 100%; background: #ffffff;}
+				#stickyCart form{width: 100%; text-align: center;}
+			</style>
+		</div>
+
+	{%- when 'json' -%}
+		{%- if template contains 'product' -%}
+					{% comment %}theme.productJSON = {{ product | json }};{% endcomment %}
+			{%- capture content -%}
+				<script>
+					theme.productSettings = {
+						addToCart: {{ 'products.product.add_to_cart' | t | json }}
+						,handle: {{ product.handle | json }}
+						,soldOut: {{ 'products.product.sold_out' | t | json }}
+						,unavailable: {{ 'products.product.unavailable' | t | json }}
+						,show_stock : {% if section.settings.stock_range != '0' or section.settings.stock_range != 0 %}true{% else %}false{% endif %}
+					}
+				</script>
+				{% comment %}<input type="hidden" id="productJSON" value="{{product | json | escape }}">{% endcomment %}
+
+				{%- assign days_product_price_valid_until = 10 | times: 86400 -%}
+
+				{%- assign gtin_option = 'gtin' -%}
+				{%- if product.selected_or_first_available_variant.barcode != blank -%}
+				{%- assign is_barcode_available = true -%}
+				{%- assign gtin_string_length = product.selected_or_first_available_variant.barcode | size -%}
+
+				{%- if gtin_string_length == 8 or gtin_string_length == 12 or gtin_string_length == 13 or gtin_string_length == 14 -%}
+				  {%- assign is_valid_gtin_length = true -%}
+				  {%- assign gtin_option = gtin_option | append: gtin_string_length -%}
+				{%- endif -%}
+				{%- endif -%}
+
+				{%- capture main_entity_microdata -%}
+					"@type": "Product",
+					"offers": [
+					  {%- for variant in product.variants -%}
+					    {
+					      "@type": "Offer",
+					      "name": {{ variant.title | json }},
+					      "availability": {%- if variant.available -%}"https://schema.org/InStock"{%- else -%}"https://schema.org/OutOfStock"{%- endif -%},
+					      "price": {{ variant.price | divided_by: 100.0 | json }},
+					      "priceCurrency": {{ cart.currency.iso_code | json }},
+					      "priceValidUntil": "{{ 'now' | date: '%s' | plus: days_product_price_valid_until | date: '%Y-%m-%d'}}",
+					      {%- if variant.sku != blank -%}
+					        "sku": {{ variant.sku | json }},
+					      {%- endif -%}
+					      "url": "{{ product.url }}?variant={{ variant.id }}"
+					    }{% unless forloop.last %},{% endunless %}
+					  {%- endfor -%}
+					],
+					{%- if is_barcode_available and is_valid_gtin_length %}
+					  "{{gtin_option}}": {{ product.selected_or_first_available_variant.barcode | json }},
+					  "productId": {{ product.selected_or_first_available_variant.barcode | json }},
+					{%- elsif is_barcode_available %}
+					  "mpn": {{ product.selected_or_first_available_variant.barcode | json }},
+					  "productId": {{ product.selected_or_first_available_variant.barcode | json }},
+					{%- endif %}
+					"brand": {
+					  "name": {{ product.vendor | json }}
+					},
+					"name": {{ product.title | json }},
+					"description": {{ product.description | strip_html | json }},
+					"category": {{ product.type | json }},
+					"url": "{{ product.url }}",
+					"sku": {{ product.selected_or_first_available_variant.sku | json }},
+					"image": {
+					  "@type": "ImageObject",
+					  "url": "https:{{ product.featured_media | img_url: '1024x' }}",
+					  "image": "https:{{ product.featured_media | img_url: '1024x' }}",
+					  "name": {{ product.featured_media.alt | json }},
+					  "width": "1024",
+					  "height": "1024"
+					}
+				{%- endcapture -%}
+				<script type="application/ld+json">
+					{
+						"@context": "http://schema.org",
+						{{ main_entity_microdata }}
+					}
+				</script>
+			{%- endcapture -%}
+			{%- render 'compress', content: content -%}
+		{%- endif -%}
+
+	{%- when 'bundle' -%}
+		{%- unless product_metafield.product_bundle == blank -%}
+			<div class="product-bundle">
+				<div class="product-bundle-header">
+					<p>{{- 'products.product.bundle_title' | t -}}</p>
+				</div>
+				<div class="product-bundle-body">
+					<div class="product-bundle-body-inner row">
+						<div class="product-bundle-col-left col-lg-8 col-12">
+							<div class="row no-gutters">
+								{%- liquid
+									assign productBundle = product_metafield.product_bundle | split: '|'
+									assign bundleTotalPrice = 0
+									assign bundleItemClass = 'col-md-4'
+								-%}
+
+								{%- for product_handle in productBundle -%}
+									{%- liquid
+										assign _product 		= all_products[product_handle]
+										assign _productSelect 	= _product.selected_or_first_available_variant
+										assign compare_price 	= _productSelect.compare_at_price
+										assign price         	= _productSelect.price
+										if _productSelect.available
+											assign bundleTotalPrice = bundleTotalPrice | plus: price
+										endif
+									-%}
+									<div class="product-bundle-item {{bundleItemClass}} col-12">
+										{%- render 'product-bundle-item', product: _product, catalogMode: true -%}
+									</div>
+
+									{%- capture bundle_line -%}
+										<div class="bundle-cart-item">
+											<input type="checkbox" name="bundleGroup" checked="checked" id="bundleItem_{{_productSelect.id}}" data-id="{{ _productSelect.id }}" data-price="{{ price }}">
+											<label for="bundleItem_{{_productSelect.id}}">
+												<span class="bundle-title">
+													{{ _product.title }}
+													{%- unless _product.has_only_default_variant -%}
+														<span class="bundle-item-option">{{ _productSelect.title }}</span>
+													{%- endunless -%}
+												</span>
+
+												<span class="bundle-price">
+													{%- if _productSelect.available -%}
+														{%- if compare_price > price -%}
+															<span class="price-sale">{%- render 'money-format', price: price -%}</span>
+															<span class="price-compare">{%- render 'money-format', price: compare_price -%}</span>
+														{%- else -%}
+															<span class="price">{%- render 'money-format', price: price -%}</span>
+														{%- endif -%}
+													{%- else -%}
+														<span class="price soldout">{{- 'products.product.sold_out' | t -}}</span>
+													{%- endif -%}
+												</span>
+											</label>
+										</div>
+									{%- endcapture -%}
+									{%- assign bundle_lines = bundle_lines | append: bundle_line -%}
+								{%- endfor -%}
+							</div>
+
+						</div>
+						<div class="product-bundle-col-right col-lg-4 col-12">
+							<div class="bundle-add-cart" data-bundle-container>
+								<div class="bundle-line-items">{{bundle_lines}}</div>
+
+								<div class="bundle-total">
+									<p>{{- 'products.product.bundle_cart_title' | t -}}</p>
+									<div class="bundle-total-price" data-bundle-total>{%- render 'money-format', price: bundleTotalPrice -%}</div>
+									<button type="button" class="btn btn-1 btn-bundle-cart" data-bundle-submit>
+										<span>{{- 'products.product.bundle_cart_button' | t -}}</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{%- endunless -%}
+{%- endcase -%}

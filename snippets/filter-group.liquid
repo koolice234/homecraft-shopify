@@ -1,0 +1,78 @@
+{%- liquid
+	assign _title 				= block.settings.title
+	assign _direction 			= block.settings.direction
+	assign _filter_style		= block.settings.style
+  	assign _prefix_filter   	= 'fcid_' | append: _filter_style | append: block.id
+  	assign _filter_tags        	= block.settings.filter_tags | strip_newlines | replace: ' ,', ',' | replace: ', ', ',' | split: ','
+
+  	if _filter_style == 'color'
+  		assign isColor = true
+  	endif
+
+  	if _filter_tags contains '+ALL'
+		assign _filter_tags = collection.all_tags
+	endif
+-%}
+
+{%- case type -%}
+  	{%- when 'render' -%}
+		{%- unless filterGroup == blank -%}
+			{%- liquid
+				if filterGroup contains 'FilterActive'
+					assign filterActive = true
+				endif
+			-%}
+
+			<div class="filter-group direction-{{_direction}} filter-{{_filter_style}}" data-prefix="{{ _prefix_filter }}">
+				<p class="sb-title"{% if filterActive %} data-ajax="inactive"{% endif %}>
+					<span>{{ _title | default: collection.title}}</span>
+					<span class="animation-content">
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
+
+					{%- if filterActive -%}
+						{%- liquid
+							for activeTag in current_tags
+								assign tag = activeTag | handle
+								assign activeTagURL = activeTagURL | append: '|' | append: tag
+
+								unless _filter_tags contains activeTag
+									assign newCurrentTags = newCurrentTags | append: '|' | append: tag
+								endunless
+							endfor
+							assign activeTagURL = activeTagURL | remove_first: '|' | split: '|' | join: '+'
+							assign newURL = newCurrentTags | remove_first: '|' | split: '|' | join: '+'
+						-%}
+
+						<a href="{{ collection.url | append: '/' | append: newURL }}" class="filter-clear" data-clear-filter>
+							<span>{{- 'collections.general.clear' | t -}}</span>
+						</a>
+					{%- endif -%}
+				</p>
+
+				<ul class="tags-list">
+					{{ filterGroup }}
+				</ul>
+			</div>
+		{%- endunless -%}
+
+  	{%- else -%}
+
+		{%- for t in _filter_tags -%}
+			{%- capture tag -%}{{ t | strip }}{%- endcapture -%}
+
+			{%- unless collection.all_tags contains tag -%}{%- continue -%}{%- endunless -%}
+
+			<li class="tags-link{% if current_tags contains tag %} active{% endif %}{% if isColor %} filterColor-{{ tag | handle }}{% endif %}" data-ajax="inactive" aria-label="{% if current_tags contains tag %}FilterActive{% else %}Filter{{tag|escape}}{% endif %}">
+				{%- unless current_tags contains tag -%}
+					{{ tag | link_to_add_tag: tag }}
+				{%- else -%}
+					{{ tag | link_to_remove_tag: tag }}
+				{%- endunless -%}
+			</li>
+		{%- endfor -%}
+{%- endcase -%}
+

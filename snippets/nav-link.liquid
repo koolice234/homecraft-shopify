@@ -1,0 +1,44 @@
+{%- assign l_url = l.url | default: 'javascript:void(0);' -%}
+{%- if l_url == '#' -%}{%- assign l_url = 'javascript:void(0);' -%}{%- endif -%}
+{%- assign submenu = l.links -%}
+
+{%- case type -%}
+  {%- when 'empty' -%}
+    <li class="{{class}} navbar-{{type}}"><a href="javascript:void(0);"><span>Lorem ipsum</span></a></li>
+
+  {%- else -%}
+    {%- if header -%}
+      {%- assign hHandle = l.title | handle -%}
+      {%- if megaArray contains hHandle -%}
+        {%- assign isMM = true -%}
+      {%- elsif l.links.size > 0 -%}
+        {%- assign isDD = true -%}
+      {%- endif -%}
+
+      <li class="{{class}}{% if l.active  %} active{% endif %}{% if isMM %} nav-mm{% elsif isDD %} nav-dd{% endif %}" navlink-index="1">
+        <a href="{{ l_url }}">
+          <span>{{ l.title }}</span>
+        </a>
+
+        {%- if isMM or isDD -%}
+          {%- assign titleHandle = l.title | handle -%}
+          {%- render 'header-snippets', type: 'megaInclude', handle: titleHandle, l: l -%}
+        {%- endif -%}
+      </li>
+
+      {%- assign isMM = nil -%}
+      {%- assign isDD = nil -%}
+
+    {%- else -%}
+      {%- if submenu.size > 0 -%}
+        {%- render 'nav-sub-link', l: l, class: class -%}
+      {%- else -%}
+        <li class="{{class}}{% if l.active  %} active{% endif %}" navlink-index="1">
+          <a href="{{ l_url }}">
+            <span>{{ l.title }}</span>
+          </a>
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+{%- endcase -%}

@@ -1,0 +1,90 @@
+{%- liquid
+    assign _pageLayout = settings.page_layout
+-%}
+
+
+{%- capture collectionTitle -%}
+	{%- if settings.breadcrumb_bg_img == blank -%}
+		<div class="page-heading">
+			<div class="collection-title" data-dynamic-content="collectionTitle">
+				{%- if current_tags -%}
+					<h1>{{ collection.title }}/{{current_tags | join: '/'}}</h1>
+					<small>({{ collection.products_count  }})</small>
+				{%- else -%}
+					<h1>{{ collection.title }}</h1>
+					<small>({{ collection.all_products_count }})</small>
+				{%- endif -%}
+			</div>
+		</div>
+	{%- endif -%}
+{%- endcapture -%}
+
+
+
+{%- comment -%}
+	**
+	*	1: Left Sidebar
+	*	2: No Sidebar
+	*	3: Infinite
+	*
+{%- endcomment-%}
+
+{%- case type -%}
+  	{%- when 1 -%}
+		{%- if _pageLayout == 'boxed' -%}<div class="container">{%- endif -%}
+			{{ collectionTitle }}
+			<div class="layout-grid layout-grid--{{type}} d-grid collection-sidebar">
+				{%- section 'collection-sidebar' -%}
+
+				<div id="main-layout">
+					{%- section 'collection-template' -%}
+					{%- section 'bottom-banner' -%}
+				</div>
+			</div>
+		{%- if _pageLayout == 'boxed' -%}</div>{%- endif -%}
+
+  	{%- when 2 -%}
+
+		{%- if _pageLayout == 'boxed' -%}<div class="container">{%- endif -%}
+			{{ collectionTitle }}
+		{%- if _pageLayout == 'boxed' -%}</div>{%- endif -%}
+
+	  	<div class="layout-grid layout-grid--{{type}}">
+			{%- section 'collection-sidebar' -%}
+	  		<div id="main-layout">
+	  			{%- section 'collection-template' -%}
+	  			{%- section 'bottom-banner' -%}
+	  		</div>
+	  	</div>
+
+	  	{%- capture sectionCss -%}
+	  		{%- render 'block-custom', type: 'productGridV2', sectionID: '#main-layout' -%}
+	  	{%- endcapture -%}
+	  	{%- assign sectionCss = sectionCss | strip_newlines -%}
+	  	{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+
+  	{%- when 3 -%}
+  		{%- include 'collection-layout-template', type: 1 -%}
+
+  	{%- when 4 -%}
+		{%- if _pageLayout == 'boxed' -%}<div class="container">{%- endif -%}
+			{{ collectionTitle }}
+			<div class="layout-grid layout-grid--{{type}} d-grid collection-sidebar">
+
+				<div id="main-layout">
+					{%- section 'collection-template' -%}
+					{%- section 'bottom-banner' -%}
+				</div>
+				
+				{%- section 'collection-sidebar' -%}
+			</div>
+		{%- if _pageLayout == 'boxed' -%}</div>{%- endif -%}
+
+  	{%- else -%}
+  		{%- liquid
+  			assign _collectionPage = settings.collection_page | times: 1
+
+  			include 'collection-layout-template', type: _collectionPage
+			render 'recently-viewed'
+  		-%}
+{%- endcase -%}

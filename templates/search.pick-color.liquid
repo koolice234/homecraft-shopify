@@ -1,0 +1,8 @@
+{%- layout none -%}
+{%- assign pickColor = search.terms | prepend: '#' -%}
+<style>
+	:root{
+		--header-bg-desk: {{pickColor}};
+		--main-color: {{pickColor}};
+	}
+</style>

@@ -1,0 +1,39 @@
+<li class="search-result-item" data-item-type="{{ type }}">
+
+  {%- if type == 'product' or type == 'collection' -%}
+    <div class="result-item-image">
+      <a href="{{item.url}}">
+        <figure>
+          <img src="{{ item.featured_image | img_url: '390x' }}" alt="{{ item.title }}">
+        </figure>
+      </a>
+    </div>
+  {%- endif -%}
+
+  <div class="result-item-info">
+    <p class="result-item-title">
+      <a href="{{ item.url }}">{{ item.title }}</a>
+    </p>
+
+    {%- case type -%}
+      {%- when 'product' -%}
+        {%- assign productSelect = item.selected_or_first_available_variant -%}
+        <p class="result-item-price">
+          {%- if productSelect.available -%}
+            <span class="price">{%- render 'money-format', price: productSelect.price -%}</span>
+          {%- else -%}
+            <span class="price soldout">{{- 'products.product.sold_out' | t -}}</span>
+          {%- endif -%}
+        </p>
+
+      {%- when 'collection' -%}
+        {%- liquid
+          assign cartItem     = 'cart.general.item' | t
+          assign cartItems    = 'cart.general.items' | t
+        -%}
+
+        <small>{{ item.products.size }} {{ item.products.size | pluralize: cartItem, cartItems}}</small>
+    {%- endcase -%}
+
+  </div>
+</li>

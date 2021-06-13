@@ -1,0 +1,1126 @@
+{%- liquid
+  assign sectionType        = 'about-page'
+  assign _layout            = settings.page_layout
+  assign noBlock            = true
+  assign iconBox_check      = section.blocks | where: 'type', 'iconbox'
+  assign testimonial_check  = section.blocks | where: 'type', 'testimonial'
+-%}
+
+{%- if iconBox_check.size > 0 -%}
+  <svg xmlnsXlink="http://www.w3.org/2000/svg" style="display: none;"><symbol id="emptySVG_{{section.id}}">{%- render 'svg', type: 'empty' -%}</symbol></svg>
+{%- endif -%}
+{%- if testimonial_check.size > 0 -%}
+  {%- capture star -%}<span class="star_rating_ui star_rating_ui-fill">{%- render 'svg', type: 'star' -%}</span>{%- endcapture -%}
+  {%- capture starEmpty -%}<span class="star_rating_ui star_rating_ui-empty">{%- render 'svg', type: 'star_empty' -%}</span>{%- endcapture -%}
+{%- endif -%}
+
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|layout-{{- _layout -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+{%- capture content -%}
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+  {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+    <div class="section_content-wrapper">
+      {%- if section.blocks.size > 0 -%}
+
+        {%- for block in section.blocks -%}
+
+          {%- if block.type contains 'sub_' -%}{%- continue -%}{%- endif -%}
+
+
+
+          {%- comment -%}
+            **
+            * First Style Config
+            *
+          {%- endcomment-%}
+          {%- if block.type contains 'style_' -%}
+            {%- if noBlock -%}
+              {%- capture block_css -%}
+                {%- case block.type -%}
+                  {%- when 'style_content' -%}
+                     {%- assign textSelect = block.settings.text_select -%}
+                     {%- capture textSelect %} {% if textSelect contains 'sub_' %}.sub-text{% else %}.text-content{% endif %}.text-{{textSelect | remove: 'sub_'}}{%- endcapture -%}
+                     {%- render 'snippet-block-style', type: 'text', block: block, preClassID: sectionID, classID: ' .block-item', nextClassID: textSelect -%}
+
+                  {%- when 'style_button' -%}
+
+                    {%- capture itemClass -%}{{sectionID}} .block-item .btn{% if block.settings.btn_select == '2' %}.button-2{% else %}:not(.button-2){% endif %}{%- endcapture -%}
+                    {%- render 'snippet-block-style', type: 'button', block: block, itemClass: itemClass -%}
+                {%- endcase -%}
+              {%- endcapture -%}
+              {%- assign section_css = section_css | append: block_css -%}
+            {%- endif -%}
+            {%- continue -%}
+          {%- endif -%}
+
+
+          {%- liquid
+            assign noBlock      = false
+            assign _blockLayout = block.settings.layout
+            assign blockIndex   = forloop.index
+          -%}
+          {%- capture blockID -%}{{sectionID}} .block-{{block.id}}{%- endcapture -%}
+
+          <section class="block-item block-{{block.id}} block-{{block.type}}"{{block.shopify_attributes}}>
+            {%- include 'snippet-about-page', block: block -%}
+          </section>
+
+          {%- comment -%}
+            **
+            * Block Custom Style
+            *
+          {%- endcomment-%}
+          {%- for block in section.blocks offset: blockIndex -%}
+            {%- unless block.type contains 'style_' -%}{%- break -%}{%- endunless -%}
+            {%- capture block_css -%}
+              {%- case block.type -%}
+                {%- when 'style_content' -%}
+                  {%- assign textSelect = block.settings.text_select -%}
+                  {%- capture textSelect %} {% if textSelect contains 'sub_' %}.sub-text{% else %}.text-content{% endif %}.text-{{textSelect | remove: 'sub_'}}{%- endcapture -%}
+                  {%- capture textID %}{{blockID}}.block-item {{textSelect}}{% endcapture -%}
+                  {%- render 'snippet-block-style', type: 'text', block: block, classID: textID -%}
+
+                {%- when 'style_button' -%}
+                  {%- capture itemClass -%}{{blockID}}.block-item .btn{% if block.settings.btn_select == '2' %}.button-2{% else %}:not(.button-2){% endif %}{%- endcapture -%}
+                  {%- render 'snippet-block-style', type: 'button', block: block, itemClass: itemClass -%}
+              {%- endcase -%}
+            {%- endcapture -%}
+            {%- assign section_css = section_css | append: block_css -%}
+          {%- endfor -%}
+
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- if section.blocks.size == 0 or noBlock -%}
+        <p>{{- 'general.text.no_block' | t -}}</p>
+      {%- endif -%}
+
+    </div>
+  {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+</div>
+
+{%- capture sectionCss -%}
+  {{- section_css -}}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+
+{% schema %}
+{
+   "name": "About page",
+   "tag": "section",
+   "settings": [
+      {
+         "type": "paragraph",
+         "content": "Created by 'Page about template' section"
+      }
+    ],
+    "blocks": [
+      {
+         "type": "paragraph",
+         "name": "Paragraph",
+         "settings": [
+            {
+               "type": "textarea",
+               "id": "text_1",
+               "label": "Text 1",
+               "default": "Talk about your brand"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Text 2",
+               "default": "Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store."
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "banner",
+         "name": "Banner image",
+         "settings": [
+            {
+               "type": "image_picker",
+               "id": "image",
+               "label": "Banner image"
+            },
+            {
+               "type":"url",
+               "id":"image_link",
+               "label":"Image link"
+            },
+            {
+               "type": "text",
+               "id": "image_position",
+               "label": "Image crop",
+               "placeholder": "E.g: center center or left center"
+            },
+            {
+               "type":"text",
+               "id":"height",
+               "label":"Manual height",
+               "placeholder": "E.g: 200px"
+            },
+            {
+               "type": "select",
+               "id": "layout",
+               "label": "Layout",
+               "options": [
+                  {
+                     "value": "boxed",
+                     "label": "Boxed"
+                  },
+                  {
+                     "value": "full",
+                     "label": "Full wide"
+                  }
+               ],
+               "default": "boxed"
+            },
+            {
+               "type": "header",
+               "content": "Small Image"
+            },
+            {
+               "type": "image_picker",
+               "id": "small_image",
+               "label": "Image"
+            },
+            {
+               "type": "text",
+               "id": "max_w",
+               "label": "Max width",
+               "placeholder": "E.g: 50px"
+            },
+            {
+               "type": "header",
+               "content": "Paragraph & Button"
+            },
+            {
+               "type": "textarea",
+               "id": "text_1",
+               "label": "Text 1"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Text 2"
+            },
+            {
+               "type": "text",
+               "id": "btn_txt",
+               "label": "Button label"
+            },
+            {
+               "type": "url",
+               "id": "btn_url",
+               "label": "Button URL"
+            },
+            {
+               "type": "range",
+               "id": "btn_style",
+               "label": "Button style",
+               "min": 1,
+               "max": 3,
+               "default": 1
+            },
+            {
+               "type": "header",
+               "content": "Custom Content"
+            },
+            {
+               "type": "text",
+               "id": "svg_1",
+               "label": "SVG 1"
+            },
+            {
+               "type": "text",
+               "id": "text_svg_1",
+               "label": "Text for SVG 1"
+            },
+            {
+               "type": "text",
+               "id": "svg_2",
+               "label": "SVG 2"
+            },
+            {
+               "type": "text",
+               "id": "text_svg_2",
+               "label": "Text for SVG 2"
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "blog",
+         "name": "Blog",
+         "settings": [
+            {
+               "type": "blog",
+               "id": "blog",
+               "label": "Blog"
+            },
+            {
+               "type": "checkbox",
+               "id": "show_excerpt",
+               "label": "Show Excerpt"
+            },
+            {
+               "type": "text",
+               "id": "items_resp",
+               "label": "Max number of content per row",
+               "default": "3,2",
+               "placeholder": "E.g: 4,3,2"
+            },
+            {
+               "type": "range",
+               "id": "total",
+               "label": "Total",
+               "min": 1,
+               "max": 10,
+               "step": 1,
+               "default": 3
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "newsletter",
+         "name": "Newsletter",
+         "limit": 1,
+         "settings": [
+            {
+               "type": "header",
+               "content": "Form settings"
+            },
+            {
+               "type": "select",
+               "id": "form_type",
+               "label": "Form Type:",
+               "options": [
+                  {
+                     "value": "mailchimp",
+                     "label": "Mailchimp"
+                  },
+                  {
+                     "value": "klaviyo",
+                     "label": "Klaviyo"
+                  }
+               ],
+               "default": "mailchimp"
+            },
+            {
+               "type": "textarea",
+               "id": "form_url",
+               "label": "Form URL"
+            },
+            {
+               "type": "select",
+               "id": "form_style",
+               "label": "Form style",
+               "options": [
+               {
+                 "value": "1",
+                 "label": "1"
+              },
+              {
+                 "value": "2",
+                 "label": "2"
+              }
+              ],
+              "default": "1"
+           },
+            {
+               "type": "paragraph",
+               "content": "Mailchimp: [Where do I get my MailChimp Form Action](https://www.arenacommerce.com/blogs/faq/shopify-theme-how-to-get-a-mailchimp-form-action-url)"
+            },
+            {
+               "type": "paragraph",
+               "content": "KLAVIYO: [Sign up](https://www.klaviyo.com/partner/signup?utm_source=0010V00002PVTlf&utm_medium=partner)"
+            },
+            {
+               "type": "range",
+               "id": "btn_style",
+               "label": "Button style",
+               "min":1,
+               "max":3,
+               "default":1
+            },
+            {
+               "type": "header",
+               "content": "Heading content"
+            },
+            {
+               "type": "text",
+               "id": "text_1",
+               "label": "Heading"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Subheading"
+            },
+            {
+               "type": "header",
+               "content": "Layout"
+            },
+            {
+               "type": "select",
+               "id": "layout",
+               "label": "Layout",
+               "options": [
+                  {
+                     "value": "boxed",
+                     "label": "Boxed"
+                  },
+                  {
+                     "value": "full",
+                     "label": "Full wide"
+                  }
+               ],
+               "default": "boxed"
+            },
+            {
+               "type": "text",
+               "id": "padding",
+               "label": "Padding",
+               "placeholder": "E.g: 5px 20px 5px 20px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "image_picker",
+               "id": "bg_image",
+               "label": "Background image"
+            },
+            {
+               "type": "select",
+               "id": "bg_size",
+               "label":"Background image fit",
+               "default": "cover",
+               "options": [
+                  {
+                     "value": "auto",
+                     "label": "Auto"
+                  },
+                  {
+                     "value": "cover",
+                     "label": "Cover"
+                  },
+                  {
+                     "value": "contain",
+                     "label": "Contain"
+                  }
+               ]
+            },
+            {
+               "type": "select",
+               "id": "bg_repeat",
+               "label": "Background Image Repeat:",
+               "default": "no-repeat",
+               "options": [
+                  {
+                     "value": "no-repeat",
+                     "label": "No Repeat"
+                  },
+                  {
+                     "value": "repeat",
+                     "label": "Repeat"
+                  },
+                  {
+                     "value": "repeat-x",
+                     "label": "Repeat X"
+                  },
+                  {
+                     "value": "repeat-y",
+                     "label": "Repeat Y"
+                  }
+               ]
+            },
+            {
+               "type": "select",
+               "id": "bg_position",
+               "label": "Background Image Position:",
+               "default": "center center",
+               "options": [
+                  {
+                     "value": "left top",
+                     "label": "Left Top"
+                  },
+                  {
+                     "value": "center top",
+                     "label": "Center Top"
+                  },
+                  {
+                     "value": "right top",
+                     "label": "Right Top"
+                  },
+                  {
+                     "value": "left center",
+                     "label": "Left Center"
+                  },
+                  {
+                     "value": "center center",
+                     "label": "Center Center"
+                  },
+                  {
+                     "value": "right center",
+                     "label": "Right Center"
+                  },
+                  {
+                     "value": "left bottom",
+                     "label": "Left Bottom"
+                  },
+                  {
+                     "value": "center bottom",
+                     "label": "Center Bottom"
+                  },
+                  {
+                     "value": "right bottom",
+                     "label": "Right Bottom"
+                  }
+               ]
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "video",
+         "name": "Video with text",
+         "settings": [
+            {
+               "type": "text",
+               "id": "video_url",
+               "label": "Video URL"
+            },
+            {
+               "type": "image_picker",
+               "id": "image",
+               "label": "Image placeholder"
+            },
+            {
+               "type": "text",
+               "id": "video_btn_label",
+               "label": "Button label"
+            },
+            {
+               "type": "range",
+               "id": "video_btn_style",
+               "label": "Button style",
+               "min": 1,
+               "max": 3,
+               "step": 1,
+               "default": 1
+            },
+            {
+               "type": "header",
+               "content": "Paragraph & Button"
+            },
+            {
+               "type": "textarea",
+               "id": "text_1",
+               "label": "Text 1"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Text 2"
+            },
+            {
+               "type": "text",
+               "id": "btn_txt",
+               "label": "Button label"
+            },
+            {
+               "type": "url",
+               "id": "btn_url",
+               "label": "Button URL"
+            },
+            {
+               "type": "range",
+               "id": "btn_style",
+               "label": "Button style",
+               "min": 1,
+               "max": 3,
+               "default": 1
+            },
+            {
+               "type": "header",
+               "content": "Custom Content"
+            },
+            {
+               "type": "text",
+               "id": "svg_1",
+               "label": "SVG 1"
+            },
+            {
+               "type": "text",
+               "id": "text_svg_1",
+               "label": "Text for SVG 1"
+            },
+            {
+               "type": "text",
+               "id": "svg_2",
+               "label": "SVG 2"
+            },
+            {
+               "type": "text",
+               "id": "text_svg_2",
+               "label": "Text for SVG 2"
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "spacing",
+         "name": "Spacing",
+         "settings": [
+            {
+               "type": "text",
+               "id": "height",
+               "label": "Height",
+               "placeholder": "E.g: 30px, 15px, 10px",
+               "default": "30px, 15px"
+            }
+         ]
+      },
+      {
+         "type": "image_gallery",
+         "name": "Image gallery",
+         "settings": [
+            {
+               "type": "text",
+               "id": "items_resp",
+               "label": "Max number of content per row",
+               "default": "2,1",
+               "placeholder": "E.g: 4,3,2"
+            },
+            {
+               "type":"paragraph",
+               "content":"Please add block \"Image with text\" for more content"
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "sub_image_gallery",
+         "name": "[+] Image with text",
+         "settings": [
+            {
+               "type": "image_picker",
+               "id": "image",
+               "label": "Banner image"
+            },
+            {
+               "type":"url",
+               "id":"image_link",
+               "label":"Image link"
+            },
+            {
+               "type": "header",
+               "content": "Paragraph"
+            },
+            {
+               "type": "text",
+               "id": "text_1",
+               "label": "Text 1"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Text 2"
+            },
+            {
+               "type": "textarea",
+               "id": "text_3",
+               "label": "Text 3"
+            }
+         ]
+      },
+      {
+         "type": "iconbox",
+         "name": "Icon box",
+         "settings": [
+            {
+               "type": "text",
+               "id": "items_resp",
+               "label": "Max number of content per row",
+               "default": "3,2",
+               "placeholder": "E.g: 4,3,2"
+            },
+            {
+               "type":"paragraph",
+               "content":"Please add block \"Icon box item\" for more content"
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "sub_iconbox",
+         "name": "[+] Icon box item",
+         "settings": [
+            {
+               "type": "text",
+               "id": "svg",
+               "label": "SVG"
+            },
+            {
+               "type": "image_picker",
+               "id": "image",
+               "label": "Image"
+            },
+            {
+               "type": "text",
+               "id": "text_1",
+               "label": "Title"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Content"
+            }
+         ]
+      },
+      {
+         "type": "testimonial",
+         "name": "Testimonial",
+         "limit": 1,
+         "settings": [
+            {
+               "type": "text",
+               "id": "items_resp",
+               "label": "Max number of content per row",
+               "default": "3,2",
+               "placeholder": "E.g: 4,3,2"
+            },
+            {
+               "type":"paragraph",
+               "content":"Please add block \"Testimonial item\" for more content"
+            },
+            {
+               "type": "header",
+               "content": "Heading content"
+            },
+            {
+               "type": "text",
+               "id": "text_1",
+               "label": "SVG"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Heading"
+            },
+            {
+               "type": "header",
+               "content": "Block layout"
+            },
+            {
+               "type": "select",
+               "id": "layout",
+               "label": "Layout",
+               "options": [
+                  {
+                     "value": "boxed",
+                     "label": "Boxed"
+                  },
+                  {
+                     "value": "full",
+                     "label": "Full wide"
+                  }
+               ],
+               "default": "boxed"
+            },
+            {
+               "type": "select",
+               "id": "mobile_layout",
+               "label": "Mobile layout",
+               "options": [
+                  {
+                     "value": "boxed",
+                     "label": "Boxed"
+                  },
+                  {
+                     "value": "full",
+                     "label": "Wide"
+                  },
+                  {
+                     "value": "full-right",
+                     "label": "Only full right"
+                  }
+               ],
+               "default": "boxed",
+               "info": "Only full right use for slider"
+            },
+            {
+               "type": "text",
+               "id": "padding",
+               "label": "Padding",
+               "placeholder": "E.g: 5px 20px 5px 20px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "image_picker",
+               "id": "bg_image",
+               "label": "Background image"
+            },
+            {
+               "type": "select",
+               "id": "bg_size",
+               "label":"Background image fit",
+               "default": "cover",
+               "options": [
+                  {
+                     "value": "auto",
+                     "label": "Auto"
+                  },
+                  {
+                     "value": "cover",
+                     "label": "Cover"
+                  },
+                  {
+                     "value": "contain",
+                     "label": "Contain"
+                  }
+               ]
+            },
+            {
+               "type": "select",
+               "id": "bg_repeat",
+               "label": "Background Image Repeat:",
+               "default": "no-repeat",
+               "options": [
+                  {
+                     "value": "no-repeat",
+                     "label": "No Repeat"
+                  },
+                  {
+                     "value": "repeat",
+                     "label": "Repeat"
+                  },
+                  {
+                     "value": "repeat-x",
+                     "label": "Repeat X"
+                  },
+                  {
+                     "value": "repeat-y",
+                     "label": "Repeat Y"
+                  }
+               ]
+            },
+            {
+               "type": "select",
+               "id": "bg_position",
+               "label": "Background Image Position:",
+               "default": "center center",
+               "options": [
+                  {
+                     "value": "left top",
+                     "label": "Left Top"
+                  },
+                  {
+                     "value": "center top",
+                     "label": "Center Top"
+                  },
+                  {
+                     "value": "right top",
+                     "label": "Right Top"
+                  },
+                  {
+                     "value": "left center",
+                     "label": "Left Center"
+                  },
+                  {
+                     "value": "center center",
+                     "label": "Center Center"
+                  },
+                  {
+                     "value": "right center",
+                     "label": "Right Center"
+                  },
+                  {
+                     "value": "left bottom",
+                     "label": "Left Bottom"
+                  },
+                  {
+                     "value": "center bottom",
+                     "label": "Center Bottom"
+                  },
+                  {
+                     "value": "right bottom",
+                     "label": "Right Bottom"
+                  }
+               ]
+            },
+            {
+               "type": "header",
+               "content": "Block label"
+            },
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Block label"
+            }
+         ]
+      },
+      {
+         "type": "sub_testimonial",
+         "name": "[+] Testimonial item",
+         "settings": [
+            {
+               "type": "richtext",
+               "id": "text_1",
+               "label": "Review",
+               "default": "<p>Add customer reviews and testimonials to showcase your store’s happy customers.</p>"
+            },
+            {
+               "type": "text",
+               "id": "text_2",
+               "label": "Author's name",
+               "default": "Author's name"
+            },
+            {
+               "type": "range",
+               "id": "rating",
+               "label": "Rating",
+               "min": 1,
+               "max": 5,
+               "step": 1,
+               "default": 4
+            }
+         ]
+      },
+      {
+         "type": "style_content",
+         "name": "[+] Text style",
+         "settings": [
+            {
+               "type":"select",
+               "id":"text_select",
+               "label":"Text to apply",
+               "options":[
+                 {
+                   "value":"1",
+                   "label":"Main text 1"
+                 },
+                 {
+                   "value":"2",
+                   "label":"Main text 2"
+                 },
+                 {
+                   "value":"3",
+                   "label":"Main text 3"
+                 },
+                 {
+                   "value":"sub_1",
+                   "label":"Sub text 1"
+                 },
+                 {
+                   "value":"sub_2",
+                   "label":"Sub text 2"
+                 },
+                 {
+                   "value":"sub_3",
+                   "label":"Sub text 3"
+                 }
+               ],
+               "default": "1"
+            },
+            {
+               "type": "text",
+               "id": "content_fs",
+               "label": "Font size",
+               "placeholder": "E.g: 24px"
+            },
+            {
+               "type": "color",
+               "id": "content_cl",
+               "label": "Color"
+            },
+            {
+               "type": "range",
+               "id": "content_fw",
+               "label": "Font weight",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0,
+               "info": "0 is auto"
+            },
+            {
+               "type": "text",
+               "id": "content_margin",
+               "label": "Margin",
+               "placeholder": "E.g: 5px 8px 5px 8px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "text",
+               "id": "content_lh",
+               "label": "Line height",
+               "placeholder": "E.g: 26px"
+            }
+         ]
+      },
+      {
+         "type": "style_button",
+         "name": "[+] Button style",
+         "settings": [
+            {
+               "type":"select",
+               "id":"btn_select",
+               "label":"Button to apply",
+               "options":[
+                 {
+                   "value":"1",
+                   "label":"First button in block"
+                 },
+                 {
+                   "value":"2",
+                   "label":"Second button in block"
+                 }
+               ],
+               "default": "1"
+            },
+            {
+               "type": "text",
+               "id": "btn_fs",
+               "label": "Font size",
+               "placeholder": "E.g: 18px"
+            },
+            {
+               "type": "range",
+               "id": "btn_fw",
+               "label": "Font weight",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0,
+               "info": "0 is auto"
+            },
+            {
+               "type": "text",
+               "id": "btn_padding",
+               "label": "Padding",
+               "placeholder": "E.g: 13px 50px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "text",
+               "id": "btn_margin",
+               "label": "Margin",
+               "placeholder": "E.g: 13px 50px",
+               "info": "Order: Top Right Bottom Left"
+            },
+            {
+               "type": "color",
+               "id": "btn_cl",
+               "label": "Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_bg_cl",
+               "label": "Background color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_cl",
+               "label": "Hover: Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_bg_cl",
+               "label": "Hover: Background color"
+            },
+            {
+               "type": "range",
+               "id": "btn_border_width",
+               "label": "Border width",
+               "min": 1,
+               "max": 10,
+               "step": 1,
+               "default": 1,
+               "unit": "px"
+            },
+            {
+               "type": "color",
+               "id": "btn_border_cl",
+               "label": "Border color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_border_cl",
+               "label": "Hover: Border color"
+            },
+            {
+               "type": "text",
+               "id": "btn_radius",
+               "label": "Rounded corners",
+               "placeholder": "E.g: 42px"
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

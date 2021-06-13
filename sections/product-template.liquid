@@ -1,0 +1,81 @@
+{%- include 'product-default' -%}
+
+{% schema %}
+{
+    "name": "Product page",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "paragraph",
+            "content": "Created by 'Product template' section"
+        },
+        {
+            "type": "range",
+            "id": "stock_range",
+            "label": "Show Left in stock at",
+            "min": 0,
+            "max": 20,
+            "default": 10,
+            "info": "0 to disable"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_dynamic_checkout",
+            "label": "Show dynamic checkout button",
+            "info": "Each customer will see their preferred payment method from those available on your store, such as PayPal or Apple Pay. [Learn more](https://help.shopify.com/manual/using-themes/change-the-layout/dynamic-checkout)"
+        },
+        {
+            "type": "header",
+            "content": "Multi Tab settings"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_multi_tab",
+            "label": "Use Multi-tabs with heading 5 tag",
+            "default": true,
+            "info": "We use heading 5 in Product's description to seperate Multi-tabs, each <h5>Tabs Title</h5> will be considered as content seperator and tabs title"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "page",
+            "name": "Static - Page",
+            "settings": [
+                {
+                    "type": "paragraph",
+                    "content": "Static tan is created based on Page content. It's ueseful to add the same content for all products such as Shipping term, Size guide, etc."
+                },
+                {
+                    "type": "text",
+                    "id": "page_title",
+                    "label": "Heading"
+                },
+                {
+                    "type": "page",
+                    "id": "page",
+                    "label": "Select a Page"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}
+
+{% if product.metafields.loox.num_reviews %}
+<script id="looxSchemaJson" type="application/ld+json">
+{
+	"@context": "http://schema.org",
+	"@type": "Product",
+	"@id": {{ canonical_url | json }},
+	"aggregateRating": {
+		"@type": "AggregateRating",
+		"ratingValue": "{{ product.metafields.loox.avg_rating }}",
+		"reviewCount": "{{ product.metafields.loox.num_reviews }}"
+	},
+	"name": {{ product.title | json }}
+}
+</script>
+{% endif %}
+
+
+	<div id="looxReviews" data-product-id="{{product.id}}" class="loox-reviews-default">{{ product.metafields.loox.reviews }}</div>

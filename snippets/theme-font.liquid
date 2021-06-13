@@ -1,0 +1,128 @@
+{%- liquid
+	assign _header_font_type 	= settings.header_font_type | default: 'google'
+	assign _body_font_type 		= settings.body_font_type | default: 'google'
+	assign _google_font_url 	= settings.google_font_url | default: 'https://fonts.googleapis.com/css2?family='
+	assign _type_header_family 	= settings.header_google_font
+	assign _type_base_family 	= settings.body_google_font
+-%}
+
+{%- comment -%}
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*
+	* GOOGLE FONT
+	*
+	* * * * *
+{%- endcomment-%}
+{%- if _header_font_type == 'google' or _body_font_type == 'google' -%}
+	{% comment %}
+	{%- capture gg_font -%}
+		{%- if _header_font_type 	== 'google' -%}|{{ _type_header_family	| strip | replace: ' ', '+' }}{%- endif -%}
+		{%- if _body_font_type 		== 'google' -%}|{{ _type_base_family 	| strip | replace: ' ', '+' }}{%- endif -%}
+	{%- endcapture -%}
+
+	{%- capture gg_link -%}
+		{%- if google_font_url contains '/css2' -%}{{- gg_font | strip_newlines | remove_first: '|' | split: '|' | uniq | join: '&family=' -}}
+		{%- else -%}{{- gg_font | strip_newlines | remove_first: '|' | split: '|' | uniq | join: '|' -}}{%- endif -%}
+	{%- endcapture -%}
+
+	{%- unless type == 'root' -%}
+	{%- endunless -%}{% endcomment %}
+
+	{%- capture gg_font -%}
+		{%- if settings.header_google_font 	!= blank -%}|{{ settings.header_google_font	| strip }}{%- endif -%}
+		{%- if settings.body_google_font 	!= blank -%}|{{ settings.body_google_font 	| strip }}{%- endif -%}
+	{%- endcapture -%}
+	{%- if gg_font != blank -%}
+
+		{%- assign gg_font = gg_font | strip_newlines | remove_first: '|' | split: '|' | uniq | join: '|' -%}
+
+		{%- capture googleFontJS -%}
+			{%- assign fontArr = gg_font | split: '|' -%}
+			{%- for f in fontArr -%}
+				{%- assign fontName = f | split: ':' | first | replace: '+', ' ' -%}
+
+				{%- capture newFontProp -%}
+					{%- if f contains '@' -%}
+						{%- assign fontProp = f | split: '@' | last | split: ';' -%}
+
+						{%- for fp in fontProp -%}
+							{%- if fp contains '1,' -%}
+								{%- assign nfp = fp | split: ',' | last | append: 'i' -%}
+							{%- else -%}
+								{%- assign nfp = fp | split: ',' | last -%}
+							{%- endif -%}
+							{%- if forloop.first -%}:{%- else -%},{%- endif -%}{{- nfp -}}
+						{%- endfor -%}
+					{%- endif -%}
+				{%- endcapture -%}
+				{%- unless forloop.first -%}','{%- endunless -%}
+				{{- fontName -}}{{- newFontProp -}}
+			{%- endfor -%}
+		{%- endcapture -%}
+
+		{%- unless type == 'root' -%}
+			<script src="{{ 'webfont-1.6.26.js' | asset_url}}" async></script>
+			<script id="theme__WebFont">
+				WebFontConfig = {
+					google: {families: ['{{ googleFontJS }}&display=swap']}
+					,active: function(){sessionStorage.fonts = true;}
+				};
+				(function() {
+					if (sessionStorage.fonts) {
+						document.documentElement.classList.add('wf-active');
+					} else {
+						console.log("No fonts installed.");
+					}
+				})();
+			</script>
+		{%- endunless -%}
+
+		{%- if _header_font_type == 'google' -%}
+			{%- capture headerFont -%}{{_type_header_family | replace: 'Google_', '' | replace: '+', ' ' | split: ':' | first }}, 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, sans-serif{%- endcapture -%}
+		{%- endif -%}
+		{%- if 	_body_font_type == 'google' -%}
+			{%- capture bodyFont -%}{{_type_base_family | replace: 'Google_', '' | replace: '+', ' ' | split: ':' | first }}, 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, sans-serif{%- endcapture -%}
+		{%- endif -%}
+
+	{%- endif -%}
+{%- endif -%}
+
+{%- comment -%}
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*
+	* SHOPIFY FONT
+	*
+	* * * * *
+{%- endcomment-%}
+{%- if _header_font_type == 'shopify' -%}
+	{%- liquid
+		assign header_font_type 			= settings.header_shopify_font
+		assign header_font_thin 			= header_font_type | font_modify: 'weight', '100'
+		assign header_font_extra_light 		= header_font_type | font_modify: 'weight', '200'
+		assign header_font_light 			= header_font_type | font_modify: 'weight', '300'
+		assign header_font_regular 			= header_font_type | font_modify: 'weight', '400'
+		assign header_font_medium 			= header_font_type | font_modify: 'weight', '500'
+		assign header_font_semi_bold 		= header_font_type | font_modify: 'weight', '600'
+		assign header_font_bold 			= header_font_type | font_modify: 'weight', '700'
+	-%}
+	{%- capture headerFont -%}{{ header_font_type.family }}, {{ header_font_type.fallback_families }}{%- endcapture -%}
+{%- endif -%}
+
+{%- if _body_font_type == 'shopify' -%}
+	{%- liquid
+		assign body_font_type 				= settings.body_shopify_font
+		assign body_font_thin 				= body_font_type | font_modify: 'weight', '100'
+		assign body_font_extra_light 		= body_font_type | font_modify: 'weight', '200'
+		assign body_font_light 				= body_font_type | font_modify: 'weight', '300'
+		assign body_font_regular 			= body_font_type | font_modify: 'weight', '400'
+		assign body_font_medium 			= body_font_type | font_modify: 'weight', '500'
+		assign body_font_semi_bold 			= body_font_type | font_modify: 'weight', '600'
+		assign body_font_bold 				= body_font_type | font_modify: 'weight', '700'
+	-%}
+	{%- capture bodyFont -%}{{ body_font_type.family }}, {{ body_font_type.fallback_families }}{%- endcapture -%}
+{%- endif -%}
+
+{%- if type == 'root' -%}
+	--font-heading: {{headerFont}};
+	--body-font-family: {{bodyFont}};
+{%- endif -%}

@@ -1,0 +1,102 @@
+{%- case productLayoutStyle -%}
+  	{%- when 2 -%}
+  		<div class="row">
+  			<div class="col-lg-6 col-12">
+  				{%- render 'product-detail-media', product: product -%}
+  			</div>
+  			<div class="col-lg-6 col-12">
+  				<div class="row">
+  					<div class="col-md-12 col-12">
+  						<div class="product-info product-info-1">
+  							<div class="product-info-row">
+  								{%- render 'product-detail-snippet', product: product, type: 'title' -%}
+  							</div>
+  							
+  							<div class="product-info-row">
+  								{%- render 'product-detail-snippet', product: product, enable: true, type: 'tags' -%}
+  								{%- render 'product-detail-snippet', product: product, enable: true, type: 'sku' -%}
+  								{%- render 'product-detail-snippet', product: product, enable: true, type: 'share' -%}
+  							</div>
+  						</div>
+  					</div>
+
+  					<div class="col-md-12 col-12">
+  						<div class="product-info product-info-2">
+  							<div class="product-info-row">
+	  							{%- render 'product-detail-snippet', product: product, enable: true, type: 'stock' -%}
+                  <!-- Zip WIDGET -->
+                  {%include 'zip-widget'%}
+                  <style>
+                    #zip-prod-widget > iframe { 
+                      position: relative !important;
+                      right: 20px !important;
+                    }
+                  </style>
+                  <div style="cursor:pointer" id="zip-prod-widget" data-zm-asset="productwidget" data-zm-widget="popup" data-zm-popup-asset="termsdialog"></div>
+                  <!-- end Zip WIDGET -->
+	  							{%- render 'product-detail-snippet', product: product, type: 'price' -%}
+	  							{%- render 'product-detail-snippet', product: product, type: 'form', section: section -%}
+	  							{%- render 'product-detail-snippet', product: product, type: 'wlcp' -%}
+  							</div>
+                <div class="product-info-row">
+                  {%- render 'product-detail-snippet', product: product, type: 'short_description' -%}
+                </div>
+    
+                <div class="product-info-row">
+                  {%- render 'product-detail-description', product: product -%}
+                </div>
+  						</div>
+  					</div>
+  				</div>
+  			</div>
+  		</div>
+
+  	{%- else -%}
+      {%- liquid
+        if productLayoutStyle == 4
+          assign leftCol = 7
+          assign rightCol = 5
+        else
+          assign leftCol = 6
+          assign rightCol = 6
+        endif
+      -%}
+
+      <div class="row">
+        <div class="col-md-{{leftCol}} col-12">
+          {%- render 'product-detail-media', product: product -%}
+        </div>
+        <div class="col-md-{{rightCol}} col-12">
+          <div class="product-info">
+            <div class="product-info-row">
+              {%- render 'product-detail-snippet', product: product, enable: true, type: 'stock' -%}
+              {%- render 'product-detail-snippet', product: product, type: 'title' -%}
+            </div>
+
+            <div class="product-info-row">
+              {%- render 'product-detail-snippet', product: product, type: 'price' -%}
+              {%- render 'product-detail-snippet', product: product, type: 'form', section: section, productLayoutStyle: productLayoutStyle -%}
+
+              {%- unless productLayoutStyle == 3 -%}
+                {%- render 'product-detail-snippet', product: product, type: 'wlcp' -%}
+              {%- endunless -%}
+            </div>
+
+            
+            
+
+            {%- if productLayoutStyle == 3 -%}
+              <div class="product-info-row">
+                {%- render 'product-detail-description', product: product -%}
+              </div>
+            {%- endif -%}
+
+            <div class="product-info-row">
+              {%- render 'product-detail-snippet', product: product, enable: true, type: 'tags' -%}
+              {%- render 'product-detail-snippet', product: product, enable: true, type: 'sku' -%}
+              {%- render 'product-detail-snippet', product: product, enable: true, type: 'share' -%}
+            </div>
+          </div>
+        </div>
+      </div>
+{%- endcase -%}

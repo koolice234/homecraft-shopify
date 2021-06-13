@@ -1,0 +1,79 @@
+{%- liquid
+	assign currentProduct 	= product.selected_or_first_available_variant
+	assign media 			= product.featured_media
+	assign showVendor 		= settings.show_vendor
+	assign imageRatio 		= settings.product_image_ratio | remove: 'auto'
+	assign imageCrop 		= settings.product_image_crop
+	assign imageRatioCustom = settings.image_ratio_custom
+	assign collectionSelect = nil
+-%}
+
+{%- unless imageRatioCustom == blank -%}
+	{%- assign imageRatio = 1 | divided_by: imageRatioCustom.aspect_ratio | times: 100 | append: '%' -%}
+{%- endunless -%}
+
+{%- if collection.handle != 'all' and collection.handle != 'frontpage' and collection.handle != 'all-products' -%}
+	{%- assign collectionSelect = collection -%}
+{%- endif -%}
+
+{%- if media.media_type == 'image' -%}
+	{%- assign image = media -%}
+{%- else -%}
+	{%- assign image = media.preview_image -%}
+{%- endif -%}
+{%- if image == blank -%}{%- assign image = 'default-image.png' | asset_url -%}{%- endif -%}
+
+
+<div class="featured_product__item">
+	<div class="featured-product_wrapper{% if imageCrop	%} imageCrop-true{% endif %}">
+
+
+		<div class="featured_product__item-header">
+			<figure class="featured_product__item-image"{%- unless imageRatio == blank -%} style="padding-top: {{imageRatio}};"{%- endunless -%}>
+				<a href="{{product.url | within: collectionSelect}}">
+					<img src="{{ image | img_url: '390x' }}" alt="{{product.title}}" >
+				</a>
+			</figure>
+		</div>
+
+		<div class="featured_product__item-body">
+			<div class="featured_product__item-row">
+
+				{%- if showVendor -%}
+					<small class="featured_product__item-vendor">
+						<a href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a>
+					</small>
+				{%- endif -%}
+
+				<p class="featured_product__item-name">
+					<a href="{{product.url | within: collectionSelect }}">{{product.title}}</a>
+				</p>
+
+				{%- render 'product-item-snippets', product: product, type: 'price' -%}
+
+				{%- if is_replace -%}
+					<div class="product-cart_button">
+						<form action="{{ routes.cart_add_url }}" class="form-cart" data-product-form>
+							<input type="hidden" name="id" value="{{ currentProduct.id }}" >
+							<button type="submit" name="add" class="btn add-to-cart btn-1">
+								<span class="cart-btn-label">
+									{%- if is_replace -%}
+										{{- 'products.product.replace_item_in_cart' | t -}}
+									{%- else -%}
+										{{- 'products.product.add_to_cart' | t -}}
+									{%- endif -%}
+								</span>
+							</button>
+						</form>
+					</div>
+				{%- endif -%}
+
+				{%- unless settings.review_app == 'none' -%}
+					<div class="featured_product__item-review">
+						{%- render 'review', product: product, type: 'badge' -%}
+					</div>
+				{%- endunless -%}
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,8 @@
+{%- layout none -%}
+<button aria-label="Close" data-dialog-close>
+  <span class="svg-element-ui" data-dialog-close>{%- render 'svg', type: 'close' -%}</span>
+</button>
+<div id="searchModal_body">
+  {%- render 'search', type: '', onModal: true -%}
+  {%- render 'search', type: 'searchResultLayout' -%}
+</div>

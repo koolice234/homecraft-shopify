@@ -1,0 +1,744 @@
+{%- include 'header' -%}
+
+{% schema %}
+{
+  "name": "Header Desktop 3",
+  "tag": "section",
+  "class": "header-block d-none d-lg-block",
+  "settings": [
+    {
+       "type":"paragraph",
+        "content":"Please go to Theme Config Section, add Header Style Blocks then start making the changes. Eg: font size, font weight, .."
+    },
+    {
+      "type": "checkbox",
+      "id": "boxed_layout",
+      "label": "Boxed layout",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mega_menu",
+      "label": "Enable Mega Navigation",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+       "type":"text",
+       "id":"logo_svg",
+       "label":"Logo svg",
+       "info": "Blank to use Logo image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "logo_max_width",
+      "label": "Logo max width",
+      "default": "220",
+      "info": "Only for Logo image. E.g: 220"
+    },
+    {
+      "type": "header",
+      "content": "Menu settings"
+    },
+    {
+      "type":"checkbox",
+      "id":"show_hamburger",
+      "label":"Show Hamburger button",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "nav_link",
+      "label": "Main menu",
+      "default": "main-menu",
+      "info": "Use for menu mobile"
+    },
+    {
+      "type": "text",
+      "id": "singleLink_label",
+      "label": "Single link label",
+      "default": "Products"
+    },
+    {
+      "type": "url",
+      "id": "singleLink_url",
+      "label": "Single link"
+    },
+    {
+       "type":"header",
+       "content":"Languages & Currencies"
+    },
+    {
+      "type":"checkbox",
+      "id":"show_languages",
+      "label":"Show Languages",
+      "default": true
+    },
+    {
+      "type":"checkbox",
+      "id":"show_currencies",
+      "label":"Show Currencies",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Form Search"
+    },
+    {
+      "type": "select",
+      "id": "frm_search_style",
+      "label": "Search form style",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_trigger",
+      "name": "Mega Navigation",
+      "settings": [
+        {
+          "type": "text",
+          "id": "trigger",
+          "label": "Mega navigation trigger - Menu title"
+        },
+        {
+          "type": "text",
+          "id": "height",
+          "label": "Min height",
+          "info": "E.g: 300px",
+          "default": "300px"
+        },
+        {
+          "type"  :"text",
+          "id"    :"block_padding",
+          "label" :"Block Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Block label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block label",
+          "default": "+++ Mega Navigation trigger"
+        }
+      ]
+    },
+    {
+      "type": "m_menu",
+      "name": "-- Mega Menu",
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu item"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Show Menu title",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Block settings"
+        },
+        {
+          "type": "text",
+          "id": "width",
+          "label": "Column width:",
+          "info": "Blank to auto. E.g: 3/12 or 20%"
+        },
+        {
+          "type"  :"text",
+          "id"    :"block_padding",
+          "label" :"Block Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Block label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block label"
+        }
+      ]
+    },
+    {
+      "type": "m_banner",
+      "name": "-- Mega Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Banner"
+        },
+        {
+          "type": "url",
+          "id": "image_link",
+          "label": "Banner link"
+        },
+        {
+          "type": "text",
+          "id": "image_txt",
+          "label": "Banner title"
+        },
+        {
+          "type": "header",
+          "content": "Block settings"
+        },
+        {
+          "type": "text",
+          "id": "width",
+          "label": "Column width:",
+          "info": "Blank to auto. E.g: 3/12 or 20%"
+        },
+        {
+          "type"  :"text",
+          "id"    :"block_padding",
+          "label" :"Block Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type":"select",
+          "id":"border_top",
+          "label":"Border top",
+          "options":[{"value":"none","label":"None"},{"value":"show","label":"Show all"},{"value":"large","label":"Show on large devices"},{"value":"small","label":"Show on small devices"}],
+          "default": "none"
+        },
+        {
+          "type":"select",
+          "id":"border_right",
+          "label":"Border right",
+          "options":[{"value":"none","label":"None"},{"value":"show","label":"Show all"},{"value":"large","label":"Show on large devices"},{"value":"small","label":"Show on small devices"}],
+          "default": "none"
+        },
+        {
+          "type":"select",
+          "id":"border_bottom",
+          "label":"Border bottom",
+          "options":[{"value":"none","label":"None"},{"value":"show","label":"Show all"},{"value":"large","label":"Show on large devices"},{"value":"small","label":"Show on small devices"}],
+          "default": "none"
+        },
+        {
+          "type":"select",
+          "id":"border_left",
+          "label":"Border left",
+          "options":[{"value":"none","label":"None"},{"value":"show","label":"Show all"},{"value":"large","label":"Show on large devices"},{"value":"small","label":"Show on small devices"}],
+          "default": "none"
+        },
+        {
+          "type":"text",
+          "id":"border_radius",
+          "label":"Rounded corners",
+          "info": "E.g: 4px 4px 4px 4px"
+        },
+        {
+          "type": "header",
+          "content": "Block label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block label"
+        }
+      ]
+    },
+    {
+      "type": "m_collection",
+      "name": "-- Mega Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "range",
+          "id": "total",
+          "label": "Total items",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "text",
+          "id": "items_resp",
+          "label": "Max number of content per row",
+          "default": "4",
+          "info": "E.g: 4"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Show Collection title"
+        },
+        {
+          "type": "range",
+          "id": "title_size",
+          "label": "Title size",
+          "min": 1,
+          "max": 6,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "header",
+          "content": "Block settings"
+        },
+        {
+          "type": "text",
+          "id": "width",
+          "label": "Column width:",
+          "info": "Blank to auto. E.g: 3/12 or 20%"
+        },
+        {
+          "type"  :"text",
+          "id"    :"block_padding",
+          "label" :"Block Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Block label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block label"
+        }
+      ]
+    },
+    {
+      "type": "m_banner_2",
+      "name": "-- Mega Banner 2",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Banner"
+        },
+        {
+          "type": "select",
+          "id": "banner_label",
+          "label": "Label",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "new",
+              "label": "New"
+            },
+            {
+              "value": "sale",
+              "label": "Sale"
+            },
+            {
+              "value": "hot",
+              "label": "Hot"
+            }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "textarea",
+          "id": "content_1",
+          "label": "Heading"
+        },
+        {
+          "type": "textarea",
+          "id": "content_2",
+          "label": "Subheading"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "range",
+          "id": "btn_style",
+          "label": "Button style",
+          "min": 1,
+          "max": 3,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product item"
+        },
+        {
+          "type": "select",
+          "id": "product_to_show",
+          "label": "Show",
+          "options": [
+            {
+              "value": "price",
+              "label": "Price"
+            },
+            {
+              "value": "sale",
+              "label": "Sale percent"
+            }
+          ],
+          "default": "price"
+        },
+        {
+          "type": "header",
+          "content": "Nested with above block"
+        },
+        {
+          "type": "checkbox",
+          "id": "nested",
+          "label": "Nested"
+        },
+        {
+          "type": "text",
+          "id": "margin",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left"
+        },
+        {
+          "type": "header",
+          "content": "Block settings"
+        },
+        {
+          "type": "text",
+          "id": "width",
+          "label": "Column width:",
+          "info": "Blank to auto. E.g: 3/12 or 20%"
+        },
+        {
+          "type"  :"text",
+          "id"    :"block_padding",
+          "label" :"Block Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Block label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block label"
+        }
+      ]
+    },
+    {
+      "type": "m_product",
+      "name": "-- Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product item"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_border",
+          "label": "Show Border",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Block settings"
+        },
+        {
+          "type": "text",
+          "id": "width",
+          "label": "Column width:",
+          "info": "Blank to auto. E.g: 3/12 or 20%"
+        },
+        {
+          "type"  :"text",
+          "id"    :"block_padding",
+          "label" :"Block Padding",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+        },
+        {
+          "type": "header",
+          "content": "Block label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block label"
+        }
+      ]
+    },
+    {
+      "type": "ms_button",
+      "name": "-- [style] Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "btn_fs",
+          "label": "Font size",
+          "info": "Order: Top Right Bottom Left"
+        },
+        {
+          "type": "range",
+          "id": "btn_fw",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "Order: Top Right Bottom Left"
+        },
+        {
+          "type": "text",
+          "id": "btn_padding",
+          "label": "Padding",
+          "info": "Order: Top Right Bottom Left"
+        },
+        {
+          "type": "text",
+          "id": "btn_margin",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left"
+        },
+        {
+          "type": "color",
+          "id": "btn_cl",
+          "label": "Text color"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg_cl",
+          "label": "Background color"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_cl",
+          "label": "Hover: Text color"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_bg_cl",
+          "label": "Hover: Background color"
+        },
+        {
+          "type": "range",
+          "id": "btn_border_width",
+          "label": "Border width",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 1,
+          "unit": "px"
+        },
+        {
+          "type": "color",
+          "id": "btn_border_cl",
+          "label": "Border color"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_border_cl",
+          "label": "Hover: Border color"
+        },
+        {
+          "type": "text",
+          "id": "btn_radius",
+          "label": "Rounded corners",
+          "info": "Order: Top Right Bottom Left"
+        }
+      ]
+    },
+    {
+      "type": "ms_text",
+      "name": "-- [style] Text",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Heading settings"
+        },
+        {
+          "type": "text",
+          "id": "font_size_1",
+          "label": "Font size",
+          "info": "E.g: 24px"
+        },
+        {
+          "type": "color",
+          "id": "color_1",
+          "label": "Color"
+        },
+        {
+          "type": "range",
+          "id": "font_weight_1",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "margin_1",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+        },
+        {
+          "type": "text",
+          "id": "line_height_1",
+          "label": "Line height",
+          "info": "E.g: 26px"
+        },
+        {
+          "type": "header",
+          "content": "Subheading settings"
+        },
+        {
+          "type": "text",
+          "id": "font_size_2",
+          "label": "Font size",
+          "info": "E.g: 24px"
+        },
+        {
+          "type": "color",
+          "id": "color_2",
+          "label": "Color"
+        },
+        {
+          "type": "range",
+          "id": "font_weight_2",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "margin_2",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+        },
+        {
+          "type": "text",
+          "id": "line_height_2",
+          "label": "Line height",
+          "info": "E.g: 26px"
+        }
+      ]
+    },
+    {
+      "type": "ms_product",
+      "name": "-- [style] Product",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Price 1 settings"
+        },
+        {
+          "type": "text",
+          "id": "font_size_1",
+          "label": "Font size",
+          "info": "E.g: 24px"
+        },
+        {
+          "type": "color",
+          "id": "color_1",
+          "label": "Color"
+        },
+        {
+          "type": "range",
+          "id": "font_weight_1",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "margin_1",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+        },
+        {
+          "type": "text",
+          "id": "line_height_1",
+          "label": "Line height",
+          "info": "E.g: 26px"
+        },
+        {
+          "type": "header",
+          "content": "Price 2 settings"
+        },
+        {
+          "type": "text",
+          "id": "font_size_2",
+          "label": "Font size",
+          "info": "E.g: 24px"
+        },
+        {
+          "type": "color",
+          "id": "color_2",
+          "label": "Color"
+        },
+        {
+          "type": "range",
+          "id": "font_weight_2",
+          "label": "Font weight",
+          "min": 0,
+          "max": 900,
+          "step": 100,
+          "default": 0,
+          "info": "0 is auto"
+        },
+        {
+          "type": "text",
+          "id": "margin_2",
+          "label": "Margin",
+          "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+        },
+        {
+          "type": "text",
+          "id": "line_height_2",
+          "label": "Line height",
+          "info": "E.g: 26px"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

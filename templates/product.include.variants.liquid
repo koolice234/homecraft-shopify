@@ -1,0 +1,12 @@
+{%- layout none -%}
+[
+	{%- for variant in product.variants -%}
+		{
+			"id": {{ variant.id }},
+			{% comment %}"ic": {{ variant.incoming }},{% endcomment %}
+			"im": {{ variant.inventory_management | json }},
+			"iq": {{ variant.inventory_quantity | json }}
+			{% comment %}"ni": {{ variant.next_incoming_date | json }}{% endcomment %}
+		}{%- unless forloop.last -%},{%- endunless -%}
+	{%- endfor -%}
+]

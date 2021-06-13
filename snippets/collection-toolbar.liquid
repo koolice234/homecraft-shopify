@@ -1,0 +1,159 @@
+<div class="collection-toolbar">
+	<div class="collection-toolbar_wrapper">
+		<div class="collection-toolbar--left d-none d-md-inline-flex">
+
+
+			{%- comment -%}
+				**********
+				*
+				* VIEW CATA
+				*
+				*****
+			{%- endcomment-%}
+			<div class="toolbar_view-mode">
+				<ul class="toolbar_view-list">
+
+					<li class="view-item">
+						{%- capture viewCata -%}{%- render 'set-item-per-row', value: '1' %}{%- endcapture -%}
+						<a href="javascript:void(0)" title="{{- 'collections.view_mode.grid_1' | t -}}" class="{% if cataClass == viewCata  %}active{% endif %}" data-gridlist>
+							<span class="svg-element-ui">{%- render 'svg', type: 'view1' -%}</span>
+							<input type="hidden" name="gridList" value="{{viewCata}}">
+						</a>
+					</li>
+
+					<li class="view-item">
+						{%- capture viewCata -%}{%- render 'set-item-per-row', value: '2' -%}{%- endcapture -%}
+						<a href="javascript:void(0)" title="{{- 'collections.view_mode.grid_2' | t -}}" class="{% if cataClass == viewCata  %}active{% endif %}" data-gridlist>
+							<span class="svg-element-ui">{%- render 'svg', type: 'view2' -%}</span>
+							<input type="hidden" name="gridList" value="{{ viewCata }}">
+						</a>
+					</li>
+
+					<li class="view-item">
+						{%- capture viewCata -%}{%- render 'set-item-per-row', value: '3,2' -%}{%- endcapture -%}
+						<a href="javascript:void(0)" title="{{- 'collections.view_mode.grid_3' | t -}}" class="{% if cataClass == viewCata  %}active{% endif %}" data-gridlist>
+							<span class="svg-element-ui">{%- render 'svg', type: 'view3' -%}</span>
+							<input type="hidden" name="gridList" value="{{ viewCata }}">
+						</a>
+					</li>
+
+					<li class="view-item">
+						{%- capture viewCata -%}{%- render 'set-item-per-row', value: '4, 3, 2' -%}{%- endcapture -%}
+						<a href="javascript:void(0)" title="{{- 'collections.view_mode.grid_4' | t -}}" class="{% if cataClass == viewCata  %}active{% endif %}" data-gridlist>
+							<span class="svg-element-ui">{%- render 'svg', type: 'view4' -%}</span>
+							<input type="hidden" name="gridList" value="{{ viewCata }}">
+						</a>
+					</li>
+				</ul>
+
+			</div>
+		</div>
+		<div class="collection-toolbar--center">
+			<div class="toolbar-show-sale d-none d-md-inline-flex">
+				{% comment %}<a href="javascript:void(0);" class="toolbar-link-target" data-sale-filter>
+					<input type="checkbox" id="onlyProductSale">
+					<label for="onlyProductSale">{{- 'collections.general.only_sale' | t -}}</label>
+				</a>{% endcomment %}
+			</div>
+
+
+			{%- comment -%}
+				**********
+				*
+				* FILTER ICON
+				*
+				*****
+			{%- endcomment-%}
+			<div class="toolbar-filter">
+				<a href="javascript:void(0);" class="toolbar-link-target" data-target="#sidebarDrawer" title="{{- 'collections.general.filter' | t -}}">
+					<span class="d-flex">
+						<span class="svg-element-ui">{%- render 'svg', type: 'filter' -%}</span>
+						<span class="toolbar-link--label">{{- 'collections.general.filter' | t -}}</span>
+					</span>
+				</a>
+			</div>
+
+
+			{%- comment -%}
+				**********
+				*
+				* COLLECTION SORT
+				*
+				*****
+			{%- endcomment-%}
+			<div class="toolbar-sort list-style-select" data-prefix="collectionSort">
+				{%- liquid
+					assign currentSort = collection.sort_by | default: collection.default_sort_by
+					assign sortBy = collection.sort_options | where: 'value', currentSort
+
+				-%}
+				<a href="javascript:void(0);" class="toolbar-link-target toolbar-sort--list" data-sort>
+					<span class="d-none d-md-flex">
+						<span class="toolbar-sort--label">{{- 'collections.general.sort_by' | t -}}</span>
+						<span class="toolbar-sort--value">{{ sortBy[0].name }}</span>
+						<span class="svg-element-ui">{%- render 'svg', type: 'arrowDown' -%}</span>
+					</span>
+					<span class="d-flex d-md-none">
+						<span class="svg-element-ui">{%- render 'svg', type: 'sort' -%}</span>
+						<span class="toolbar-sort--label">{{- 'collections.general.sorting' | t -}}</span>
+					</span>
+					<span class="animation-content">
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
+				</a>
+
+				{%- capture activeTag -%}{% if current_tags != blank %}/{%- for tag in current_tags -%}{%- unless forloop.first -%}+{%- endunless -%}{{tag | handle}}{%- endfor -%}{% endif %}{%- endcapture -%}
+
+				<ul id="collectionSortList" class="toolbar-sort-list overlay-ui">
+					<li data-ajax="inactive" class="sort-action title-ascending"   data-sort="title-ascending">   <a href="{{ collection.url | append: activeTag | sort_by: 'title-ascending' 	}}">{{- 'collections.sorting.az'               | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action title-descending"  data-sort="title-descending">  <a href="{{ collection.url | append: activeTag | sort_by: 'title-descending' 	}}">{{- 'collections.sorting.za'               | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action manual"            data-sort="manual">            <a href="{{ collection.url | append: activeTag | sort_by: 'manual' 			}}">{{- 'collections.sorting.featured'         | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action price-ascending"   data-sort="price-ascending">   <a href="{{ collection.url | append: activeTag | sort_by: 'price-ascending' 	}}">{{- 'collections.sorting.price_ascending'  | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action price-descending"  data-sort="price-descending">  <a href="{{ collection.url | append: activeTag | sort_by: 'price-descending' 	}}">{{- 'collections.sorting.price_descending' | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action created-ascending" data-sort="created-ascending"> <a href="{{ collection.url | append: activeTag | sort_by: 'created-ascending' }}">{{- 'collections.sorting.date_ascending'   | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action created-descending"data-sort="created-descending"><a href="{{ collection.url | append: activeTag | sort_by: 'created-descending'}}">{{- 'collections.sorting.date_descending'  | t -}}</a></li>
+					<li data-ajax="inactive" class="sort-action best-selling"      data-sort="best-selling">      <a href="{{ collection.url | append: activeTag | sort_by: 'best-selling' 		}}">{{- 'collections.sorting.best_selling'     | t -}}</a></li>
+				</ul>
+			</div>
+		</div>
+
+
+		{%- comment -%}
+			**********
+			*
+			* LIST VIEW CATA
+			*
+			*****
+		{%- endcomment-%}
+		{%- liquid
+			assign total = section.settings.total | remove: ' ' | split: ','
+		-%}
+		{%- unless section.settings.total == blank -%}
+			<div class="collection-toolbar--right d-none d-md-inline-flex">
+				<div class="toolbar-list-to-show list-style-select" data-parent>
+					<a href="javascript:void(0);" class="toolbar-sort--show">
+						<span class="toolbar-show--label">{{- 'collections.general.show' | t -}}</span>
+						<span class="toolbar-show--value" data-current-view>{{ total.first }}</span>
+						<span class="svg-element-ui">{%- render 'svg', type: 'arrowDown' -%}</span>
+						<span class="animation-content">
+							<span></span>
+							<span></span>
+							<span></span>
+						</span>
+					</a>
+					<div class="toolbar-list-view overlay-ui">
+						<ul id="collectionListView">
+							{%- for view in total -%}
+								<li><a href="javascript:void(0);" data-view="{{ view | strip }}">{{- view | strip -}}</a></li>
+							{%- endfor -%}
+						</ul>
+					</div>
+				</div>
+			</div>
+		{%- endunless -%}
+	</div>
+</div>
+

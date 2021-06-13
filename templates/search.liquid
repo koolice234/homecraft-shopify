@@ -1,0 +1,68 @@
+{%- liquid
+  assign _pageLayout  = settings.page_layout
+  assign _total       = settings.search_page_total | default: '20' | times: 1
+-%}
+{%- capture keyWord -%}{{search.terms | escape}}{%- endcapture -%}
+
+{%- assign headerMobiStyle = '2,3' | split: ',' -%}
+{%- assign headerDeskStyle = '1,2,3,4' | split: ',' -%}
+{%- capture formClass -%}
+  {%- if headerMobiStyle contains settings.header_mobi_style  -%}d-none{%- endif -%}
+  {%- if headerDeskStyle contains settings.header_desk_style  -%}d-lg-none{%- else -%}d-lg-block{%- endif -%}
+{%- endcapture -%}
+
+
+{%- capture content -%}
+{%- if _pageLayout == 'boxed' -%}<div class="container">{%- endif -%}
+<div id="searchresults">
+  <div class="page-heading text-center">
+    <h1>{{- 'search.general.result_title' | t: number: search.results_count, keyword: keyWord -}}</h1>
+    <div class="search-wrapper {{formClass}}">
+      {%- render 'search' -%}
+    </div>
+  </div>
+
+  {% if search.performed %}
+    {% paginate search.results by _total %}
+
+      {% if search.results == empty %}
+        <p>{{- 'search.general.empty' | t: keyword: keyWord -}}</p>
+      {% else %}
+
+        {%- liquid
+          assign productRS = search.results | where: 'object_type', 'product' | size
+          assign articleRS = search.results | where: 'object_type', 'article' | size
+          assign pageRS    = search.results | where: 'object_type', 'page' | size
+        -%}
+
+        <div class="result-list">
+          {% for item in search.results %}
+            <div class="result-item item-type-{{ item.object_type }}">
+              {%- assign image = item.image | default: item.featured_image -%}
+              {% if image != blank %}
+                <div class="result-image">
+                  <a href="{{item.url}}" title="{{ item.title }}">
+                    <figure>
+                      {%- render 'image-style', image: image -%}
+                    </figure>
+                  </a>
+                </div>
+              {% endif %}
+              <div class="result-content">
+                <h4>{{ item.title | link_to: item.url }}</h4>
+                <span>{{ item.content | strip_html | truncatewords: 40 | highlight: search.terms }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+      {% endif %}
+
+      {%- include 'pagination' -%}
+
+    {% endpaginate %}
+  {% endif %}
+</div>
+{%- if _pageLayout == 'boxed' -%}</div>{%- endif -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}

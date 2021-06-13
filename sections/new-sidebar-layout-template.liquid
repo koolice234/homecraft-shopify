@@ -1,0 +1,51 @@
+{%- liquid
+  assign _pageLayout = settings.page_layout
+-%}
+{%- capture gridClass -%}{%- render 'set-item-per-row', value: '5,3,2' -%}{%- endcapture -%}
+
+<section class="new-sidebar-layout">  
+  <div class="container">
+    <div class="section_content-wrapper">
+      <div class="section_content-body">
+        <div class="d-grid">
+          <div id="collections-listing">
+              <div class="page-heading">
+                 <h1>{{ collection.title }}</h1>
+              </div>
+              <div class="page-content">
+                    <div class="row">
+                      {% assign linkCollection = link.object %}
+                      {% for link in linklists.fabrics-menu.links %}
+                        <div class="collection-item {{ gridClass }}" style="padding: 15px;">
+                          <div class="collection-image" style="margin-bottom: 0;">
+                            <a href="{{ link.url }}">
+                              	<img src="{{ link.object.image.src | collection_img_url: 'large' }}" alt="{{ link.object.title | escape  }}" />
+                              	{%- render 'image-style', image: collection.image, imagePadding: '100%', image_css: 'object-fit: contain;' -%}
+                            </a>
+                          </div>
+                          <div class="collection-title text-center">
+                            <strong><a href="{{ link.url }}">{{ link.title | escape }}</a></strong>
+                          </div>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Section name",
+    "settings": []
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

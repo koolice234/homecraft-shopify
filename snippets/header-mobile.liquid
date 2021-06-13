@@ -1,0 +1,30 @@
+{%- capture content -%}
+
+{%- if section.settings.boxed_layout -%}{%- assign _layout = 'boxed' -%}{%- else -%}{%- assign _layout = 'full' -%}{%- endif -%}
+{%- liquid
+  assign sectionType        = 'header-mobile'
+  assign _header_style      = settings.header_mobi_style
+-%}
+
+{%- capture section_class -%}
+  {{- -}}|section-{{- section.id -}}
+  {{- -}}|layout-{{- _layout -}}
+  {{- -}}|header-mobile
+  {{- -}}|h-mobi-{{_header_style}}  
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+	<div class="header-content{% if _layout == 'boxed' %} container{% endif %}">
+
+    {%- capture mobiStyle -%}mobi_{{_header_style}}{%- endcapture -%}
+		{%- include 'header-style', style: mobiStyle -%}
+
+	</div>
+</div>
+
+{%- unless section_css == blank -%}
+  {% style %}{{section_css | remove: '<style>' | remove: '</style>' }}{% endstyle %}
+{%- endunless -%}
+
+{%- endcapture -%}
+{%- render 'compress', content: content -%}

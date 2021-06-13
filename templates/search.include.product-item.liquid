@@ -1,0 +1,56 @@
+{%- layout none  -%}
+{%- comment -%}
+  **
+  * Product Cart HTML
+  *
+{%- endcomment-%}
+{%- assign searchTerms = search.terms -%}
+{%- assign imageRatioCustom = settings.image_ratio_custom -%}
+{%- unless imageRatioCustom == blank -%}
+  {%- assign imageRatio = 1 | divided_by: imageRatioCustom.aspect_ratio | times: 100 | append: '%' -%}
+{%- endunless -%}
+
+<div id="productCardLayout" class="hide">
+  <div class="featured_product__item">
+    <div class="featured-product_wrapper">
+      <div class="featured_product__item-header">
+        <figure class="featured_product__item-image"{%- unless imageRatio == blank -%} style="padding-top: {{imageRatio}};"{%- endunless -%}>
+          <a href="javascript:void(0);" data-item-url>
+            <img src="" alt="" data-item-image>
+          </a>
+        </figure>
+      </div>
+
+      <div class="featured_product__item-body">
+        <div class="featured_product__item-row">
+
+          <small class="featured_product__item-vendor">
+            <a href="javascript:void(0);" data-item-vendor></a>
+          </small>
+
+          <p class="featured_product__item-name">
+            <a href="javascript:void(0);" data-item-url>
+              <span data-item-title></span>
+            </a>
+          </p>
+
+          <p class="product-price">
+            <span class="price" data-item-price></span>
+            <span class="price-compare" data-item-price-compare></span>
+          </p>
+
+          <div class="product-cart_button">
+            <form action="{{ routes.cart_add_url }}" class="form-cart" data-product-form>
+              <input type="hidden" name="id" value="{{ productSelect.id }}" data-item-id>
+              <button type="submit" name="add" class="btn add-to-cart btn-1">
+                <span class="cart-btn-label" data-item-cart-button-label>{{- 'products.product.add_to_cart' | t -}}</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="featured_product__item-review"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

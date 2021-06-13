@@ -1,0 +1,82 @@
+{%- liquid
+	assign swatch_button 	= settings.card_swt_button | downcase
+	assign swatch_color 	= settings.card_swt_color  | downcase
+	assign swatch_image 	= settings.card_swt_image  | downcase
+	assign optionArr		= product.options_with_values | map: 'name'
+-%}
+
+{%- comment -%}
+	**********
+	*
+	* Check Swatch
+	*
+	*****
+{%- endcomment-%}
+
+{%- liquid
+	for op in optionArr
+		assign opname = op | downcase
+		if swatch_button contains opname or swatch_color contains opname or swatch_image contains opname
+			assign hasSWT = true
+			break
+		endif
+	endfor
+-%}
+{%- comment -%}	* * * * * * * * * *	* *  * * * * * * {%- endcomment-%}
+
+{%- if hasSWT -%}
+<div class="swatch-variants-wrapper swatch-{{product.id}}" data-card-swatch data-handle="{{product.handle}}">
+	{%- for option in product.options_with_values -%}
+		{%- capture optionIndex -%}option{{ option.position }}{%- endcapture -%}
+		{%- capture optionName -%}{{option.name | downcase }}{%- endcapture -%}
+
+		{%- assign swtType = '' -%}
+
+		{%- if swatch_button contains optionName -%}
+			{%- assign swtType = 'button' -%}
+		{%- endif -%}
+		{%- if swatch_color contains optionName -%}
+			{%- assign swtType = 'color' -%}
+		{%- endif -%}
+		{%- if swatch_image contains optionName -%}
+			{%- assign swtType = 'image' -%}
+		{%- endif -%}
+
+		{%- if swtType == '' -%}{%- continue -%}{%- endif -%}
+
+		<div class="swatch-option" data-target="#cardOption{{ option.position }}">
+			<div class="swatch-container d-flex">
+				{%- for value in option.values -%}
+					{%- capture swtID -%}swt{{option.position}}_{{value|handle}}_{{product.id}}{%- endcapture -%}
+
+					{%- assign variantSelect = product.variants | where: optionIndex, value | first -%}
+					{%- capture variantImage -%}{{variantSelect.featured_media}}{%- endcapture -%}
+
+					<div class="swatch-item">
+						{%- capture swtClass -%}swt-element swt-{{swtType}} {{swtID}}{% if option.selected_value == value %} active{% endif %}{%- endcapture -%}
+
+						{%- if swtType != 'button' -%}
+							<label class="{{swtClass}} customColor-{{value | handle}}" data-value="{{ value | escape }}"></label>
+							<span class="tooltip">{{value}}</span>
+
+						{%- else -%}
+							<label class="{{swtClass}}" data-value="{{ value | escape }}">{{value}}</label>
+						{%- endif -%}
+					</div>
+
+					{%- capture swtImage -%}
+						{%- if swtType == 'image' -%}
+							<style>.swatch-{{product.id}} label.{{ swtID }}{background-image: url({{ variantSelect.featured_media | img_url: '100x'}})!important;}</style>
+						{%- endif -%}
+					{%- endcapture -%}
+					{%- assign swtCss = swtCss | append: swtImage -%}
+				{%- endfor -%}
+			</div>
+		</div>
+	{%- endfor -%}
+
+
+	{%- assign swtCss = swtCss | remove: "<style>" | remove: "</style>" -%}
+	{%- unless swtCss == blank -%}<style>{{swtCss}}</style>{%- endunless -%}
+</div>
+{%- endif -%}

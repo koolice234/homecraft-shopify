@@ -1,0 +1,32 @@
+{%- case type -%}
+      {%- when 'slideshow' -%}
+        {%- if image != blank  -%}
+              {%- capture dataBgSet -%}
+                {%- if image.width >= 0   -%},{{- image | img_url: '360x'  }} 360w  {%- endif -%}
+                {%- if image.width >= 361   -%},{{- image | img_url: '720x'  }} 720w  {%- endif -%}
+                {%- if image.width >= 721   -%},{{- image | img_url: '1024x' }} 1024w {%- endif -%}
+                {%- if image.width >= 1025  -%},{{- image | img_url: '1350x' }} 1350w {%- endif -%}
+                {%- if image.width >= 1351  -%},{{- image | img_url: '1366x' }} 1366w {%- endif -%}
+                {%- if image.width >= 1367  -%},{{- image | img_url: '1920x' }} 1920w {%- endif -%}
+                {%- if image.width >= 1921  -%},{%- assign iw = image.width | append: 'x' -%}{{- image | img_url: iw }} {{iw | replace: 'x', 'w'}} {%- endif -%}
+            {%- endcapture -%}
+            {{- }}{% unless class == blank %} {{class}}{% endunless %} lazyload" data-sizes="auto" data-bgset="{{- dataBgSet | strip_newlines | remove_first: ',' -}}
+        {%- endif -%}
+      {%- else -%}
+          {%- if isp or image != blank -%}
+            {%- assign width = width | default: '360,1080,1296,1728' | split: ',' -%}
+            {%- capture dataBgSet -%}
+                {%- for w in width -%}
+                    {%- assign number = w | strip | times: 1 -%}
+                    {%- if number <= image.width -%}
+                        {%- assign img_size = number | append: 'x' -%}
+                        {%- unless forloop.first -%},{%- endunless -%}
+                        {{- image | img_url: img_size }} {{w}}w
+                    {%- else -%}
+                        {%- break -%}
+                    {%- endif -%}
+                {%- endfor -%}
+            {%- endcapture -%}
+            {{- }}{% unless class == blank %} {{class}}{% endunless %} lazyload" data-sizes="auto" data-bgset="{{- dataBgSet | strip_newlines -}}
+        {%- endif -%}
+{%- endcase -%}

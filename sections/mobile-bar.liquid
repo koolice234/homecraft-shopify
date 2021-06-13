@@ -1,0 +1,382 @@
+{%- capture content -%}
+
+{%- liquid
+  assign _section_bg_color    = section.settings.section_bg_color | default: 'rgba(0,0,0,0)'
+  assign _block_height        = section.settings.block_height | default: '30px'
+-%}
+
+<div id="mobile-bar" class="section-show-{{section.id}}" data-section-id="{{ section.id }}" data-section-type="mobile-bar" data-hide-bottom="{{ section.settings.hide_bottom }}">
+	<div class="section-content">
+
+        {%- for block in section.blocks -%}
+            {%- if block.type == 'sticky_cart' -%}{%- unless template contains 'product' -%}{%- continue -%}{%- endunless -%}{%- endif -%}
+
+
+            {%- capture blockVisible -%}
+                {%- if template == 'index'               -%}{{block.settings.show_home}}
+                {%- elsif template contains 'collection' -%}{{block.settings.show_collection}}
+                {%- elsif template contains 'product'    -%}{{block.settings.show_product}}
+                {%- elsif template contains 'cart'       -%}{{block.settings.show_cart}}
+                {%- elsif template contains 'blog'       -%}{{block.settings.show_blog}}
+                {%- elsif template contains 'page'       -%}{{block.settings.show_pages}}{%- endif -%}
+            {%- endcapture -%}
+
+
+            {%- if blockVisible contains 'false' -%}{%- continue -%}{%- endif -%}
+
+            {%- liquid
+                assign blockCount         = blockCount | plus: 1
+                assign defaultButton      = block.settings.default_button
+                assign blockWidth         = block.settings.width
+                assign blockHeight        = block.settings.height
+            -%}
+
+			{%- capture blockID -%}#mobile-bar .mobile-block_{{block.id}}{%- endcapture -%}
+
+
+            {%- comment -%}
+            **********
+            *
+            * ICON SETTINGS
+            *
+            *****
+            {%- endcomment-%}
+
+            {%- capture iconWH -%}
+                {%- unless blockWidth == blank -%}width: {{blockWidth}};{%- endunless -%}
+                {%- unless blockHeight == blank -%}height: {{blockHeight}};{%- endunless -%}
+            {%- endcapture -%}
+
+			{%- capture blockICON -%}
+				{%- case block.settings.icon_type -%}
+					{%- when 'svg' -%}
+						{%- render 'svg' ,type: 'custom' ,name: block.settings.block_icon -%}
+                        {%- capture block_css -%}{{- blockID}} svg{ {{iconWH}} }{%- endcapture -%}
+
+					{%- else -%}
+                        {%- render 'image-style', image: block.settings.block_image, originQuality: true -%}
+						{%- capture block_css -%}{{- blockID}} .image__style{margin: 0 auto;{{iconWH}} }{%- endcapture -%}
+				{%- endcase -%}
+
+				{%- assign section_css = section_css | append: block_css -%}
+			{%- endcapture -%}
+
+
+      {%- if defaultButton == 'none' and blockICON == blank -%}{%- continue -%}{%- endif -%}
+
+      {%- capture blockClass -%}mb-block block-{{block.id}}{%- endcapture -%}
+
+
+            {%- comment -%}
+            **********
+            *
+            * BLOCK CONTENT
+            *
+            *****
+            {%- endcomment-%}
+    		<div class="mobile-bar--block mobile-block_{{block.type}} mobile-block_{{block.id}}{% if block.type == 'sticky_cart' %} block-w{{blockWidth}}{% endif %}"{{block.shopify_attributes}}>
+
+                {%- if block.type == 'sticky_cart' and template contains 'product' -%}
+                    {%- assign productSelect = product.selected_or_first_available_variant -%}
+
+                    {%- unless product.has_only_default_variant -%}
+                        {%- assign disableDefaultVariant = settings.disable_auto_product_selected -%}
+                    {%- endunless -%}
+                    
+ 
+                    <button id="stickyAddCartBtn" type="button" class="btn btn-1{% if disableDefaultVariant %} btn-require-options{% endif %}">
+                        {%- if block.settings.label_type == 'text' -%}
+                            <span class="cart-btn-label" item-cart-btn-label>
+                                {%- unless productSelect.available -%} {{- 'products.product.sold_out' | t -}}
+                                {%- else -%} {{- 'products.product.add_to_cart' | t -}}
+                                {%- endunless -%}
+                            </span>
+                        {%- else -%}
+                            <span class="svg-element-ui">{%- render 'svg', type: 'cart', stroke: '#FFFFFF', fill: '#FFFFFF' -%}</span>
+                        {%- endif -%}
+                    </button>
+
+                    {%- capture block_css -%}
+                        {{ blockID }} button{border-radius: {{block.settings.btn_radius}}px;}
+                    {%- endcapture -%}
+                    {%- assign section_css = section_css | append: block_css -%}
+
+                {%- else -%}
+                  {%- if defaultButton != 'none' -%}
+                    {%- assign fill = block.settings.fill -%}
+                    {%- render 'button', type: defaultButton, button_class: '', btnContent: '', stroke: fill, fill: fill -%}
+
+                  {%- else -%}
+                    <a href="{{ block.settings.link | default: 'javascript:void(0);' }}" class="btn">{{ blockICON }}</a>
+                  {%- endif -%}
+
+                  {%- capture block_css -%}
+                    {%- render 'css-resp', classID: blockID, nextClassID: ' a', css_value: block.settings.padding -%}
+                  {%- endcapture -%}
+                  {%- assign section_css = section_css | append: block_css -%}
+                {%- endif -%}
+
+    		</div>
+
+		{%- endfor -%}
+	</div>
+</div>
+
+{%- capture ss -%}
+{{- section_css -}}
+<style>
+  @media (max-width: 991px) {
+    #mobile-bar{background: {{_section_bg_color}};}
+    #mobile-bar a.btn,
+    #mobile-bar button{height: {{section.settings.height}}px;}
+  }
+</style>
+{%- endcapture -%}
+
+{% style %}{{ss | remove: '<style>' | remove: '</style>' }}{% endstyle %}
+
+{%- endcapture -%}
+
+{%- if section.blocks.size > 0 -%}
+{%- render 'compress', content: content -%}
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "Mobile bar",
+    "class": "d-lg-none",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "checkbox",
+            "id": "hide_bottom",
+            "label": "Hide at the bottom of page",
+            "default": true
+        },
+        {
+            "type": "color",
+            "id": "section_bg_color",
+            "label": "Background color",
+            "default": "#ffffff"
+        },
+        {
+            "type": "header",
+            "content": "Button style"
+        },
+        {
+            "type": "range",
+            "id": "height",
+            "label": "Height",
+            "min":20,
+            "max":100,
+            "step":1,
+            "unit":"px",
+            "default": 40
+        }
+    ],
+    "blocks": [
+        {
+            "type": "content",
+            "name": "Block content",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                },
+                {
+                    "type": "select",
+                    "id": "default_button",
+                    "label": "Use default button:",
+                    "options": [
+                        {
+                            "value": "none",
+                            "label": "None"
+                        },
+                        {
+                            "value": "hamburger",
+                            "label": "Hamburger"
+                        },
+                        {
+                            "value": "account",
+                            "label": "Account"
+                        },
+                        {
+                            "value": "home",
+                            "label": "Home"
+                        },
+                        {
+                            "value": "wishlist",
+                            "label": "Wishlist"
+                        },
+                        {
+                            "value": "compare",
+                            "label": "Compare"
+                        },
+                        {
+                            "value": "cart",
+                            "label": "Cart"
+                        },
+                        {
+                            "value": "filter",
+                            "label": "Filter"
+                        },
+                        {
+                            "value": "language",
+                            "label": "Language"
+                        }
+                    ],
+                    "default": "home"
+                },
+                {
+                    "type": "color",
+                    "id": "fill",
+                    "label": "Default button color",
+                    "default": "#FF9923"
+                },
+                {
+                    "type": "header",
+                    "content": "Customize button"
+                },
+                {
+                    "type": "select",
+                    "id": "icon_type",
+                    "label": "Icon type",
+                    "options": [
+                        {
+                            "value": "svg",
+                            "label": "SVG"
+                        },
+                        {
+                            "value": "image",
+                            "label": "Image"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "id": "block_icon",
+                    "label": "SVG code"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "block_image",
+                    "label": "Image"
+                },
+                {
+                    "type": "url",
+                    "id": "link",
+                    "label": "Button link"
+                },
+                {
+                    "type": "text",
+                    "id": "width",
+                    "label": "Width",
+                    "default": "22px",
+                    "info": "E.g: 22px"
+                },
+                {
+                    "type": "text",
+                    "id": "height",
+                    "label": "Height",
+                    "default": "22px",
+                    "info": "E.g: 22px"
+                },
+                {
+                    "type": "header",
+                    "content": "Available on"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_home",
+                    "label": "Homepage",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_collection",
+                    "label": "Collection page",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_product",
+                    "label": "Product page",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_blog",
+                    "label": "Blog page",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_cart",
+                    "label": "Cart page",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_pages",
+                    "label": "Other pages",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "type": "sticky_cart",
+            "name": "Sticky cart",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "header",
+                    "content": "Use for Product page"
+                },
+                {
+                    "type": "radio",
+                    "id": "width",
+                    "label": "Width",
+                    "options": [
+                        {
+                            "value": "50",
+                            "label": "50%"
+                        },
+                        {
+                            "value": "75",
+                            "label": "75%"
+                        }
+                    ],
+                    "default": "50"
+                },
+                {
+                    "type":"select",
+                    "id":"label_type",
+                    "label":"Label type",
+                    "options":[
+                        {
+                          "value":"icon",
+                          "label": "Icon"
+                        },
+                        {
+                          "value":"text",
+                          "label": "Text"
+                        }
+                    ],
+                    "default": "text"
+                },
+                {
+                    "type": "range",
+                    "id": "btn_radius",
+                    "label": "Rounded corners",
+                    "min":0,
+                    "max":60,
+                    "step":1,
+                    "unit":"px",
+                    "default":42
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

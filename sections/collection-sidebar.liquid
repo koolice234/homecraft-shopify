@@ -1,0 +1,346 @@
+{%- include 'sidebar' -%}
+
+{% schema %}
+{
+   "name": "Sidebar",
+   "tag": "aside",
+   "class": "custom-static-sidebar",
+   "settings": [
+      {
+         "type": "paragraph",
+         "content": "Created by 'Collection sidebar' section"
+      },
+      {
+         "type": "text",
+         "id": "grid_layout",
+         "label": "Column Grid layout",
+         "default": "20% 80%",
+         "info": "E.g: 70% 30% or 100%"
+      },
+      {
+         "type": "text",
+         "id": "grid_gap",
+         "label": "Column Grid spacing",
+         "info": "E.g: 15px",
+         "default": "30px, 15px"
+      },
+      {
+         "type": "header",
+         "content": "Sidebar settings"
+      },
+      {
+         "type": "text",
+         "id": "section_padding",
+         "label": "Section Padding",
+         "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+      }
+   ],
+   "blocks": [
+      {
+         "type": "filter_group",
+         "name": "Filter group",
+         "settings": [
+            {
+               "type": "text",
+               "id": "title",
+               "label": "Heading",
+               "default": "Filter by"
+            },
+            {
+               "type": "textarea",
+               "id": "filter_tags",
+               "label": "Tags",
+               "info": "Separated by commas. Eg: Blue, Red, Yellow, ..."
+            },
+            {
+               "type": "select",
+               "id": "direction",
+               "label": "Direction",
+               "options": [
+                  {
+                     "value": "horizontal",
+                     "label": "Horizontal"
+                  },
+                  {
+                     "value": "vertical",
+                     "label": "Vertical"
+                  }
+               ],
+               "default": "vertical"
+            },
+            {
+               "type":"select",
+               "id":"style",
+               "label":"Style",
+               "options":[
+                  {
+                     "value":"checkbox",
+                     "label": "Checkbox"
+                  },
+                  {
+                    "value":"color",
+                    "label": "Color"
+                  },
+                  {
+                    "value":"button",
+                    "label": "Button"
+                  }
+               ],
+               "default": "checkbox"
+            },
+            {
+               "type": "text",
+               "id": "block_max_height",
+               "label": "Max height",
+               "info": "E.g: 160px"
+            },
+            {
+               "type": "text",
+               "id": "margin",
+               "label": "Block margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+            }
+         ]
+      },
+      {
+         "type": "category",
+         "name": "Category",
+         "settings": [
+            {
+               "type": "link_list",
+               "id": "category",
+               "label": "Category"
+            },
+            {
+               "type": "text",
+               "id": "heading",
+               "label": "Category's Heading",
+               "info": "Default is Menu title"
+            },
+            {
+               "type": "text",
+               "id": "margin",
+               "label": "Block margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+            }
+         ]
+      },
+      {
+         "type": "banner",
+         "name": "Banner",
+         "settings": [
+            {
+               "type": "image_picker",
+               "id": "banner",
+               "label": "Banner image"
+            },
+            {
+               "type": "text",
+               "id": "margin",
+               "label": "Block margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 20px 5px 20px"
+            },
+            {
+               "type": "header",
+               "content": "Banner content"
+            },
+            {
+               "type": "textarea",
+               "id": "text_1",
+               "label": "Heading"
+            },
+            {
+               "type": "textarea",
+               "id": "text_2",
+               "label": "Subheading"
+            },
+            {
+               "type": "text",
+               "id": "btn_label",
+               "label": "Button label"
+            },
+            {
+               "type": "url",
+               "id": "btn_url",
+               "label": "Button URL"
+            },
+            {
+               "type": "range",
+               "id": "btn_style",
+               "label": "Button style",
+               "min": 1,
+               "max": 3,
+               "step": 1,
+               "default": 1
+            },
+            {
+               "type": "text",
+               "id": "align",
+               "label": "Text alignment",
+               "info": "E.g: center or right"
+            }
+         ]
+      },
+      {
+         "type": "style_content",
+         "name": "[+] Heading & Subheading",
+         "settings": [
+            {
+               "type": "header",
+               "content": "Heading settings"
+            },
+            {
+               "type": "text",
+               "id": "content_fs_1",
+               "label": "Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "color",
+               "id": "content_cl_1",
+               "label": "Color"
+            },
+            {
+               "type": "range",
+               "id": "content_fw_1",
+               "label": "Font weight",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0,
+               "info": "0 is auto"
+            },
+            {
+               "type": "text",
+               "id": "content_margin_1",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "text",
+               "id": "content_lh_1",
+               "label": "Line height",
+               "info": "E.g: 26px"
+            },
+            {
+               "type": "header",
+               "content": "Subheading settings"
+            },
+            {
+               "type": "text",
+               "id": "content_fs_2",
+               "label": "Font size",
+               "info": "E.g: 24px"
+            },
+            {
+               "type": "color",
+               "id": "content_cl_2",
+               "label": "Color"
+            },
+            {
+               "type": "range",
+               "id": "content_fw_2",
+               "label": "Font weight",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0,
+               "info": "0 is auto"
+            },
+            {
+               "type": "text",
+               "id": "content_margin_2",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 5px 8px 5px 8px"
+            },
+            {
+               "type": "text",
+               "id": "content_lh_2",
+               "label": "Line height",
+               "info": "E.g: 26px"
+            }
+         ]
+      },
+      {
+         "type": "style_button",
+         "name": "[+] Button",
+         "settings": [
+            {
+               "type": "text",
+               "id": "btn_fs",
+               "label": "Font size",
+               "info": "E.g: 18px"
+            },
+            {
+               "type": "range",
+               "id": "btn_fw",
+               "label": "Font weight",
+               "min": 0,
+               "max": 900,
+               "step": 100,
+               "default": 0,
+               "info": "0 is auto"
+            },
+            {
+               "type": "text",
+               "id": "btn_padding",
+               "label": "Padding",
+               "info": "Order: Top Right Bottom Left. E.g: 13px 50px"
+            },
+            {
+               "type": "text",
+               "id": "btn_margin",
+               "label": "Margin",
+               "info": "Order: Top Right Bottom Left. E.g: 13px 50px"
+            },
+            {
+               "type": "color",
+               "id": "btn_cl",
+               "label": "Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_bg_cl",
+               "label": "Background color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_cl",
+               "label": "Hover: Text color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_bg_cl",
+               "label": "Hover: Background color"
+            },
+            {
+               "type": "range",
+               "id": "btn_border_width",
+               "label": "Border width",
+               "min": 1,
+               "max": 10,
+               "step": 1,
+               "default": 1,
+               "unit": "px"
+            },
+            {
+               "type": "color",
+               "id": "btn_border_cl",
+               "label": "Border color"
+            },
+            {
+               "type": "color",
+               "id": "btn_hover_border_cl",
+               "label": "Hover: Border color"
+            },
+            {
+               "type": "text",
+               "id": "btn_radius",
+               "label": "Rounded corners",
+               "info": "E.g: 42px"
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

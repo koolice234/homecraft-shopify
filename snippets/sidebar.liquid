@@ -1,0 +1,273 @@
+{%- comment -%}
+  **
+  * Sidebar Block type support
+  *
+{%- endcomment-%}
+{%- assign blocksSupport = 'category,banner,iconbox,filter_group,product_recommend,html,payment' | split: ',' -%}
+{%- liquid
+  assign sectionType    = sectionType | default: 'sidebar'
+  if template contains 'collection'
+    assign currentObj = collection
+  elsif template contains 'product'
+    assign currentObj = product
+  endif
+-%}
+
+{%- capture section_class -%}
+  {{- -}}sidebar{{ template | split: '.' | first | camelize -}}
+  {{- -}}|sidebar-section
+  {{- -}}|section-{{- section.id -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+
+{%- capture content -%}
+<div id="sidebarDrawer" class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}" >
+  <div class="section_content-overlay sb-btn-close" data-target="#sidebarDrawer"></div>
+
+  <div class="section_content-wrapper">
+
+    <div class="section_content-header">
+      <a href="javascript:void(0);" class="sidebarDrawer-close sb-btn-close" data-target="#sidebarDrawer">{%- render 'svg', type: 'close' -%}</a>
+    </div>
+
+    <div class="section_content-body{% if template contains 'collection' %} animation-fade{% endif %}">
+
+      {%- if section.blocks.size > 0 -%}
+
+        {%- for block in section.blocks -%}
+
+          {%- unless blocksSupport contains block.type -%}{%- continue -%}{%- endunless -%}
+
+          {%- assign blockVisible = block.settings.visible | strip_newlines | split: ',' -%}
+          {%- if blockVisible.size == 0 or blockVisible contains currentObj.title -%}{%- else -%}{%- continue -%}{%- endif -%}
+          {%- comment -%}
+            **
+            * Filter group render
+            *
+          {%- endcomment-%}
+          {%- if block.type == 'filter_group' -%}
+            {%- capture filterGroup -%}{%- render 'filter-group', type: '', collection: currentObj, block: block, filterGroup: filterGroup  -%}{%- endcapture -%}
+            {%- if filterGroup == blank -%}{%- continue -%}{%- endif -%}
+          {%- endif -%}
+
+
+          {%- comment -%}
+            **
+            * Banner content first style
+            *
+          {%- endcomment-%}
+          {%- if block.type contains 'style_' -%}
+            {%- if  bannerCount == blank  -%}
+              {%- assign blockType = block.type | remove: 'style_' -%}
+
+              {%- capture itemID -%}
+                {%- case block.type -%}
+                  {%- when 'style_content' %} .featured_block-content-inner .block_content-text-
+                  {%- when 'style_button' %} .featured_block-content-inner .btn-content
+                {%- endcase -%}
+              {%- endcapture -%}
+
+              {%- capture block_css -%}
+                {%- render 'snippet-block-style', type: blockType, block: block, itemClass: itemID, sectionID: sectionID, blockID: '' -%}
+              {%- endcapture -%}{%- assign section_css = section_css | append: block_css -%}
+            {%- endif -%}
+
+            {%- continue -%}
+          {%- endif -%}
+
+          {%- comment -%}
+            **
+            * Block content
+            *
+          {%- endcomment-%}
+          {%- capture blockID -%}.featured_block-{{block.type}}.block-{{block.id}}{%- endcapture -%}
+
+          <section class="featured_block featured_block-{{block.type}} block-{{block.id}}{% if template contains 'collection' %} animation-fade-index-{% increment fadeCount %}{% endif %}"{{block.shopify_attributes}}>
+            {%- assign sidebarBlock_exist = true -%}
+
+            {%- case block.type -%}
+
+              {%- when 'category' -%}
+                {%- liquid
+                  assign __menu       = block.settings.category
+                  assign __menuList   = linklists[__menu]
+                  assign __menuTitle  = block.settings.heading | default: __menuList.title
+                -%}
+
+                {%- if __menu != blank and __menuList.links.size > 0 -%}
+                  <div class="menu_list-ui menu-toggle"{{block.shopify_attributes}}>
+                    <div class="menu_list-header">
+                      <p class="sb-title">{{ __menuTitle }}</p>
+                    </div>
+                    <div class="menu_list-body">
+                      <ul class="menu_list-wrapper">
+                        {%- for l in __menuList.links -%}
+                          {%- render 'nav-link', l: l, class: 'menu_list-item' -%}
+                        {%- endfor -%}
+                      </ul>
+                    </div>
+                  </div>
+
+                {%- else -%}
+                    {%- render 'svgset', type: 'empty-menu' -%}
+                {%- endif -%}
+
+              {%- when 'banner' -%}
+                {%- liquid
+                  assign __banner          = block.settings.banner
+                  assign __text_1          = block.settings.text_1
+                  assign __text_2          = block.settings.text_2
+                  assign __btn_label       = block.settings.btn_label
+                  assign __btn_url         = block.settings.btn_url | default: 'javascript:void(0);'
+                -%}
+
+                {%- unless __banner == blank -%}
+
+                  {%- comment -%}
+                    **
+                    * Banner Image
+                    *
+                  {%- endcomment-%}
+                  {%- render 'image-style', image: __banner -%}
+
+                  {%- unless __text_1 == blank and __text_2 == blank and __btn_label == blank -%}
+                    <div class="featured_block-content overlay-ui">
+                      <div class="featured_block-content-inner">
+
+                        {%- comment -%}
+                          **
+                          * Heading & Subheading
+                          *
+                        {%- endcomment-%}
+                        {%- unless __text_1 == blank -%}<div class="block_content-text block_content-text-1">{{ __text_1 }}</div>{%- endunless -%}
+                        {%- unless __text_2 == blank -%}<div class="block_content-text block_content-text-2">{{ __text_2 }}</div>{%- endunless -%}
+
+                        {%- comment -%}
+                          **
+                          * Button
+                          *
+                        {%- endcomment-%}
+                        {%- unless __btn_label == blank -%}
+                          <div class="block_content-button">
+                            <a href="{{ __btn_url | default: 'javascript:void(0);' }}" class="btn btn-content btn-{{block.settings.btn_style}}">{{ __btn_label }}</a>
+                          </div>
+                        {%- endunless -%}
+                      </div>
+                    </div>
+                    {%- include 'block-custom', type: 'sidebarStyle' -%}
+
+                  {%- endunless -%}
+
+                {%- else -%}
+                  {%- render 'svgset' -%}
+                {%- endunless -%}
+
+              {%- when 'iconbox' -%}
+                  {%- for i in (1..3) -%}
+                    {%- liquid
+                      assign __svg   = 'svg_' | append: i
+                      assign __image = 'image_' | append: i
+                      assign __title = 'title_' | append: i
+                      assign __svg   = block.settings[__svg]
+                      assign __image = block.settings[__image]
+                      assign __title = block.settings[__title]
+                    -%}
+                    {%- unless forloop.first -%}
+                      {%- capture blockContent -%}{{- __svg -}}{{- __image -}}{{- __title -}}{%- endcapture -%}
+                      {%- if blockContent == blank -%}{%- continue -%}{%- endif -%}
+                    {%- endunless -%}
+
+                    <div class="featured_block-content-inner">
+                      <div class="ic_block-header">
+                        <div class="ic_block-figure">
+                          {%- unless __svg == blank -%}<span class="svg-element-ui">{{ __svg }}</span>
+                          {%- elsif __image != blank -%}{%- render 'image-style', image: __image, originQuality: true -%}
+                          {%- else -%}{%- render 'svgset' -%}
+                          {%- endunless -%}
+                        </div>
+                      </div>
+                      {%- unless __title == blank -%}
+                        <div class="ic_block-body">
+                          <p class="ic_block-title block_content-text-1">{{__title}}</p>
+                        </div>
+                      {%- endunless -%}
+                    </div>
+                  {%- endfor -%}
+
+                  {%- include 'block-custom', type: 'sidebarStyle' -%}
+
+              {%- when 'filter_group' -%}
+                {%- if currentObj.all_tags.size > 0 -%}
+
+                  {%- render 'filter-group', type: 'render', collection: currentObj, block: block, filterGroup: filterGroup  -%}
+
+                  {%- capture block_css -%}
+                    {%- render 'css-resp', classID: blockID, nextClassID: ' .tags-list', css_value: block.settings.block_max_height, css_property: 'max-height' -%}
+                  {%- endcapture -%}
+                  {%- assign section_css = section_css | append: block_css -%}
+                {%- endif -%}
+
+              {%- when 'product_recommend' -%}{%- render 'product-detail-snippet', product: product, type: 'recommendation', title: block.settings.title, limit: block.settings.limit -%}
+
+              {%- when 'html' -%}{{block.settings.content}}
+
+              {%- when 'payment' -%}
+                {%- assign paymentIcons = section.blocks | where: 'type', 'payment_item' -%}
+                {%- if paymentIcons.size > 0 -%}
+                  {%- capture paymentClass -%}{%- render 'set-item-per-row', value: block.settings.items_resp -%}{%- endcapture -%}
+
+                  <div class="row no-gutters text-center">
+                    {%- for p in paymentIcons -%}
+                      <div class="{{paymentClass}}">
+                        <div class="payment-item">
+                          {%- if p.settings.default != 'custom' -%}
+                            {%- render 'svg', type: p.settings.default -%}
+                          {%- else -%}
+                            {%- unless p.settings.image == blank -%}
+                              <img src="{{p.settings.image | img_url: 'x30' }}">
+                            {%- else -%}
+                              {%- render 'svg', type: 'custom', name: p.settings.svg -%}
+                            {%- endunless -%}
+                          {%- endif -%}
+
+                        </div>
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+            {%- endcase -%}
+          </section>
+
+
+
+          {%- capture block_css -%}
+            {%- render 'css-resp', classID: blockID, css_value: block.settings.margin, css_property: 'margin' -%}
+          {%- endcapture -%}{%- assign section_css = section_css | append: block_css -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+
+      {%- if section.blocks.size == 0 or sidebarBlock_exist != true -%}
+        <p>{{- 'general.text.no_content' | t -}}</p>
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+{%- capture sectionCss -%}
+  {%- liquid
+    assign gridLayout = section.settings.grid_layout | append: ',100%,100%'
+    render 'css-resp', classID: '.layout-grid.d-grid', css_value: gridLayout, css_property: 'grid-template-columns'
+    render 'css-resp', classID: '.layout-grid.d-grid', css_value: section.settings.grid_gap, css_property: 'grid-gap'
+    render 'css-resp', classID: sectionID, css_value: section.settings.section_padding
+  -%}
+{%- endcapture -%}
+{%- assign section_css = section_css | prepend: sectionCss -%}
+
+{%- unless template contains 'blog' -%}
+  {%- unless section_css == blank -%}<style>{{section_css}}</style>{%- endunless -%}
+{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}

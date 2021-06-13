@@ -1,0 +1,69 @@
+{%- include 'collection-default' -%}
+
+{% schema %}
+{
+   "name": "Collection page",
+   "tag": "section",
+   "settings": [
+      {
+         "type": "checkbox",
+         "id": "boxed_layout",
+         "label": "Boxed layout",
+         "default": true,
+         "info": "Using for template no sidebar"
+      },
+      {
+         "type"  :"text",
+         "id"    :"items_resp",
+         "label":"Max number of content per row",
+         "default": "4,3,2",
+         "info": "E.g: 4,3,2"
+      },
+      {
+         "type":"text",
+         "id":"total",
+         "label":"Total items",
+         "default": "20",
+         "info": "Maximum is 50"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_short_description",
+         "label":"Show Short description"
+      },
+      {
+         "type":"textarea",
+         "id":"catalog_mode",
+         "label":"Removing Add to Cart button",
+         "info": "Using +ALL to enable all collections, blank to disable. E.g Collection's Title, Collection's Title, ..."
+      },
+      {
+         "type":"header",
+         "content":"Subcollection"
+      },
+      {
+         "type":"paragraph",
+         "content": "Before using metafield, you need to [install](https:\/\/apps.shopify.com\/advanced-custom-field#modal-show=AuthModal) ACF app"
+      },
+      {
+         "type":"paragraph",
+         "content":"Metafields: Subcollection Title (c_f.subcollection_title)"
+      },
+      {
+         "type":"paragraph",
+         "content":"Metafields: Subcollection (c_f.subcollection)"
+      },
+      {
+         "type":"paragraph",
+         "content":"Metafields: Highlight Title (c_f.highlight_product_title)"
+      },
+      {
+         "type":"paragraph",
+         "content":"Metafields: Highlight Products (c_f.highlight_product)"
+
+      }
+   ],
+   "blocks": [
+   ]
+}
+{% endschema %}

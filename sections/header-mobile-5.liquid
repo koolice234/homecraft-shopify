@@ -1,0 +1,45 @@
+{%- include 'header-mobile' -%}
+
+{% schema %}
+{
+  "name": "Header Mobile 5",
+  "tag": "section",
+  "class": "header-block d-lg-none",
+  "settings": [
+    {
+       "type":"paragraph",
+        "content":"Please go to Theme Config Section, add Header Style Blocks then start making the changes. Eg: font size, font weight, .."
+    },
+    {
+      "type": "checkbox",
+      "id": "boxed_layout",
+      "label": "Boxed layout",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+       "type":"text",
+       "id":"logo_svg",
+       "label":"Logo svg",
+       "info": "Blank to use Logo image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "logo_max_width",
+      "label": "Logo max width",
+      "default": "110",
+      "info": "Only for Logo image. E.g: 110"
+    }
+  ],
+  "blocks": [
+  ]
+}
+{% endschema %}

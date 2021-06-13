@@ -1,0 +1,72 @@
+{%- assign editorMode = request.design_mode -%}
+{% comment %}{%- assign editorMode = true -%}{% endcomment %}
+{%- capture content -%}
+	{%- case type -%}
+		{%- when 'product-template' 			-%}{%- section 'product-template' -%}
+		{%- when 'product-sidebar' 				-%}{%- section 'product-sidebar' -%}
+		{%- when 'product-recommendation' 		-%}{%- section 'product-recommendation' -%}
+		{%- when 'bottom-banner' 				-%}{%- section 'bottom-banner' -%}
+
+		{%- when 'style' -%}
+			{%- liquid
+				assign templateSuffix = template.suffix
+
+				if templateSuffix contains 'no-sidebar'
+					echo '2'
+
+				elsif templateSuffix contains 'tab-information'
+					echo '3'
+
+				elsif templateSuffix contains 'full-width'
+					echo '4'
+
+				else
+					echo settings.product_page
+				endif
+			-%}
+
+		{%- when 1 -%}
+	  		<div class="container">
+		  		<div class="row">
+		  			<div class="col-lg-9 col-12">
+		  				{%- include 'product-layout-template', type: 'product-template' -%}
+		  			</div>
+
+		  			<div class="col-lg-3{% if settings.hide_product_sb_mobile %} d-none d-lg-block{% endif %}">
+			  			<div id="productSidebarEl" class="{% unless editorMode %} lazyload lazyqueue-wait" data-include="{{product.url}}?view=dt_sb{% endunless %}">
+			  				{%- if editorMode -%}
+			  					{%- include 'product-layout-template', type: 'product-sidebar' -%}
+			  				{%- endif -%}
+			  			</div>
+		  			</div>
+		  		</div>
+	  		</div>
+		  	{%- include 'product-layout-template', type: 'product-recommendation' -%}
+		  	{%- include 'product-layout-template', type: 'bottom-banner' -%}
+
+	  	{%- when 2 -%}
+	  		<div class="container">
+		  		{%- include 'product-layout-template', type: 'product-template' -%}
+	  		</div>
+		  	{%- include 'product-layout-template', type: 'product-recommendation' -%}
+		  	{%- include 'product-layout-template', type: 'bottom-banner' -%}
+
+	  	{%- when 3 -%}
+	  		<div class="container">
+		  		{%- include 'product-layout-template', type: 'product-template' -%}
+	  		</div>
+		  	{%- include 'product-layout-template', type: 'product-recommendation' -%}
+		  	{%- include 'product-layout-template', type: 'bottom-banner' -%}
+
+	  	{%- when 4 -%}
+		  	{%- include 'product-layout-template', type: 'product-template' -%}
+		  	{%- include 'product-layout-template', type: 'product-recommendation' -%}
+		  	{%- include 'product-layout-template', type: 'bottom-banner' -%}
+
+	  	{%- else -%}
+	  		{%- capture productLayoutStyle -%}{%- include 'product-layout-template', type: 'style' -%}{%- endcapture -%}
+	  		{%- assign style = productLayoutStyle | times: 1 -%}
+	  		{%- include 'product-layout-template', type: style -%}
+	{%- endcase -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}

@@ -1,0 +1,150 @@
+{%- case block.type -%}
+  {%- when 'style' -%}
+    {%- liquid
+      assign _background_color           = block.settings.background_color | default: 'rgba(0,0,0,0)'
+      assign _border_radius              = block.settings.border_radius
+      assign _heading_color              = block.settings.heading_color | default: 'rgba(0,0,0,0)'
+      assign _heading_font_weight        = block.settings.heading_font_weight
+      assign _heading_font_size          = block.settings.heading_font_size
+      assign _text_1_color               = block.settings.text_1_color | default: 'rgba(0,0,0,0)'
+      assign _text_2_color               = block.settings.text_2_color | default: 'rgba(0,0,0,0)'
+      assign _link_color                 = block.settings.link_color | default: 'rgba(0,0,0,0)'
+      assign _hover_link_color           = block.settings.hover_link_color | default: 'rgba(0,0,0,0)'
+    -%}
+    {%- comment -%}
+      **
+      * Wrapper
+      *
+    {%- endcomment-%}
+    {%- capture firstValues -%}
+      {%- unless _background_color == 'rgba(0,0,0,0)' -%}background-color: {{_background_color}};{%- endunless -%}
+      {%- liquid
+        render 'css-resp', type: 'value', showFirst: true, css_value: _border_radius, css_property: 'border-radius'
+      -%}
+    {%- endcapture -%}
+
+    {%- liquid
+      render 'css-resp', classID: blockID, nextClassID: '', css_values: firstValues
+      render 'css-resp', classID: blockID, nextClassID: '', showLast: true, css_value: _border_radius, css_property: 'border-radius'
+    -%}
+
+    {%- comment -%}
+      **
+      * Element
+      *
+    {%- endcomment-%}
+    {%- capture firstValues -%}
+      {%- unless _heading_color == 'rgba(0,0,0,0)' -%}color: {{_heading_color}};{%- endunless -%}
+      {%- if _heading_font_weight > 0 -%}font-weight: {{_heading_font_weight}};{%- endif -%}
+      {%- render 'css-resp', type: 'value', showFirst: true, css_value: _heading_font_size, css_property: 'font-size' -%}
+    {%- endcapture -%}
+
+    {%- liquid
+      render 'css-resp', classID: blockID, nextClassID: ' .card_footer-title', css_values: firstValues
+      render 'css-resp', classID: blockID, nextClassID: ' .card_footer-title', showLast: true, css_value: _heading_font_size, css_property: 'font-size'
+    -%}
+
+    {%- unless _text_1_color     == 'rgba(0,0,0,0)' -%}{{- blockID }} .card_footer-text-1{color: {{_text_1_color}};}{%- endunless -%}
+    {%- unless _text_2_color     == 'rgba(0,0,0,0)' -%}{{- blockID }} .card_footer-text-2{color: {{_text_2_color}};}{%- endunless -%}
+    {%- unless _text_2_color     == 'rgba(0,0,0,0)' -%}{{- blockID }} svg path{fill: {{_text_2_color}};}{%- endunless -%}
+    {%- unless _link_color       == 'rgba(0,0,0,0)' -%}{{- blockID }} .card_footer-body ul li a{color: {{_link_color}};}{%- endunless -%}
+    {%- unless _hover_link_color == 'rgba(0,0,0,0)' -%}{{- blockID }} .card_footer-body ul li a:hover{color: {{_hover_link_color}};}{%- endunless -%}
+
+  {%- when 'style_button' -%}
+    {%- render 'snippet-gallery', block: block, blockID: blockID, nextClassID: '.btn', type: 'button'  -%}
+
+  {%- else -%}
+    {%- liquid
+      assign __title      = block.settings.title
+      assign __hide_title = block.settings.hide_title | default: false
+    -%}
+
+    {%- if block.type == 'menu' -%}
+      {%- assign __title = __title | default: linklists[block.settings.menu].title -%}
+    {%- endif -%}
+
+
+    <section class="card_footer-item card_footer-{{block.type}} card_footer-{{block.id}}"{{block.shopify_attributes}}>
+      
+      {%- if __hide_title != true and __title != blank and block.type != 'group_4_menu' -%}
+        <div class="card_footer-title">{{ __title }}</div>
+      {%- endif -%}
+
+      <div class="card_footer-body">
+        {%- case block.type -%}
+          {%- when 'menu' -%}
+            {%- assign __menu = block.settings.menu -%}
+
+            <ul class="menu_list-wrapper">
+              {%- if __menu != blank -%}
+              
+                {%- for l in linklists[__menu].links -%}
+                  {%- render 'nav-link', l: l -%}
+                {%- endfor -%}
+
+              {%- else -%}
+                <li class="menu_list-item"><a href="javascript:void(0);">Lorem ipsum </a></li>
+                <li class="menu_list-item"><a href="javascript:void(0);">At lectus urna</a></li>
+                <li class="menu_list-item"><a href="javascript:void(0);">Ac feugiat</a></li>
+                <li class="menu_list-item"><a href="javascript:void(0);">Vel eros donec ac odio</a></li>
+                <li class="menu_list-item"><a href="javascript:void(0);">Tristique nulla</a></li>
+              {%- endif -%}
+            </ul>
+
+          {%- when 'newsletter' -%}
+            {%- liquid
+              assign __form_type    = block.settings.form_type
+              assign __form_url     = block.settings.form_url
+              assign __btn_txt      = block.settings.btn_txt
+              assign __btn_style    = block.settings.btn_style | preprend: 'btn-' | append: ' button__link'
+              assign __frm_style    = 'frm-style-' | append: block.settings.form_style
+            -%}
+
+            <div class="home-newsletter">
+              {%- for i in (1..2) -%}
+                {%- liquid
+                  assign __text = 'main_text_' | append: i
+                  assign __text = block.settings[__text]
+                -%}
+                {%- unless __text == blank -%}
+                  <div class="main__text main__text-{{i}} card_footer-text card_footer-text-{{i}}">{{__text}}</div>
+                {%- endunless -%}
+              {%- endfor -%}
+
+              {%- render 'subscribe-form', type: __form_type, formClass: __frm_style, url: __form_url, btnStyle: __btn_style, btnLabel: __btn_txt -%}
+            </div>
+
+          {%- when 'text' -%}
+            {%- liquid
+              assign __text_content_1    = block.settings.text_content_1
+              assign __text_content_2    = block.settings.text_content_2
+              assign __btn_label         = block.settings.btn_label
+              assign __btn_url           = block.settings.btn_url | default: 'javascript:void(0);'
+              assign __btn_style         = block.settings.btn_style
+            -%}
+
+            {%- unless __text_content_1 == blank -%}<div class="card_footer-text card_footer-text-1">{{ __text_content_1 }}</div>{%- endunless -%}
+            {%- unless __text_content_2 == blank -%}<div class="card_footer-text card_footer-text-2">{{ __text_content_2 }}</div>{%- endunless -%}
+            {%- unless __btn_label == blank -%}
+              <div class="card_footer-button">
+                <a href="{{ __btn_url }}" class="btn btn-{{__btn_style}}">{{ __btn_label }}</a>
+              </div>
+            {%- endunless -%}
+
+          {%- when 'text_width_social' -%}
+            {%- liquid
+              assign __text_content_1    = block.settings.text_content_1
+              assign __text_content_2    = block.settings.text_content_2
+            -%}
+
+            {%- unless __text_content_1 == blank -%}<div class="card_footer-text card_footer-text-1">{{ __text_content_1 }}</div>{%- endunless -%}
+            {%- unless __text_content_2 == blank -%}<div class="card_footer-text card_footer-text-2">{{ __text_content_2 }}</div>{%- endunless -%}
+
+            <div class="card_footer-social">
+              {%- render 'social-media-icons' -%}
+            </div>
+
+        {%- endcase -%}
+      </div>
+    </section>
+{%- endcase -%}

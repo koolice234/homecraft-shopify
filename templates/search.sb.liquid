@@ -1,0 +1,6 @@
+{%- layout none -%}
+{%- capture content -%}
+	{%- section 'article-template' -%}
+{%- endcapture -%}
+{%- assign content = content | split: '[||]' -%}
+{%- render 'compress', content: content[1] -%}

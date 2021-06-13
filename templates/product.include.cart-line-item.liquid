@@ -1,0 +1,8 @@
+{%- layout none -%}
+{%- liquid
+	assign vID 				= request.path | split: product.handle | last | remove: '/' | times: 1
+	assign findProduct 		= cart.items | where: 'variant_id', vID
+-%}
+{%- if findProduct.size > 0 -%}	
+	{%- render 'product-cart-line-item', item: findProduct.first, number: 'number' -%}
+{%- endif -%}

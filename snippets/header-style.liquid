@@ -1,0 +1,316 @@
+{%- liquid
+	assign frmStyle = section.settings.frm_search_style | prepend: 'frm-style-'
+-%}
+{%- capture borderElement -%}{%- render 'header-snippets', type: 'border' -%}{%- endcapture -%}
+{%- capture headerCustomInformation -%}{%- include 'header-snippets', type: 'headerInformation' -%}{%- endcapture -%}
+
+{%- case style -%}
+	{%- comment -%}
+		**
+		* Desktop Style
+		*
+	{%- endcomment-%}
+  	{%- when 'desk_1' -%}{% comment %}* 1 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-5">
+	  				<div class="header-col header-col-center">
+	  					{%- render 'search', type: '', formClass: frmStyle -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-3 col-4">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'language_currency' -%}
+	  					{%- include 'header-snippets', type: 'iconList' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+	  	{{- borderElement -}}
+	  	<div class="header-row header-row-2">
+	  		<div class="row">
+	  			<div class="header-col-1 col-{% if headerCustomInformation == blank %}12{% else %}10{% endif %}">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'header-snippets', type: 'mainMenu' -%}
+	  					{%- include 'header-snippets', type: 'subMenu' -%}
+	  				</div>
+	  			</div>
+
+	  			{%- unless headerCustomInformation == blank -%}
+		  			<div class="header-col-2 col-2">
+		  				<div class="header-col header-col-right">
+		  					{{ headerCustomInformation }}
+		  				</div>
+		  			</div>
+	  			{%- endunless -%}
+	  		</div>
+	  	</div>
+
+  	{%- when 'desk_2' -%}{% comment %}* 2 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+		<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-9">
+	  				<div class="header-col header-col-right">
+	  					{{ headerCustomInformation }}
+	  					{%- render 'search', type: '', formClass: frmStyle -%}
+	  					{%- include 'header-snippets', type: 'iconList' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+	  	{{- borderElement -}}
+	  	<div class="header-row header-row-2">
+	  		<div class="row">
+	  			<div class="header-col-1 col-9">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'header-snippets', type: 'mainMenu' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-3">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'subMenu' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+	{%- when 'desk_3' -%}{% comment %}* 3 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+		<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-5">
+	  				<div class="header-col header-col-center">
+  						<nav class="horizontal-menu main-menu-wrapper main-nav" aria-label="Main" role="navigation">
+  							<ul class="main-menu main-nav__list">
+  								{%- unless section.settings.show_hamburger == false -%}
+  								<li class="main-nav__item nav-mobile">{%- include 'header-snippets', type: 'navMobile' -%}</li>
+  								{%- endunless -%}
+  								<li class="main-nav__item nav-group">{%- include 'header-snippets', type: 'singleMenu' -%}</li>
+  							</ul>
+  						</nav>
+	  					{%- render 'search', type: '', formClass: frmStyle -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-3 col-4">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'language_currency' -%}
+	  					{%- include 'header-snippets', type: 'iconList' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+	{%- when 'desk_4' -%}{% comment %}* 4 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+		<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-5">
+	  				<div class="header-col header-col-center">
+	  					{%- render 'social-media-icons', type: '' -%}
+	  					{%- render 'search', type: '', formClass: frmStyle -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-3 col-4">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'language_currency' -%}
+	  					{%- include 'header-snippets', type: 'iconList' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+	{%- when 'desk_5' -%}{% comment %}* 5 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+		<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3 col-wrapper--left">
+	  				<div class="header-col">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-9 col-wrapper--right">
+				  	<div class="header-col header-col-left">
+	  					{%- include 'header-snippets', type: 'mainMenu' -%}
+	  				</div>
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'iconList' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+	{%- comment -%}
+		**
+		* Mobile style
+		*
+	{%- endcomment-%}
+  	{%- when 'mobi_1' -%}{% comment %}* 1 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row">
+	  		<div class="row">
+	  			<div class="header-col-1 col-9">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-3">
+	  				<div class="header-col header-col-right">
+	  					<div class="header-icons">
+	  						{%- render 'search', type: 'button' -%}
+	  					</div>
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+  	{%- when 'mobi_2' -%}{% comment %}* 2 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-6">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-6">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'language_currency' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+	  	<div class="header-row header-row-2">
+	  		<div class="row">
+	  			<div class="header-col-1 col-12">
+	  				<div class="header-col header-col-center">
+	  					{%- render 'search', type: '', formClass: frmStyle -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+  	{%- when 'mobi_3' -%}{% comment %}* 3 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-6">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-6">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'language_currency' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+	  	<div class="header-row header-row-2">
+	  		<div class="row">
+	  			<div class="header-col-1 col-12">
+	  				<div class="header-col header-col-center">
+
+	  					<div class="nav-group">
+	  						{%- include 'header-snippets', type: 'navMobile' -%}
+	  						{%- include 'header-snippets', type: 'singleMenu' -%}
+	  					</div>
+
+	  					{%- render 'search', type: '', formClass: frmStyle -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+  	{%- when 'mobi_4' -%}{% comment %}* 4 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3">
+	  				<div class="header-col header-col-left">
+	  					<div class="header-icons">
+	  						{%- render 'search', type: 'button' -%}
+	  					</div>
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-6">
+	  				<div class="header-col header-col-center">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-3 col-3">
+	  				<div class="header-col header-col-right">
+	  					<div class="header-icons">
+	  						{%- include 'button', type: 'cart', is_onHeader: true -%}
+	  					</div>
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+  	{%- when 'mobi_5' -%}{% comment %}* 5 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row header-row-1">
+	  		<div class="row">
+	  			<div class="header-col-1 col-12">
+	  				<div class="header-col header-col-center">
+	  					{%- include 'header-snippets', type: 'iconList', isHeaderMobile: true -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+	  	{{- borderElement -}}
+	  	<div class="header-row header-row-2">
+	  		<div class="row">
+	  			<div class="header-col-1 col-6">
+	  				<div class="header-col header-col-left">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-6">
+	  				<div class="header-col header-col-right">
+	  					{%- include 'header-snippets', type: 'language_currency' -%}
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+
+  	{%- when 'mobi_6' -%}{% comment %}* 6 * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * * * {% endcomment %}
+	  	<div class="header-row">
+	  		<div class="row">
+	  			<div class="header-col-1 col-3">
+	  				<div class="header-col header-col-left">
+	  					<div class="header-icons">
+	  						{%- include 'button', type: 'hamburger' -%}
+	  					</div>
+	  				</div>
+	  			</div>
+	  			<div class="header-col-2 col-6">
+	  				<div class="header-col header-col-center">
+	  					{%- include 'logo' -%}
+	  				</div>
+	  			</div>
+	  			<div class="header-col-3 col-3">
+	  				<div class="header-col header-col-right">
+	  					<div class="header-icons">
+	  						{%- render 'search', type: 'button' -%}
+	  						{%- include 'button', type: 'cart', is_onHeader: true -%}
+	  					</div>
+	  				</div>
+	  			</div>
+	  		</div>
+	  	</div>
+{%- endcase -%}
+{%- assign headerStyleCheck = 'desk_3|desk_4|desk_5|mobi_1|mobi_2|mobi_3|mobi_4|mobi_6' | split: '|' -%}
+{%- if headerStyleCheck contains style -%}{{- borderElement -}}{%- endif -%}

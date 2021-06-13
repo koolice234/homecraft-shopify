@@ -1,0 +1,228 @@
+{%- liquid
+	assign swatch_button 	= settings.swatch_button | downcase
+	assign swatch_color 	= settings.swatch_color  | downcase
+	assign swatch_image 	= settings.swatch_image  | downcase
+-%}
+
+
+{%- unless product.has_only_default_variant -%}
+	{%- assign disableDefaultVariant = settings.disable_auto_product_selected -%}
+{%- endunless -%}
+
+{%- if section_id == product.id -%}
+	{%- assign isQuickview = true -%}
+{%- endif -%}
+
+<div class="swatch-variants-wrapper" data-swatch-wrapper>
+	{%- for option in product.options_with_values -%}
+		{%- capture optionIndex -%}option{{ option.position }}{%- endcapture -%}
+		{%- capture optionName -%}{{option.name | downcase }}{%- endcapture -%}
+
+		{%- assign swtType = '' -%}
+		{%- assign swtCss = '' -%}
+		{%- if swatch_button contains optionName -%}
+			{%- assign swtType = 'button' -%}
+		{%- endif -%}
+		{%- if swatch_color contains optionName -%}
+			{%- assign swtType = 'color' -%}
+		{%- endif -%}
+		{%- if swatch_image contains optionName -%}
+			{%- assign swtType = 'image' -%}
+		{%- endif -%}
+
+		{%- if swtType == '' -%}{%- continue -%}{%- endif -%}
+
+		<div class="swatch-option" data-target="#{% if isQuickview %}qs_{% endif %}Option{{ option.position }}">
+			<div class="swatch-header">
+				<p>{{ option.name }}</p>
+			</div>
+
+			<div class="swatch-container d-flex">
+				{%- for value in option.values -%}
+					{%- capture swtID -%}{% if isQuickview %}qs_{% endif %}swt{{option.position}}_{{value|handle}}{%- endcapture -%}
+
+					{%- capture swtImage -%}
+						{%- if swtType == 'image' -%}
+							{%- assign variantSelect = product.variants | where: optionIndex, value | first -%}
+							<!-- <style>
+								.swatch-variants-wrapper label[for="{{ swtID }}"]{
+									background-image: url({{ variantSelect.featured_media |img_url: '100x'}})!important;;
+								}
+							</style> -->
+						{%- endif -%}
+					{%- endcapture -%}
+					{%- assign swtCss = swtCss | append: swtImage -%}
+
+					
+                    
+				{%- endfor -%}
+                    <div class="swatch-drpdown">
+                        <div class="s-dropdown--styled">
+                            <div class="dropdown-fke">
+                                {%- assign current_variant = product.selected_or_first_available_variant -%}
+                                <span class="fa fa-chevron-down" style="cursor: pointer;"> 
+                                    <img src="{{ current_variant.featured_media |img_url: '35x' }}" alt="{{ current_variant.title }}">
+                                    <label for="{{ current_variant.title }}" class="swt-{{current_variant.title}}" style="background: none !important;">{{current_variant.title}}</label>
+                                </span>
+                                <i class="arrow down"></i>
+                            </div>
+                            <ul class="s-dropdown u-hide">
+                                {%- for value in option.values -%}
+                                {%- capture swtID -%}{% if isQuickview %}qs_{% endif %}swt{{option.position}}_{{value|handle}}{%- endcapture -%}
+                                {%- assign variantSelect = product.variants | where: optionIndex, value | first -%}
+                                    <li class="j-store option" data-value="{{ swtID }}" {% if option.values == value and disableDefaultVariant != true %} selected{% endif %}>
+                                        <div class="swatch-item" style="display: flex;">
+                                            <img src="{{ variantSelect.featured_media |img_url: '35x' }}" alt="{{ value }}">
+                                            <input type="radio" class="swt-type-{{swtType}}" name="swatch{{ option.name | handle | uppercase }}" id="{{ swtID }}" value="{{value | escape}}"{% if option.selected_value == value and disableDefaultVariant != true %} checked{% endif %} style="display: none !important;">
+                                            <label for="{{ swtID }}" class="swt-{{swtType}}" style="background: none !important;">{{value}}</label>
+                                        </div>
+                                    </li>
+                                {%- endfor -%}
+                            </ul>
+                        </div>
+                    </div>
+			</div>
+		</div>
+        <style>
+            ul#swatch-dropdown {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                height: 30px;
+                width: 150px;
+                border: 1px #000 solid;
+            }
+
+            .swatch-option .swatch-drpdown .dropdown-fke .swatch-item label{
+                border: none !important;
+                width: 140px !important;
+                line-height: 40px;
+            }
+
+            .dropdown-fke span .swatch-item {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .dropdown-fke {
+                background-color: #ffffff !important;
+                border: solid 1px #ccc;
+                margin-bottom: 20px;
+                padding: 0;
+                border-radius: 30px;
+                width: 270px;
+                text-align: left;
+                cursor: pointer;
+            }
+
+            li.option {    
+                list-style: none;
+                padding: 10px 20px;
+                vertical-align: middle;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .u-hide {
+                display: none;
+            }
+
+            ul.s-dropdown {
+                padding: 0;
+                position: absolute;    
+                left: 8px;
+                right: 0;
+                margin: 0;
+                background: #fff;
+                z-index: 9;
+                max-height: 250px;
+                overflow: auto;
+                cursor: pointer;
+                width: 100%;
+                max-width: 270px;
+                top: 160px;
+            }
+
+            ul.s-dropdown li.option label {
+                position: absolute;
+                text-align: left !important;
+                line-height: 40px;
+                padding-left: 72px;
+            }
+
+            .swatch-drpdown ul li .swatch-item {
+                display: flex;
+                flex-direction: row;
+            }
+            
+            .swatch-drpdown ul li .swatch-item {
+                display: flex;
+                width: 100%;
+                text-align: left !important;
+            }
+
+            .swatch-drpdown ul li .swatch-item img{
+                display: inline;
+                padding-left: 10px;
+            }
+
+            .swatch-drpdown .swatch-item {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .swatch-drpdown ul li .swatch-item label {
+                display: inline;
+                vertical-align: middle;
+                margin: 0 0 0 10px;
+                width: 100% !important;
+                border: none !important;
+                height: 100% !important;
+                cursor: pointer;
+                font-weight: normal;
+                text-align: left;
+            }
+
+            .swatch-drpdown .fa-chevron-down {
+                display: flex;
+                justify-content: space-evenly;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                cursor: pointer;
+            }
+
+            .swatch-drpdown .fa-chevron-down label {
+                margin: 0 !important;
+                line-height: 40px;
+                cursor: pointer;
+            }
+
+            .dropdown-fke span.fa-chevron-down:after {
+                content: '\25be';
+                float: right;
+                padding-top: 10px;
+            }
+
+              
+        </style>
+        <script>
+            $(document).on('click', '.swatch-drpdown', function() {
+                    $(this).find('ul').slideToggle();
+                });
+            
+                $(document).on('click', '.j-store', function() {
+                    var store = $(this).find('.swatch-item').html();
+                    $('.swatch-drpdown .dropdown-fke span.fa-chevron-down').html(store);
+                });
+
+            $("input[name='swatchcolor']").change(function(){
+                var id = $(this).attr('id');
+
+                var store = $("ul.s-dropdown").find("li[data-value='" + id + "']").html();
+                console.log(store);
+                $('.swatch-drpdown .dropdown-fke span.fa-chevron-down').html(store);
+            })
+
+        </script>
+		<style>.section-{{section_id}} .select-option[data-option="{{option.name | handle}}"]{display: none;}{{swtCss | remove: "<style>" | remove: "</style>" }}</style>
+	{%- endfor -%}
+</div>

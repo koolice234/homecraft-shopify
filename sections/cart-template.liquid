@@ -1,0 +1,208 @@
+{%- liquid
+  assign sectionType    = 'cart-section'
+  assign ajaxQty        = settings.enable_cart_qty_ajax
+  assign cart_layout    = section.settings.cart_layout | times: 1
+-%}
+
+ {%- capture removeIcon -%}<svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.5L1 10.5" stroke="#103178" stroke-width="1.91" stroke-miterlimit="10"></path><path d="M1 1.5L10 10.5" stroke="#103178" stroke-width="1.91" stroke-miterlimit="10"></path></svg>{%- endcapture -%}
+
+{%- capture section_class -%}
+  {{- -}}cart-section
+  {{- -}}|layout-{{- cart_layout-}}
+  {{- -}}|section-{{- section.id -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+{%- capture emptyCart -%}
+  <div class="cart-empty text-center">
+    <h1 class="cart-title">{{ 'cart.general.empty' | t }}</h1>
+    <p>
+      <a class="btn btn-1" href="{{routes.all_products_collection_url}}" id="continueShopping">{{ 'cart.general.continue_shopping' | t }}</a>
+      <a class="btn btn-2" href="{{ routes.root_url }}">{{ 'cart.general.homepage' | t }}</a>
+    </p>
+  </div>
+{%- endcapture -%}
+
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+  <div class="container" data-cart-body data-pagination="{{ cart.attributes.pagination }}">
+    {%- if cart.items.size > 0 -%}
+      <div class="page-heading">
+        <div class="cart-title">
+          <h1>{{- 'cart.general.shopping_cart' | t -}}</h1>
+          <span class="cart-count">(<span class="number" data-cart-count>{{cart.item_count}}</span>)</span>
+        </div>
+      </div>
+      <form action="{{routes.cart_url}}" method="post" novalidate class="cart">
+        <div class="row">
+          <div class="{% if cart_layout == 1 %}col-lg-8 {% endif %}col-12">
+            <div class="cart-table">
+              <div class="line-title d-flex">
+                <div class="line-col-title line-col-1">{{ 'cart.general.product' | t }}</div>
+                <div class="line-col-title line-col-2">{{ 'cart.general.price' | t }}</div>
+                <div class="line-col-title line-col-3">{{ 'cart.general.quantity' | t }}</div>
+                <div class="line-col-title line-col-4">{{ 'cart.general.subtotal' | t }}</div>
+              </div>
+
+              <div class="line-items-wrapper">
+                {% for line in cart.items %}
+                  {%- assign hasDiscount = false -%}
+                  {%- if line.original_price != line.final_price -%}
+                    {%- assign hasDiscount = true -%}
+                  {%- endif -%}
+                
+                  {%- unless line.properties == blank -%}
+                	{%- for p in line.properties -%}
+                	  {%- if p.first == '_sample_image' -%}
+                		{%- assign sample_image = p.last -%}
+                	  {%- endif -%}
+                	{%- endfor -%}
+                  {%- endunless -%}
+
+                  <section class="line-item" data-line-item>
+                    <div class="line-item-inner d-flex">
+
+                      <div class="d-flex">
+                        <a href="/cart/change?line={{ forloop.index }}&quantity=0" data-item-key="{{ line.key }}" data-item-remove>{%- render 'svg', type: 'custom', name: removeIcon -%}</a>
+
+                        <div class="line-item-image" style="width: 90px;">
+                          <figure>
+                            {%- assign image = line.image -%}
+                            <a href="{{line.url}}">
+                              {%- if sample_image != blank and image == blank -%}
+                                <span class="image__style" style="padding-top:100.0%;">
+                                  <img class="overlay-ui w-100 h-100 lazyautosizes lazyloaded" src="{{ sample_image }}"/>
+                                </span>
+                              {%- else -%}
+                                {%- render 'image-style', image: image -%}
+                              {%- endif -%}
+                            </a>
+                          </figure>
+                        </div>
+                        <div class="line-item-title">
+                          <p>
+                            <a href="{{line.url}}">{{line.product.title}}</a>
+                          </p>
+                          
+                          <div class="line-price d-md-none" data-price>{%- render 'money-format', price: line.original_price -%}</div>
+
+                          {%- unless line.product.has_only_default_variant -%}
+                            <div class="line-item-options">
+                            {%- for option in line.options_with_values -%}
+                              {%- if option.name != 'Title' -%}
+                                <p>{{ option.name }}: {{ option.value }}</p>
+                              {%- endif -%}
+                            {%- endfor -%}
+                            </div>
+                          {%- endunless -%}
+
+                          {%- unless line.properties == blank -%}
+                            {%- for p in line.properties -%}
+                          	  {%- assign first_character_in_key = p.first | truncate: 1, '' -%}
+                          	  <p class="line-item-options">
+                                {%- unless p.last == blank or first_character_in_key == '_' -%}
+                                  {{ p.first }}:{%- if p.last contains '/uploads/' -%}<a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>{%- else -%}{{ p.last }}{%- endif -%}
+                                {%- endunless -%}
+                              </p>
+                            {%- endfor -%}
+                          {%- endunless -%}
+
+                        </div>
+
+                      </div>
+                      <div class="line-price">
+                        <p data-price>{%- render 'money-format', price: line.original_price -%}</p>
+                      </div>
+
+                      <div class="line-qty qty-wrapper" data-quantity>
+                        <div class="qty-select">
+                          <a href="javascript:void(0);" class="qty-minus">-</a>
+
+                          <input type="text" name="updates[]" id="updates_{{ line.id }}" value="{{ line.quantity }}" pattern="[0-9]+" data-item-key="{{ line.key }}" min="1"{% if line.variant.inventory_policy != 'continue' %} max="{{line.variant.inventory_quantity}}"{% endif %}/>
+                          <a href="javascript:void(0);" class="qty-plus">+</a>
+                        </div>
+                      </div>
+                      <div class="line-subtotal">
+                        <p data-item-line-price="{{line.key}}">{%- render 'money-format', price: line.final_line_price -%}</p>
+                      </div>
+                    </div>
+                  </section>
+                {% endfor %}
+              </div>
+
+              <div class="cart-table-footer">
+<!--                 <div class="cart-note">
+                  <textarea name="note" placeholder="{{- 'cart.general.cart_note' | t -}}"></textarea>
+                </div> -->
+                {%- if ajaxQty -%}
+                  <a href="{{ routes.cart_clear_url }}" class="btn btn-2">{{- 'cart.general.clear_cart' | t -}}</a>
+                {%- else -%}
+                  <button type="submit" class="btn btn-2">{{- 'cart.general.update_cart' | t -}}</button>
+                {%- endif -%}
+
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-lg-{% if cart_layout == 2 %}5{% else %}4{% endif %} col-12">
+            <div class="cart-info">
+              <div class="cart-info-title">
+                <p>{{- 'cart.general.cart_total' | t -}}</p>
+              </div>
+              <div class="cart-detail">
+                <div class="cart-subtotal">
+                  <span class="cart-detail-label">{{- 'cart.general.subtotal' | t -}}</span>
+                  <span class="cart-detail-value"data-cart-total>{%- render 'money-format', price: cart.total_price -%}</span>
+                </div>
+                <div class="shipping-method">
+                  <span class="cart-detail-label">{{- 'cart.general.shipping' | t -}}</span>
+                  <span class="cart-detail-value"></span>
+                </div>
+                <div class="cart-total">
+                  <span class="cart-detail-label">{{- 'cart.general.total' | t -}}</span>
+                  <span class="cart-detail-value"data-cart-total>{%- render 'money-format', price: cart.total_price -%}</span>
+                </div>
+                <div class="cart-note">
+<!--                   <textarea name="note" placeholder="{{- 'cart.general.cart_note' | t -}}"></textarea> -->
+                  <textarea name="note" placeholder="Order Notes"></textarea>
+                </div>
+                <div class="cart-button">
+                  <button class="btn btn-1" type="submit" name="checkout">{{- 'cart.general.proceed_to_checkout' | t -}}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    {%- else -%}
+      {{ emptyCart }}
+    {%- endif -%}
+  </div>
+</div>
+<script>theme.cartPage = {empty: {{ emptyCart | json }} } </script>
+
+{% schema %}
+{
+   "name":"Cart Page",
+   "tag": "section",
+   "settings":[
+     {
+        "type":"select",
+        "id":"cart_layout",
+        "label":"Layout",
+        "options":[
+          {
+            "value":"1",
+            "label":"1"
+          },
+          {
+            "value":"2",
+            "label":"2"
+          }
+        ],
+        "default": "1"
+     }
+   ]
+}
+{% endschema %}

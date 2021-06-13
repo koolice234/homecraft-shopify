@@ -1,0 +1,493 @@
+{%- case block.type -%}
+  {%- when 'paragraph' -%}
+    {%- comment -%}
+      **
+      * PARAGRAPH
+      *
+    {%- endcomment-%}
+    {%- render 'block-custom', type: 'paragraph', block: block -%}
+
+  {%- when 'banner' -%}
+    {%- comment -%}
+      **
+      * BANNER IMAGE
+      *
+    {%- endcomment-%}
+    {%- liquid
+      assign _image           = block.settings.image
+      assign _image_link      = block.settings.image_link | default: 'javascript:void(0);'
+      assign _image_position  = block.settings.image_position
+      assign _manualHeight    = block.settings.height
+      assign _small_image     = block.settings.small_image
+      assign _btn_txt         = block.settings.btn_txt
+      assign _btn_url         = block.settings.btn_url | default: 'javascript:void(0);'
+      assign _svg_1           = block.settings.svg_1
+      assign _text_svg_1      = block.settings.text_svg_1
+      assign _svg_2           = block.settings.svg_2
+      assign _text_svg_2      = block.settings.text_svg_2
+
+      if _manualHeight != blank
+        assign _disablePadding = true
+      else
+        assign _disablePadding = false
+      endif
+    -%}
+    {%- capture customContent_check -%}{{- _svg_1 -}}{{- _text_svg_1 -}}{{- _svg_2 -}}{{- _text_svg_2 -}}{%- endcapture -%}
+
+    <div class="banner-image">
+      <div class="image-wrapper{% if _blockLayout == 'full' %} f-break{% endif %}">
+        <a href="{{_image_link}}">
+          {%- unless _image == blank -%}
+            {%- render 'image-style', image: _image, disablePadding: _disablePadding, image_css: 'object-fit: cover;' -%}
+            {%- capture block_css -%}
+              {%- render 'css-resp', classID: blockID, nextClassID: ' img', css_value: _image_position, css_property: 'object-position' -%}
+              {%- render 'css-resp', classID: blockID, nextClassID: ' .image__style', css_value: _manualHeight, css_property: 'padding-top' -%}
+            {%- endcapture -%}{%- assign section_css = section_css | append: block_css -%}
+          {%- else -%}
+            {%- include 'svgset', type: 'lifestyle' -%}
+          {%- endunless -%}
+        </a>
+      </div>
+
+      {%- capture bannerContent -%}
+
+        {%- comment -%}
+          **
+          * Heading Image (Section single banner)
+          *
+        {%- endcomment-%}
+        {%- unless _small_image == blank -%}
+          <div class="small-image">
+            {%- render 'image-style', image: _small_image, setWidth: false -%}
+          </div>
+          {%- capture block_css -%}{%- render 'css-resp', classID: blockID, nextClassID: ' .small-image', css_value: block.settings.max_w, css_property: 'max-width' -%}{%- endcapture -%}
+          {%- assign section_css = section_css | append: block_css -%}
+        {%- endunless -%}
+
+
+        {%- comment -%}
+          **
+          * Text content
+          *
+        {%- endcomment-%}
+        {%- render 'block-custom', type: 'paragraph', block: block -%}
+
+
+        {%- comment -%}
+          **
+          * SVG Custom Content
+          *
+        {%- endcomment-%}
+        {%- unless customContent_check == blank -%}
+          <div class="banner-custom-content">
+            {%- for i in (1..2) -%}
+              {%- liquid
+                assign _svg = 'svg_' | append: i
+                assign _txt = 'text_svg_' | append: i
+                assign _svg = block.settings[_svg]
+                assign _txt = block.settings[_txt]
+              -%}
+              {%- unless _svg == blank and _txt == blank -%}
+                <div class="banner-content-{{i}}">
+                  {%- unless _svg == blank -%}<span class="text-3 svg-element-ui">{{ _svg }}</span>{%- endunless -%}
+                  {%- unless _txt == blank -%}<span class="text-3 svg-content">{{ _txt }}</span>{%- endunless -%}
+                </div>
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        {%- endunless -%}
+
+
+        {%- comment -%}
+          **
+          * Slide Button content
+          *
+        {%- endcomment-%}
+        {%- unless _btn_txt == blank -%}
+          <div class="slide-content-item content-button">
+            <a href="{{_btn_url}}" class="btn btn-banner btn-{{block.settings.btn_style}}">{{_btn_txt}}</a>
+          </div>
+        {%- endunless -%}
+      {%- endcapture -%}
+
+      {%- unless bannerContent == blank -%}
+        <div class="banner-content-wrapper"><div class="banner-content-inner overlay-ui">{{ bannerContent }}</div></div>
+      {%- endunless -%}
+    </div>
+
+  {%- when 'blog' -%}
+    {%- comment -%}
+      **
+      * BLOG
+      *
+    {%- endcomment-%}
+    {%- liquid
+      assign _blog            = block.settings.blog
+      assign blog             = blogs[_blog]
+      assign _show_excerpt    = block.settings.show_excerpt
+      assign _items_resp      = block.settings.items_resp
+      assign _total           = block.settings.total
+      assign _enable_slider   = true
+    -%}
+
+    {%- capture gridClass -%}{%- render 'set-item-per-row', value: _items_resp -%}{%- endcapture -%}
+    <div class="block-content-wrapper {{block.type}}-wrapper{% unless _show_label %} hide-label{% endunless %}" data-slide-wrapper>
+      <div class="row{% if _enable_slider %} slide_ui-element{% endif %}">
+        {%- if _blog != blank and blog.articles.size > 0 -%}
+
+          {%- for article in blog.articles limit: _total -%}
+            <section class="blog-section {{gridClass}}">
+              {%- render 'article-item', article: article, showExcerpt: _show_excerpt -%}
+            </section>
+          {%- endfor -%}
+        {%- else -%}
+          {%- assign _total = _total | minus: 1 -%}
+          {%- for i in (0.._total) -%}
+            <section class="blog-section {{gridClass}}">
+              {%- include 'svgset', type: 'empty-article', svg_group: 'svg_groups', showExcerpt: _show_excerpt -%}
+            </section>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+      {%- if _enable_slider -%}
+        {%- render 'set-item-per-row', value: _items_resp, type: 'slider', itemClass: 'blog-section', gutter: '30' -%}
+      {%- endif -%}
+    </div>
+
+  {%- when 'spacing' -%}
+    {%- capture block_css -%}{%- render 'css-resp', classID: blockID, css_value: block.settings.height, css_property: 'height' -%}{%- endcapture -%}
+    {%- assign section_css = section_css | append: block_css -%}
+
+  {%- when 'iconbox' -%}
+
+    {%- comment -%}
+      **
+      * ICON BOX
+      *
+    {%- endcomment-%}
+    {%- capture gridClass -%}{%- render 'set-item-per-row', value: block.settings.items_resp -%}{%- endcapture -%}
+    <div class="block-content-wrapper iconbox-wrapper">
+
+      {%- capture blockContent -%}
+        {%- for block in section.blocks offset: forloop.index -%}
+          {%- if block.type != 'sub_iconbox' -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign _image     = block.settings.image
+            assign _svg       = block.settings.svg
+            assign blockIndex = blockIndex | plus: 1
+          -%}
+
+          <div class="card_section-item block-{{block.id}} {{ gridClass }}"{{block.shopify_attributes}}>
+            <div class="card_section-item-inner">
+              <div class="card_section-header">
+                <div class="card_section-figure">
+                  {%- unless _svg == blank -%}<span class="svg-element-ui">{{ _svg }}</span>
+                  {%- elsif _image != blank -%}{%- render 'image-style', image: _image, originQuality: true -%}
+                  {%- else -%}<svg width="20" height="20"><use xlink:href="#emptySVG_{{section.id}}"></use></svg>
+                  {%- endunless -%}
+                </div>
+              </div>
+              <div class="card_section-body">
+                <div class="card_section-info">
+                  {%- render 'block-custom', type: 'paragraph', block: block -%}
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endcapture -%}
+
+      <div class="row">
+        {%- unless blockContent == blank -%}
+          {{blockContent}}
+        {%- else -%}
+          <div class="col-12"><p class="text-center"><i>Please add block "Icon box item"</i></p></div>
+        {%- endunless -%}
+      </div>
+
+  {%- when 'testimonial' -%}
+
+    {%- comment -%}
+      **
+      * TESTIMONIAL
+      *
+    {%- endcomment-%}
+    {%- liquid
+      assign _enable_slider   = true
+      assign _items_resp      = block.settings.items_resp
+      assign _padding         = block.settings.padding
+      assign _bg_size         = block.settings.bg_size
+      assign _bg_repeat       = block.settings.bg_repeat
+      assign _bg_position     = block.settings.bg_position
+    -%}
+
+    {%- capture block_class -%}
+      {{- -}}testimonial-wrapper
+      {{- -}}|mobile_layout-{{- block.settings.mobile_layout -}}
+      {%- if _blockLayout == 'full' -%}|f-break{%- endif -%}
+      {%- render 'bgset' ,class: 'bg-image' ,image: block.settings.bg_image -%}
+    {%- endcapture -%}{%- assign block_class = block_class | strip_newlines | split: '|' | join: ' ' -%}
+
+
+    {%- capture firstValues -%}
+      {%- render  'css-resp', type: 'value', showFirst: true, css_property: 'padding', css_value: _padding -%}
+
+      {%- unless block.settings.bg_image == blank -%}
+        {%- unless _bg_size     == blank -%}background-size: {{ _bg_size }};{%- endunless -%}
+        {%- unless _bg_repeat   == blank -%}background-repeat: {{ _bg_repeat }};{%- endunless -%}
+        {%- unless _bg_position == blank -%}background-position: {{ _bg_position }};{%- endunless -%}
+      {%- endunless -%}
+    {%- endcapture -%}
+
+    {%- capture block_css -%}
+      {%- render 'css-resp', classID: blockID, nextClassID: ' .testimonial-wrapper', css_values: firstValues -%}
+      {%- render 'css-resp', classID: blockID, nextClassID: ' .testimonial-wrapper', showLast: true, css_property: 'padding', css_value: _padding -%}
+    {%- endcapture -%}
+    {%- assign section_css = section_css | append: block_css -%}
+
+    <div class="{{ block_class }}" data-slide-wrapper>
+
+      <div class="block-header">
+        {%- render 'block-custom', type: 'paragraph', block: block -%}
+      </div>
+
+      {%- capture gridClass -%}{%- render 'set-item-per-row', value: block.settings.items_resp -%}{%- endcapture -%}
+      {%- capture blockContent -%}
+        {%- for block in section.blocks offset: forloop.index -%}
+          {%- if block.type != 'sub_testimonial' -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign _star        = block.settings.rating
+            assign _starEmpty   = 5 | minus: _star
+            assign blockIndex   = blockIndex | plus: 1
+          -%}
+
+          <div class="card_section-item block-{{block.id}} {{ gridClass }}"{{block.shopify_attributes}}>
+            <div class="card_section-item-inner">
+              {%- render 'block-custom', type: 'paragraph', block: block, class: 'sub-text' -%}
+              <div class="card_testimonial-rating">
+                {%- for i in (1.._star) -%}{{star}}{%- endfor -%}
+                {%- if _star < 5 -%}
+                {%- for i in (1.._starEmpty) -%}{{starEmpty}}{%- endfor -%}
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endcapture -%}
+
+      <div class="block-content-wrapper row{% if _enable_slider %} slide_ui-element{% endif %}">
+        {%- unless blockContent == blank -%}
+          {{blockContent}}
+        {%- else -%}
+          <div class="col-12"><p class="text-center"><i>Please add block "Testimonial item"</i></p></div>
+        {%- endunless -%}
+      </div>
+
+      {%- if _enable_slider -%}
+        {%- render 'set-item-per-row', value: _items_resp, type: 'slider', itemClass: 'blog-section', gutter: '30', nav: true, dot: true -%}
+      {%- endif -%}
+    </div>
+
+  {%- when 'newsletter' -%}
+
+    {%- comment -%}
+      **
+      * NEWSLETTER
+      *
+    {%- endcomment-%}
+
+    {%- liquid
+      assign _formType      = block.settings.form_type
+      assign _formURL       = block.settings.form_url
+      assign _btn_style     = block.settings.btn_style
+      assign _padding       = block.settings.padding
+      assign _bg_size       = block.settings.bg_size
+      assign _bg_repeat     = block.settings.bg_repeat
+      assign _bg_position   = block.settings.bg_position
+      assign _formStyle     = 'frm-style-' | append: block.settings.form_style
+    -%}
+
+    {%- capture block_class -%}
+      {{- -}}block-content-wrapper
+      {{- -}}|newsletter-wrapper
+      {%- if _blockLayout == 'full' -%}|f-break{%- endif -%}
+      {%- render 'bgset' ,class: 'bg-image' ,image: block.settings.bg_image -%}
+    {%- endcapture -%}{%- assign block_class = block_class | strip_newlines | split: '|' | join: ' ' -%}
+
+
+    {%- capture firstValues -%}
+      {%- render  'css-resp', type: 'value', showFirst: true, css_property: 'padding', css_value: _padding -%}
+
+      {%- unless block.settings.bg_image == blank -%}
+        {%- unless _bg_size     == blank -%}background-size: {{ _bg_size }};{%- endunless -%}
+        {%- unless _bg_repeat   == blank -%}background-repeat: {{ _bg_repeat }};{%- endunless -%}
+        {%- unless _bg_position == blank -%}background-position: {{ _bg_position }};{%- endunless -%}
+      {%- endunless -%}
+    {%- endcapture -%}
+
+    {%- capture block_css -%}
+      {%- render 'css-resp', classID: blockID, nextClassID: ' .block-content-wrapper', css_values: firstValues -%}
+      {%- render 'css-resp', classID: blockID, nextClassID: ' .block-content-wrapper', showLast: true, css_property: 'padding', css_value: _padding -%}
+    {%- endcapture -%}
+    {%- assign section_css = section_css | append: block_css -%}
+
+    <div class="{{ block_class }}">
+      <div class="block-header">
+        {%- render 'block-custom', type: 'paragraph', block: block -%}
+      </div>
+
+      <div class="block-body">
+        {%- render 'subscribe-form', type: _formType, formClass: _formStyle, url: _formURL, btnStyle: _btn_style -%}
+      </div>
+    </div>
+
+  {%- when 'image_gallery' -%}
+
+    {%- comment -%}
+      **
+      * Image with text
+      *
+    {%- endcomment-%}
+    {%- capture gridClass -%}{%- render 'set-item-per-row', value: block.settings.items_resp -%}{%- endcapture -%}
+    <div class="block-content-wrapper image-gallery-wrapper">
+
+      {%- capture blockContent -%}
+        {%- for block in section.blocks offset: forloop.index -%}
+          {%- if block.type != 'sub_image_gallery' -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign _image       = block.settings.image
+            assign _image_link  = block.settings.image_link | default: 'javascript:void(0);'
+            assign blockIndex   = blockIndex | plus: 1
+          -%}
+
+          <div class="card_section-item block-{{block.id}} {{ gridClass }}"{{block.shopify_attributes}}>
+            <div class="card_section-item-inner">
+              <div class="card_section-header">
+                <div class="card_section-figure">
+                  <a href="{{_image_link}}">
+                    {%- unless _image == blank -%}{%- render 'image-style', image: _image -%}
+                    {%- else -%}{%- render 'svgset' -%}
+                    {%- endunless -%}
+                  </a>
+                </div>
+              </div>
+              <div class="card_section-body">
+                <div class="card_section-info">
+                  {%- render 'block-custom', type: 'paragraph', block: block, number: 3 -%}
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endcapture -%}
+
+      <div class="row">
+        {%- unless blockContent == blank -%}
+          {{blockContent}}
+        {%- else -%}
+          <div class="col-12"><p class="text-center"><i>Please add block "Image with text"</i></p></div>
+        {%- endunless -%}
+      </div>
+    </div>
+
+  {%- when 'video' -%}
+    {%- liquid
+      assign __videoURL          = block.settings.video_url
+      assign __placeholder       = block.settings.image
+      assign __btn_label         = block.settings.video_btn_label
+      assign _video_btn_style    = block.settings.video_btn_style
+      assign _btn_txt            = block.settings.btn_txt
+      assign _btn_url            = block.settings.btn_url | default: 'javascript:void(0);'
+      assign _svg_1              = block.settings.svg_1
+      assign _text_svg_1         = block.settings.text_svg_1
+      assign _svg_2              = block.settings.svg_2
+      assign _text_svg_2         = block.settings.text_svg_2
+    -%}
+    {%- capture customContent_check -%}{{- _svg_1 -}}{{- _text_svg_1 -}}{{- _svg_2 -}}{{- _text_svg_2 -}}{%- endcapture -%}
+
+    {%- capture bannerContent -%}
+      {%- comment -%}
+        **
+        * Text content
+        *
+      {%- endcomment-%}
+      {%- render 'block-custom', type: 'paragraph', block: block -%}
+
+
+      {%- comment -%}
+        **
+        * SVG Custom Content
+        *
+      {%- endcomment-%}
+      {%- unless customContent_check == blank -%}
+        <div class="banner-custom-content">
+          {%- for i in (1..2) -%}
+            {%- liquid
+              assign _svg = 'svg_' | append: i
+              assign _txt = 'text_svg_' | append: i
+              assign _svg = block.settings[_svg]
+              assign _txt = block.settings[_txt]
+            -%}
+            {%- unless _svg == blank and _txt == blank -%}
+              <div class="banner-content-{{i}}">
+                {%- unless _svg == blank -%}<span class="svg-element-ui">{{ _svg }}</span>{%- endunless -%}
+                {%- unless _txt == blank -%}<span class="svg-content">{{ _txt }}</span>{%- endunless -%}
+              </div>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+      {%- endunless -%}
+
+
+      {%- comment -%}
+        **
+        * Slide Button content
+        *
+      {%- endcomment-%}
+      {%- unless _btn_txt == blank -%}
+        <div class="slide-content-item content-button">
+          <a href="{{_btn_url}}" class="btn btn-banner btn-{{block.settings.btn_style}} button-2">{{_btn_txt}}</a>
+        </div>
+      {%- endunless -%}
+    {%- endcapture -%}
+
+    <div class="row">
+      {%- unless bannerContent == blank -%}
+        <div class="col-md-6 ol-12">
+          <div class="content-wrapper">{{ bannerContent }}</div>
+        </div>
+      {%- endunless -%}
+
+      <div class="{% unless bannerContent == blank %}col-md-6 {% endunless %}col-12">
+        <div class="video__ui" data-video-container>
+          <div class="video__ui-wrapper{% unless __placeholder == blank %} video__ui-has-placeholder{% endunless %}">
+            <div class="video__ui-placeholder">
+              {%- unless __placeholder == blank -%}
+                {%- render 'image-style', image: __placeholder -%}
+              {%- else -%}
+              {%- endunless -%}
+            </div>
+
+            <div class="video__ui-item{% unless __placeholder == blank %} overlay-ui{% endunless %}" data-video-item>
+              {%- if __videoURL contains 'iframe' -%}
+                {{ __videoURL }}
+              {%- else __videoURL != blank -%}
+                <video controls loop playsinline preload="auto" data-width="0" data-height="0" class="w-100 h-100"><source src="{{__videoURL}}" type="video/mp4"></video>
+              {%- endif -%}
+            </div>
+
+            {%- unless __btn_label == blank -%}
+              <div class="video__ui-btn overlay-ui">
+                <a href="javascript:void(0);" class="btn btn-{{block.settings.video_btn_style}} button__link" data-button-video>
+                  <span class="button-label">{{ __btn_label }}</span>
+                  <span class="btn-video-close">{%- render 'svg', type: 'close' -%}</span>
+                </a>
+              </div>
+            {%- endunless -%}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{%- endcase -%}

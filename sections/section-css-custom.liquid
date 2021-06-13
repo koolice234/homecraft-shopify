@@ -1,0 +1,332 @@
+{%- capture content -%}
+{%- comment -%}
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*
+	* HEADER STYLE
+	*
+	* * * * *
+{%- endcomment-%}
+{%- render 'header-snippets', type: 'header_color', section: section -%}
+
+{%- comment -%}
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*
+	* CURRENCY
+	*
+	* * * * *
+{%- endcomment-%}
+{%- assign flagCurrency = settings.flag_currency -%}
+{%- unless flagCurrency == 'none' -%}
+	<style>
+		.currency-flag {
+			display: inline-block;
+			width: 24px;
+			height: 16px;
+			background-size: cover;
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAgCAIAAADbtmxLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4FpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQwIDc5LjE2MDQ1MSwgMjAxNy8wNS8wNi0wMTowODoyMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDoxYTY4YzRkYy0xNzg2LTQ2Y2UtYmIzYS1hMGNhZDcxNzBjNzMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OTA3QzBCRkU1ODQwMTFFOEI5NzdERDE3RUQ5MUVEQUMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OTA3QzBCRkQ1ODQwMTFFOEI5NzdERDE3RUQ5MUVEQUMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6N2U4OWM3NTYtOGI0Mi00YmMwLTlmMjItZjQyOWNhZjAwNGQ0IiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MmM4MzhmMGYtYjNiMy1jZjRkLTg2ZDEtOGM2YWJhYTRlMzRiIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+oR1RLAAAAdVJREFUeNrsl+mKwjAURm2t1lEUl/d/Q8VdW5fWM35QisKYxKsIY36UUO5NT77cJY3Ksmx80ogbHza+QI9GEux5Op12u12WZcfjsSiKKIr6/f5gMGDybiBQFosFNPWXcDSbzSdpQoD2+/1sNpMkP9eRpiko5XXULfM8xwyDFwKt1+v5fM6Ez4xGoyRJ6grd0GB5OBww4yhfAsQZiWY4HBIrfxsjW7fbBQgX9GNunGXEDSflSKOBGcZMcMTdGGi5XBIibNSRpmLCBUeSwBKI/W23W6KEgPBNAlxw5LgdRYodo4cneyUafIGqALopE08BUf2UWWGlRY5axAaIWsyz3W6HAclRi9gAUd8kfhiQHLWIZXN9z83JCSiOY/ct3o/z+VwtYgPUarV4UnbDgOSoRWyAOp2O2moYkBy1iA1QVUgkvu95VWXMDIiurg6g5uo1cFHPqV8NDLKMNqkOsFqt3GkwxgVHdVlLIPY3mUyY0CY3m40jjXoqjo7y+NUhZKdTkr0PCxJ9dDqdigZt3C9Dvxc933LHVZAErhcVXWcVv2Q4OcUxsSwvx+Nxr9fzWj96vv6ixH1goQrauJ+UwW9QJQ8HJIWQDfGoN+459RKFvr/S/xzoIsAAC8ECkbRnk8sAAAAASUVORK5CYII=');
+		}
+		.currency-flag.currency-{{flagCurrency}} {
+			width: 24px;
+			height: {%- if flagCurrency contains '1' -%}16px{%- else -%}24px{%- endif -%};
+			background-position: center center;
+			{%- if flagCurrency contains '3' -%}
+				border-radius: 50%;
+			{%- endif -%}
+		}
+	</style>
+
+    {%- case settings.currency_type -%}
+        {%- when '1' -%}{%- assign currenciesArray = shop.enabled_currencies | map: 'iso_code' -%}
+        {%- when '2' -%}{%- assign currenciesArray = settings.supported_currencies | split: ' ' -%}
+    {%- endcase -%}
+
+	{%- for currency in currenciesArray -%}
+		{%- assign currencyCode = currency | downcase -%}
+		{%- render 'currency-icon', type: currencyCode -%}
+	{%- endfor -%}
+{%- endunless -%}
+
+
+{%- comment -%}
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*
+	* CUSTOM STYLESHEET
+	*
+	* * * * *
+{%- endcomment-%}
+{%- if section.blocks.size > 0 -%}
+	{%- for block in section.blocks -%}
+		{%- assign _content	= block.settings.content -%}
+
+		{%- case block.type -%}
+		  	{%- when 'stylesheet' -%}
+		        {%- assign _class 	= block.settings.title -%}
+				{%- assign _image 	= block.settings.image -%}
+				{%- capture itemCss -%}
+					{%- capture firstValues -%}
+						{{- _content | strip_newlines -}}
+						{%- unless _image == blank -%}background-image: url({{_image | img_url: 'master' }});{%- endunless -%}
+					{%- endcapture -%}
+					{%- render 'css-resp', classID: _class, css_values: firstValues -%}
+				{%- endcapture -%}
+
+		  	{%- when 'stylesheet_large' -%}{%- capture itemCss -%}{{- _content | strip_newlines  -}}{%- endcapture -%}
+
+		  	{%- when 'custom_color' -%}
+				{%- assign ar_color 	 	= block.settings.color_code | downcase | strip_newlines | split: ';' -%}
+				{%- assign color_setting 	= '' -%}
+				{%- assign hasColorSetting 	= true -%}
+
+				{%- for i_color in ar_color -%}
+					{%- assign temp 	= i_color | strip -%}
+					{%- assign _color 	= temp | split: ':' | first | strip | handleize -%}
+					{%- assign _cl_code = temp | split: ':' | last | strip -%}
+
+					{%- if _color.size > 0 and _cl_code.size > 0 -%}
+						{%- capture temp_color %}.customColor-{{_color}}{% if template contains 'collection' %}, .filterColor-{{_color}} a{% endif %}{background: {{_cl_code}};color: {{_cl_code}};}{% endcapture -%}
+						{%- assign color_setting = color_setting | strip | append: temp_color -%}
+					{%- endif -%}
+				{%- endfor -%}
+		  		{%- capture itemCss -%}{{color_setting}}{%- endcapture -%}
+
+		{%- endcase -%}
+
+		{%- assign _content_css = _content_css | append: itemCss -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- comment -%}
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*
+	* Variant Color
+	*
+	* * * * *
+{%- endcomment-%}
+{%- if hasColorSetting != true -%}
+	{%- assign ar_color_eg = 'red: #FF0000;pink: #FFC0CB;black: #000000;white:#ffffff;silver:#c0c0c0;grey:#808080;gray:#808080;black:#000000;red:#ff0000;maroon:#800000;yellow:#ffff00;olive:#808000;lime:#00ff00;green:#008000;aqua:#00ffff;teal:#008080;blue:#0000ff;navy:#000080;fuchsia:#ff00ff;purple:#800080;orange:#ffa500;brown: #654321;gold: #FFD700;' -%}
+	{%- assign ar_color 	 = ar_color_eg | downcase | strip_newlines | split: ';' -%}
+	{%- assign color_setting = '' -%}
+
+	{%- for i_color in ar_color -%}
+		{%- assign temp 	= i_color | strip -%}
+		{%- assign _color 	= temp | split: ':' | first | strip | handleize -%}
+		{%- assign _cl_code = temp | split: ':' | last | strip -%}
+
+		{%- if _color.size > 0 and _cl_code.size > 0 -%}
+			{%- capture temp_color %}.customColor-{{_color}}{% if template contains 'collection' %}, .filterColor-{{_color}} a{% endif %}{background: {{_cl_code}};color: {{_cl_code}};}{% endcapture -%}
+			{%- assign color_setting = color_setting | strip | append: temp_color -%}
+		{%- endif -%}
+	{%- endfor -%}
+	{%- capture itemCss -%}{{color_setting}}{%- endcapture -%}
+	{%- assign _content_css = _content_css | append: itemCss -%}
+{%- endif -%}
+
+{%- unless _content_css == blank -%}{{_content_css | strip_newlines}}{%- endunless -%}
+{%- endcapture -%}
+{%- capture content -%}{%- render 'compress', content: content -%}{%- endcapture -%}
+{%- style -%}{{ content | remove: '<style>' | remove: '<style data-shopify>' | remove: '</style>' | strip }}{%- endstyle -%}
+{%- render 'snippet-theme', type: 'themeCSS' -%}
+
+{% schema %}
+{
+    "name": "Theme Config",
+    "settings": [
+        {
+            "type": "paragraph",
+            "content": "Header color styles, custom stylesheet"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "style_desk",
+            "limit": 1,
+            "name": "Header Desktop styles",
+            "settings": [
+                {
+                    "type": "color",
+                    "id": "header_bg_color",
+                    "label": "Background color"
+                },
+                {
+                    "type": "range",
+                    "id": "header_bg_color_opacity",
+                    "label": "Background color opacity",
+                    "min": 0,
+                    "max": 100,
+                    "step": 5,
+                    "unit": "%",
+                    "default": 100
+                },
+                {
+                    "type": "color",
+                    "id": "header_text_color",
+                    "label": "Text color"
+                },
+                {
+                    "type": "color",
+                    "id": "header_icon_color",
+                    "label": "Icon color"
+                },
+                {
+                    "type": "color",
+                    "id": "header_bg_cart_number",
+                    "label": "Background Cart Icon number"
+                },
+                {
+                    "type": "color",
+                    "id": "header_text_cart_number",
+                    "label": "Cart Icon number"
+                },
+                {
+                    "type": "color",
+                    "id": "header_border_color",
+                    "label": "Border color"
+                },
+                {
+                    "type": "range",
+                    "id": "header_border_color_opacity",
+                    "label": "Border color opacity",
+                    "min": 0,
+                    "max": 100,
+                    "step": 10,
+                    "unit": "%",
+                    "default": 10
+                }
+            ]
+        },
+        {
+            "type": "style_navigation",
+            "limit": 1,
+            "name": "Header Navigation styles",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "nav_size",
+                    "label": "Link font size",
+                    "info": "E.g: 17px"
+                },
+                {
+                    "type": "range",
+                    "id": "nav_weight",
+                    "label": "Link weight",
+                    "min": 0,
+                    "max": 900,
+                    "step": 100,
+                    "default": 0,
+                    "info": "0 is auto"
+                },
+                {
+                    "type": "color",
+                    "id": "nav_link_color",
+                    "label": "Link Color"
+                },
+                {
+                    "type": "color",
+                    "id": "nav_hover_color",
+                    "label": "Hover: Link Color"
+                }
+            ]
+        },
+        {
+            "type": "style_mobi",
+            "limit": 1,
+            "name": "Header Mobile styles",
+            "settings": [
+                {
+                    "type": "color",
+                    "id": "header_bg_color",
+                    "label": "Background color"
+                },
+                {
+                    "type": "color",
+                    "id": "header_text_color",
+                    "label": "Text color"
+                },
+                {
+                    "type": "color",
+                    "id": "header_icon_color",
+                    "label": "Icon color"
+                },
+                {
+                    "type": "color",
+                    "id": "header_bg_cart_number",
+                    "label": "Background Cart Icon number"
+                },
+                {
+                    "type": "color",
+                    "id": "header_text_cart_number",
+                    "label": "Cart Icon number"
+                },
+                {
+                    "type": "color",
+                    "id": "header_border_color",
+                    "label": "Border color"
+                },
+                {
+                    "type": "range",
+                    "id": "header_border_color_opacity",
+                    "label": "Border color opacity",
+                    "min": 0,
+                    "max": 100,
+                    "step": 5,
+                    "unit": "%",
+                    "default": 10
+                }
+            ]
+        },
+        {
+            "type": "stylesheet_large",
+            "name": "Stylesheet",
+            "settings": [
+                {
+                    "type": "html",
+                    "id": "content",
+                    "label": "CSS",
+                    "info": ".selector{\nfont-size: 15px;\ncolor: #000000; ...\n}\n.selector{\nfont-size: 15px;\ncolor: #000000; ...\n}"
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Block label"
+                }
+            ]
+        },
+        {
+            "type": "stylesheet",
+            "name": "Stylesheet + Background",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Class Name",
+                    "info": ".selector"
+                },
+                {
+                    "type": "html",
+                    "id": "content",
+                    "label": "CSS",
+                    "info": "font-size: 15px;\ncolor: #000000;\n..."
+                },
+                {
+                    "type": "image_picker",
+                    "id": "image",
+                    "label": "Image"
+                }
+            ]
+        },
+        {
+            "type": "custom_color",
+            "name": "Color Code",
+            "settings": [
+                {
+                    "type": "html",
+                    "id": "color_code",
+                    "label": "Color Hex Code",
+                    "default": "red: #FF0000;pink: #FFC0CB;black: #000000;white:#ffffff;silver:#c0c0c0;grey:#808080;gray:#808080;black:#000000;red:#ff0000;maroon:#800000;yellow:#ffff00;olive:#808000;lime:#00ff00;green:#008000;aqua:#00ffff;teal:#008080;blue:#0000ff;navy:#000080;fuchsia:#ff00ff;purple:#800080;orange:#ffa500;brown: #654321;gold: #FFD700;",
+                    "info": "E.g: Red: #FF0000, Black: #000000, ..."
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

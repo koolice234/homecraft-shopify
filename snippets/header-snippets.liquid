@@ -1,0 +1,282 @@
+{%- case type -%}
+
+  	{%- when 'iconList' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+	  	<div class="header-icons">
+          <a href="/pages/virtual-tour"><b>Virtual Tour</b></a>
+	  		{%- if isHeaderMobile -%}{%- include 'button', type: 'hamburger' -%}{%- endif -%}
+	  		{%- if _header_style == '5' or isHeaderMobile -%}{%- include 'search', type: 'button' -%}{%- endif -%}
+	  		{%- include 'button', type: 'account' -%}
+	  		{%- include 'button', type: 'wishlist' -%}
+	  		{%- include 'button', type: 'compare' -%}
+	  		{%- include 'button', type: 'cart' -%}
+	  	</div>
+
+	{%- when 'mainMenu' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+	 	{%- assign _nav_link = section.settings.nav_link -%}
+
+	 	{%- unless _nav_link == blank -%}
+			 <nav class="horizontal-menu main-menu-wrapper main-nav" aria-label="Main" role="navigation">
+			 	<ul class="main-menu main-nav__list">
+			 		{%- unless section.settings.show_hamburger == false -%}
+			 			<li class="main-nav__item nav-item nav-mobile">{%- include 'header-snippets', type: 'navMobile' -%}</li>
+			 		{%- endunless -%}
+
+			 		{%- for l in linklists[_nav_link].links -%}
+			 			{%- include 'nav-link', l: l, class: 'main-nav__item nav-item', header: true, megaMenu: section.settings.enable_mega_menu -%}
+			 		{%- endfor -%}
+			 	</ul>
+			 </nav>
+	 	{%- endunless -%}
+
+	{%- when 'subMenu' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+	 	{%- assign _nav_link = section.settings.nav_link_sub -%}
+	 	{%- unless _nav_link == blank -%}
+			 <div class="horizontal-menu sub-menu-wrapper">
+			 	<ul class="sub-menu">
+			 		{%- for l in linklists[_nav_link].links -%}
+			 			{%- include 'nav-link', l: l, class: 'nav-item', header: true, megaMenu: section.settings.enable_mega_menu -%}
+			 		{%- endfor -%}
+			 	</ul>
+			 </div>
+	 	{%- endunless -%}
+
+	{%- when 'navMobile' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+
+		{%- liquid
+			assign svgIcon = settings.hicon_svg_hamburger
+			assign imgIcon = settings.hicon_img_hamburger
+		-%}
+		<a href="javascript:void(0);" class="nav--mobile" data-dialog-trigger="#menuMobile">
+			{%- if svgIcon != blank 	-%}{%- render 'svg', type: 'custom', name: svgIcon -%}
+			{%- elsif imgIcon != blank 	-%}<img src="{{ imgIcon | img_url: '30x' }}" alt="{{type | capitalize}}">
+			{%- else 					-%}<span class="svg-element-ui">{%- render 'svg', type: 'nav' -%}</span>
+			{%- endif -%}
+			
+		</a>
+
+	{%- when 'singleMenu' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+		{%- liquid
+	 	 	assign _navFirst_label 		= section.settings.singleLink_label
+	 	 	assign _navFirst_url 		= section.settings.singleLink_url | default: 'javascript:void(0);'
+	 	 	assign _navFirstHandle      = _navFirst_label | handle
+	 	-%}
+
+	 	{%- unless _navFirst_label == blank -%}
+			 	<a href="{{ _navFirst_url }}" class="">{{_navFirst_label}}</a>
+			 	{%- unless section.id contains 'mobile' -%}
+			 		{%- render 'header-snippets', type: 'megaInclude', lHandle: _navFirstHandle -%}
+			 	{%- endunless -%}
+		 	{% comment %}<div class="nav-single f-menu-item"></div>{% endcomment %}
+		{%- endunless -%}
+
+	{%- when 'language_currency' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+		{%- liquid
+			assign _currencies = section.settings.show_currencies
+			assign _languages = section.settings.show_languages
+		-%}
+
+		{%- unless _currencies == false and _languages == false -%}
+	 		<div class="select-dropdown-group-ui">
+
+	 			{%- unless _languages == false -%}
+		 			<div class="select-dropdown-element-ui language-dropdown">
+		 				<a href="javascript:void(0);" class="select-dropdown---label{% if settings.enable_multi_languages and shop.published_locales.size > 1 %}" data-dialog-trigger="#languageModal{% endif %}">
+		 					<span>{{ request.locale.name }}</span>
+		 					{%- if settings.enable_multi_languages and shop.published_locales.size > 1 -%}
+		 						<span class="svg-element-ui">{%- render 'svg', type: 'arrowDown' -%}</span>
+		 					{%- endif -%}
+		 				</a>
+		 			</div>
+	 			{%- endunless -%}
+
+	 			{%- unless _currencies == false -%}
+		 			{%- case settings.currency_type -%}
+			 			{%- when '1' -%}{%- assign currenciesArray = shop.enabled_currencies -%}
+			 			{%- when '2' -%}{%- assign currenciesArray = settings.supported_currencies | split: ' ' -%}
+		 			{%- endcase -%}
+		 			<div class="select-dropdown-element-ui currency-dropdown">
+		 				<a href="javascript:void(0);" class="select-dropdown---label{% if settings.currency_type != '3' %}" data-dialog-trigger="#currencyModal{% endif %}">
+		 					<span data-currency-code>{{ cart.currency.iso_code }}</span>
+		 					{%- if settings.currency_type != '3' and currenciesArray.size > 1 -%}
+		 						<span class="svg-element-ui">{%- render 'svg', type: 'arrowDown' -%}</span>
+		 					{%- endif -%}
+		 				</a>
+		 			</div>
+	 			{%- endunless -%}
+	 		</div>
+		{%- endunless -%}
+
+	{%- when 'headerInformation' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* *{%- endcomment-%}
+		{%- assign _header_information 			= section.settings.header_information -%}
+
+		{%- unless _header_information == blank -%}
+			<div class="header-custom-text-info">
+				<div id="header_information">{{ _header_information }}</div>
+			</div>
+		{%- endunless -%}
+
+	{%- when 'border' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+		<div class="header-border-wrapper">
+			<div class="header-border-item f-break"></div>
+		</div>
+
+	{%- when 'menu-mobile' -%}
+
+  
+		<dialog id="menuMobile" class="drawer-ui mobile-version{% if settings.enable_link_to_dropdown %} mega-link-to-dropdown{% endif %} lazyqueue-wait lazyload" aria-hidden="true">
+			<div tabindex="-1" data-dialog-close></div>
+			{%- if request.design_mode -%}
+				<div role="dialog" aria-modal="true" class="lazyloaded">
+					{%- render 'mega-import', search_terms: 'hmob', section: section -%}
+				</div>
+
+			{%- else -%}
+				<div role="dialog" aria-modal="true" class="lazyqueue-wait lazyload" data-include="{{ routes.search_url }}?view=mm&q=hmob">
+					<div class="mobile-layer main-layer active"></div>
+				</div>
+			{%- endif -%}
+		</dialog>
+
+
+	{%- when 'header_color' -%}
+
+		{%- capture sectionCss -%}
+		    {%- for block in section.blocks -%}
+		      	{%- case block.type -%}
+
+			        {%- when 'style_desk' -%}{%- comment -%}  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *{%- endcomment-%}
+				        {%- liquid
+				        	assign header_style              = settings.header_desk_style
+				        	assign _bg_color                 = block.settings.header_bg_color | remove: 'rgba(0,0,0,0)'
+				        	assign _header_bg_opacity        = block.settings.header_bg_color_opacity | times: 0.01
+				        	assign _text_color               = block.settings.header_text_color | remove: 'rgba(0,0,0,0)'
+				        	assign _icon_color               = block.settings.header_icon_color | remove: 'rgba(0,0,0,0)'
+				        	assign _bg_cart_number           = block.settings.header_bg_cart_number | remove: 'rgba(0,0,0,0)'
+				        	assign _text_cart_number         = block.settings.header_text_cart_number | remove: 'rgba(0,0,0,0)'
+				        	assign _border_color             = block.settings.header_border_color | remove: 'rgba(0,0,0,0)'
+				        	assign _border_color_opacity     = block.settings.header_border_color_opacity | times: 0.01
+
+				        	if _bg_color != '' and _header_bg_opacity < 1
+				        		assign _bg_color = _bg_color | color_modify: 'alpha', _header_bg_opacity
+				        	endif
+				        -%}
+
+			          	{%- capture rootValue -%}
+			                {%- unless _bg_color            == '' -%}--header-bg-desk: {{ _bg_color }};{%- endunless -%}
+			                {%- unless _text_color          == '' -%}--header-text-color-desk: {{ _text_color }};{%- endunless -%}
+			                {%- unless _icon_color          == '' -%}--header-icons-color-desk: {{ _icon_color }};{%- endunless -%}
+			                {%- unless _bg_cart_number      == '' -%}--header-bg-cart-number-desk: {{ _bg_cart_number }};{%- endunless -%}
+			                {%- unless _text_cart_number    == '' -%}--header-text-cart-number-desk: {{ _text_cart_number }};{%- endunless -%}
+			          	{%- endcapture -%}
+			          	{%- assign rootStyle = rootStyle | append: rootValue -%}
+
+
+			          {%- comment -%}
+			          	**********
+			          	*
+			          	* BORDER COLOR
+			          	*
+			          	*****
+			          {%- endcomment-%}
+
+			          {%- if _border_color.size > 0 -%}
+				          {%- assign _border_color = _border_color | color_modify: 'alpha', _border_color_opacity -%}
+				          .header-border-item{%- if '1,3,4' contains header_style -%},
+				          .h-desk-{{header_style}} .header-col-right > div:not(:last-child){%- endif -%}{border-color: {{_border_color}};}
+
+				          {%- capture rootValue -%}
+				          	--header-border-color-desk: {{ _border_color | color_modify: 'alpha', 0.1 | remove: ', 0.1)' | remove: 'rgba(' | strip }};
+				          	--header-border-color-desk-opacity: {{ _border_color_opacity }};
+				          {%- endcapture -%}
+				          {%- assign rootStyle = rootStyle | append: rootValue -%}
+			          {%- endif -%}
+
+			        {%- when 'style_navigation' -%}{%- comment -%}  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *{%- endcomment-%}
+				        {%- liquid
+				        	assign _nav_size         = block.settings.nav_size
+				        	assign _nav_weight       = block.settings.nav_weight
+				        	assign _nav_link_color   = block.settings.nav_link_color | remove: 'rgba(0,0,0,0)'
+				        	assign _nav_hover_color  = block.settings.nav_hover_color | remove: 'rgba(0,0,0,0)'
+				        -%}
+			          	{%- capture rootValue -%}
+				            {%- unless _nav_size     == blank -%}--nav-size: {{ _nav_size | split: ',' | first }};{%- endunless -%}
+				            {%- unless _nav_weight       == 0 -%}--nav-weight: {{ _nav_weight }};{%- endunless -%}
+				            {%- unless _nav_link_color  == '' -%}--nav-link-color: {{ _nav_link_color }};{%- endunless -%}
+				            {%- unless _nav_hover_color == '' -%}--nav-link-hover: {{ _nav_hover_color }};{%- endunless -%}
+				        {%- endcapture -%}
+			          	{%- assign rootStyle = rootStyle | append: rootValue -%}
+
+
+			        {%- when 'style_mobi' -%}{%- comment -%}  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *{%- endcomment-%}
+			          	{%- liquid
+				            assign header_style              = settings.header_mobi_style
+				            assign _bg_color                 = block.settings.header_bg_color | remove: 'rgba(0,0,0,0)'
+				            assign _text_color               = block.settings.header_text_color | remove: 'rgba(0,0,0,0)'
+				            assign _icon_color               = block.settings.header_icon_color | remove: 'rgba(0,0,0,0)'
+				            assign _bg_cart_number           = block.settings.header_bg_cart_number | remove: 'rgba(0,0,0,0)'
+				            assign _text_cart_number         = block.settings.header_text_cart_number | remove: 'rgba(0,0,0,0)'
+				            assign _border_color             = block.settings.header_border_color | remove: 'rgba(0,0,0,0)'
+			            	assign _border_color_opacity     = block.settings.header_border_color_opacity     | times: 0.01
+			          	-%}
+			          	{%- capture rootValue -%}
+			            	{%- unless _bg_color          == '' -%}--header-bg-mobile: {{_bg_color}};{%- endunless -%}
+			            	{%- unless _text_color        == '' -%}--header-text-color-mobile: {{_text_color}};{%- endunless -%}
+			            	{%- unless _icon_color        == '' -%}--header-icons-color-mobile: {{_icon_color}};{%- endunless -%}
+			            	{%- unless _bg_cart_number    == '' -%}--header-bg-cart-number-mobile: {{_bg_cart_number}};{%- endunless -%}
+			            	{%- unless _text_cart_number  == '' -%}--header-text-cart-number-mobile: {{_text_cart_number}};{%- endunless -%}
+			          	{%- endcapture -%}
+			          	{%- assign rootStyle = rootStyle | append: rootValue -%}
+
+			          	{%- comment -%}
+			            **
+			            * Border
+			            *
+			          	{%- endcomment-%}
+			          	{%- liquid
+			          		if _border_color != 'rgba(0,0,0,0)' and _border_color_opacity < 1
+			          		assign _border_color = _border_color | color_modify: 'alpha', _border_color_opacity
+			          		endif
+			          	-%}
+		              	{%- if _border_color != 'rgba(0,0,0,0)' or _border_color_opacity < 1 -%}
+		                	@media(max-width: 991px){ .header-mobile .header-border-item{border-color: {{_border_color}} !important;} }
+		              	{%- endif -%}
+
+			          	{%- capture rootValue -%}
+			          		--header-border-color-mobile: {{ _border_color | color_modify: 'alpha', 0.1 | remove: ', 0.1)' | remove: 'rgba(' | strip }};
+		              		--header-border-color-mobile-opacity: {{_border_color_opacity}};
+			          	{%- endcapture -%}
+			          	{%- assign rootStyle = rootStyle | append: rootValue -%}
+		      {%- endcase -%}
+		    {%- endfor -%}
+
+		    {%- unless rootStyle == blank -%}:root{ {{rootStyle}} }{%- endunless -%}
+
+		{%- endcapture -%}
+
+		{%- unless sectionCss == blank -%}{{ sectionCss | remove: '<style>' | remove: '</style>' }}{%- endunless -%}
+
+
+	{%- when 'megaInclude' -%}{%- comment -%}	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * *	* * * * * *{%- endcomment-%}
+
+
+		{%- assign megaTrigger = section.blocks | where: 'type', 'mega_trigger' -%}
+		{%- capture megaArray -%}{%- for bM in megaTrigger -%}{%- unless forloop.first -%}|{%- endunless -%}{{ bM.settings.trigger | handle }}{%- endfor -%}{%- endcapture -%}
+		{%- assign megaArray = megaArray | split: '|' -%}
+
+		{%- if section.settings.enable_mega_menu and megaArray contains handle -%}
+			<div class="lazyload-include block-mega-menu" data-handle="{{ handle }}">
+				<div class="block-mega-menu-item">
+					{%- render 'mega-import', trigger: handle -%}
+				</div>
+			</div>
+
+		{%- elsif l.links.size > 0  -%}
+			<div class="lazyload-include dropdown-menu-include" data-handle="{{ handle }}">
+				{%- assign nhandle = handle | append: '_dd' -%}
+				<div class="dropdown-menu-item">
+					{%- render 'mega-import', trigger: nhandle -%}
+				</div>
+			</div>
+		{%- endif -%}
+
+{%- endcase -%}

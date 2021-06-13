@@ -1,0 +1,28 @@
+	{% assign metreM = '/metre' %}
+	{% assign rollM = '/roll' %}
+
+	{%- if settings.currency_format == 'money_format' -%}
+    	{{- price | money -}} 
+		
+		{% for tag in product.tags %}
+            {% if tag == 'Metre' %} 
+				<span class="prod-curr"> {{ '/metre' }} </span>
+            {% elsif tag == 'Roll' %} 
+                <span class="prod-curr"> {{ '/roll' }} </span>
+            {%- endif -%}
+		{% endfor %}
+    {%- else -%}
+        {{- price | money_with_currency -}} 
+		
+		{% for tag in product.tags %}
+
+            {% if tag == 'Metre' %} 
+				<span class="prod-curr"> {{ '/metre' }} </span>
+            {% elsif tag == 'Roll' %} 
+				<span class="prod-curr"> {{ '/roll' }} </span>
+            {%- endif -%}
+		{% endfor %}
+    {%- endif -%}
+	
+
+

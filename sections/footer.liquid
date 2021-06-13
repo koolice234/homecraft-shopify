@@ -1,0 +1,158 @@
+{%- capture content -%} 
+{%- if section.settings.boxed_layout -%}{%- assign _layout = 'boxed' -%}{%- else -%}{%- assign _layout = 'full' -%}{%- endif -%}
+{%- liquid
+  assign sectionType          = 'footer'
+  assign _lazyload            = settings.use_lazyload
+  assign _paymentBlock        = section.blocks | where: 'type', 'payment'
+  assign __background_color   = section.settings.background_color | default: 'rgba(0,0,0,0)'
+  assign __text_color         = section.settings.text_color | default: 'rgba(0,0,0,0)'
+  assign __border_color       = section.settings.border_color | default: 'rgba(0,0,0,0)'
+-%}
+
+{%- unless request.design_mode -%}
+  {%- unless settings.enable_footerWidget -%}
+    <link rel="stylesheet" href="{{ 'footer.css' | asset_url }}" as="style">
+  {%- endunless -%}
+{%- endunless -%}
+
+
+{%- capture section_class -%}
+  section-{{- section.id -}}
+  |layout-{{- _layout -}}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+	{%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+		<div class="section_content-wrapper">
+      <div class="row">
+        <div class="col-md-6 col-12">
+          <div class="copyright-content">
+            {{ section.settings.copyright }}
+          </div>
+        </div>
+
+        {%- if _paymentBlock.size > 0 -%}
+          <div class="col-md-6 col-12 text-md-right">
+            <div class="payment-wrapper">
+              {%- for block in _paymentBlock -%}
+                {%- liquid
+                  assign __title  = block.settings.title
+                  assign __image  = block.settings.image
+                  assign __svg    = block.settings.svg
+                -%}
+                <a class="payment_item block-{{block.id}}" href="javascript:void(0);"{{block.shopify_attributes}}>
+                  <span class="payment_item--inner">
+                    {%- unless __image == blank -%}
+                      {%- render 'image-style', image: __image, originQuality: true, setWidth: true, manualWidth: block.settings.image_manual_w -%}
+                    {%- elsif __svg != blank -%}
+                      <span class="svg-element-ui">{{ __svg }}</span>
+                    {%- endunless -%}
+                  </span>
+                </a>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+		</div>
+	{%- if _layout == 'boxed' -%}</div>{%- endif -%}
+</div>
+
+{%- capture sectionCss -%}
+  :root{
+    {%- unless __background_color == 'rgba(0,0,0,0)' -%}--footer-bg: {{ __background_color }};{%- endunless -%}
+    {%- unless __text_color       == 'rgba(0,0,0,0)' -%}--footer-copyright-cl: {{ __text_color }};{%- endunless -%}
+    {%- unless __border_color     == 'rgba(0,0,0,0)' -%}--footer-copyright-border-top: {{ __border_color }};{%- endunless -%}
+  }
+  {%- unless __text_color == 'rgba(0,0,0,0)' -%}
+    @media (max-width: 767px){
+      .card_footer-mobile .card_footer-nav .navElement span{color: {{__text_color}};}
+      .card_footer-mobile .card_footer-nav .navElement .svg-element-ui path {fill: {{__text_color}};}
+    }
+  {%- endunless -%}
+  {%- render 'snippet-theme', type: 'sectionCSS', ID: sectionID -%}
+  {{- section_css -}}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}
+
+{% schema %}
+{
+   "name": "Footer",
+   "tag": "section",
+   "settings": [
+      {
+         "type": "checkbox",
+         "id": "boxed_layout",
+         "label": "Boxed layout",
+         "default": true
+      },
+      {
+         "type": "text",
+         "id": "section_padding",
+         "label": "Section Padding",
+         "placeholder": "E.g: 5px 20px 5px 20px",
+         "info": "Order: Top Right Bottom Left"
+      },
+      {
+         "type":"richtext",
+         "id":"copyright",
+         "label":"Copyright",
+         "default": "<p>Copyright © 2020 Mymedi. All Rights Reserved</p>"
+      },
+      {
+         "type":"header",
+         "content":"Color style"
+      },
+      {
+         "type":"color",
+         "id":"background_color",
+         "label":"Background color"
+      },
+      {
+         "type":"color",
+         "id":"text_color",
+         "label":"Text color"
+      },
+      {
+         "type":"color",
+         "id":"border_color",
+         "label":"Border color"
+      }
+   ],
+   "blocks": [
+      {
+        "type": "payment",
+        "name": "Payment",
+        "settings": [
+          {
+            "type":"text",
+            "id":"title",
+            "label":"Block label"
+          },
+          {
+             "type":"html",
+             "id":"svg",
+             "label":"SVG"
+          },
+          {
+             "type":"image_picker",
+             "id":"image",
+             "label":"Image"
+          },
+          {
+             "type":"text",
+             "id":"image_manual_w",
+             "label":"Image manual width",
+             "default": "50px",
+             "placeholder": "E.g: 50px"
+          }
+        ]
+      }
+   ]
+}
+{% endschema %}

@@ -1,0 +1,120 @@
+{%- capture content -%}
+{%- if section.settings.boxed_layout -%}{%- assign _layout = 'boxed' -%}{%- else -%}{%- assign _layout = 'full' -%}{%- endif -%}
+{%- if template.suffix != 'no-sidebar' and settings.collection_page != '2' -%}
+  {%- if settings.page_layout == 'boxed' -%}{%- assign _layout = 'full' -%}{%- endif -%}  
+{%- endif -%}
+
+{%- liquid
+  assign sectionType        = 'collection'
+  assign _enableCatalog     = false
+  assign _collectionDefault = settings.collection_page | times: 1
+  assign _items_resp        = section.settings.items_resp | default: '5,3,2'
+  assign _catalog_mode      = section.settings.catalog_mode | strip | split: ','
+  for ct in _catalog_mode
+    assign ct_t = ct | strip
+    assign catalogArr = catalogArr | append: '|' | append: ct_t
+  endfor
+  assign catalogArr = catalogArr | remove_first: '|' | split: '|'
+-%}
+
+{%- if cart.attributes.pagination == blank -%}
+  {%- assign _total = section.settings.total | split: ',' | first | strip | default: '20' | times: 1 -%}
+{%- else -%}
+  {%- assign _total = cart.attributes.pagination -%}
+{%- endif -%}
+
+{%- if request.design_mode or cart.attributes.view_cata == blank -%}
+  {%- capture cataClass -%}{%- render 'set-item-per-row', value: _items_resp -%}{%- endcapture -%}
+{%- else -%}
+  {%- capture cataClass -%}{{cart.attributes.view_cata}}{%- endcapture -%}
+{%- endif -%}
+
+{%- if _collectionDefault == 3 or collection.template_suffix contains 'infinite' -%}
+  {%- assign infiniteMode = true -%}
+{%- endif -%}
+
+{%- if catalogArr contains '+ALL' or catalogArr contains collection.title -%}
+  {%- assign _enableCatalog = true -%}
+{%- endif -%}
+
+{%- assign checkListMode = cataClass | split: ' ' | first -%}
+{%- if checkListMode contains 'col-12' -%}
+  {%- assign checkListMode = true -%}
+{%- endif -%}
+
+
+{%- capture section_class -%}
+  {{- -}}section-{{- section.id -}}
+  {{- -}}|layout-{{- _layout -}}
+  {{- -}}|catalog-{{- _enableCatalog -}}
+  {%- if checkListMode == true -%}|product_style-list{%- endif -%}
+{%- endcapture -%}{%- assign section_class = section_class | strip | split: '|' | join: ' ' -%}
+{%- assign sectionID = '.section-' | append: section.id -%}
+
+
+<div class="{{section_class}}" data-section-type="{{sectionType}}" data-section-id="{{section.id}}">
+	<div class="section_content-wrapper">
+
+    <div class="section_content-head">
+      {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+
+        {%- render 'collection-detail-snippet', type: 'subcollection', currentCollection: collection -%}
+        {%- render 'collection-toolbar', defaultView: _total, cataClass: cataClass -%}
+
+      {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+    </div>
+
+
+    <div class="section_content-body">
+      {%- paginate collection.products by _total -%}
+        <div id="col-main">
+          {%- if _layout == 'boxed' -%}<div class="container">{%- endif -%}
+            <div class="row" data-content-dynamic>
+              {%- if collection.products.size > 0 -%}
+                {%- for product in collection.products -%}
+                  {%- assign productClass = 'product-section' -%}
+
+                  <section class="{{ productClass }} {{cataClass}}" data-product-class="{{productClass}}">
+                    {% comment %}{%- render 'product-item', product: product, showShortDes: section.settings.show_short_description -%}{% endcomment %}
+                    {%- render 'product-item-in-collection', product: product, showShortDes: section.settings.show_short_description -%}
+                  </section>
+                {%- endfor -%}
+
+              {%- else -%}
+                <p class="no-products">{{- 'collections.general.no_product' | t -}}</p>
+              {%- endif -%}
+            </div>
+
+            {%- if infiniteMode -%}
+              {%- capture captureCurrentview -%}
+                <span class="infinite-view" data-infinite-count data-current-view>{{collection.products.size}}</span>
+              {%- endcapture -%}
+
+              <div class="load-more-text text-center{% unless collection.products.size > 0 %} hide{% endunless %}">
+                <p data-dynamic-content="viewTotal">{{- 'collections.general.infinite_text' | t: total: collection.products_count, number: '[]' | replace: '[]', captureCurrentview -}}</p>
+                {%- if paginate.next -%}
+                  <div class="load_more">
+                    <a href="{{ paginate.next.url }}" class="btn btn-1 btn-load-more">{{'collections.general.load_more' | t }}</a>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- else -%}
+              <div data-dynamic-content="pagination">
+                {%- include 'pagination' -%}
+              </div>
+            {%- endif -%}
+          {%- if _layout == 'boxed' -%}</div>{%- endif -%}
+        </div>
+      {%- endpaginate -%}
+  	</div>
+  </div>
+</div>
+
+
+{%- capture sectionCss -%}
+  {{- section_css -}}
+{%- endcapture -%}
+{%- assign sectionCss = sectionCss | strip_newlines -%}
+{%- unless sectionCss == blank -%}{% style %}{{sectionCss}}{% endstyle %}{%- endunless -%}
+{%- endcapture -%}
+{%- render 'compress', content: content -%}

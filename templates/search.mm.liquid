@@ -1,0 +1,19 @@
+{%- layout none -%}
+{%- liquid
+	assign _header_style = settings.header_desk_style	
+-%}
+
+{%- capture content -%}
+	{%- case _header_style -%}	
+	  	{%- when '1' -%}{%- section 'header-1' -%}
+	  	{%- when '2' -%}{%- section 'header-2' -%}
+	  	{%- when '3' -%}{%- section 'header-3' -%}
+	  	{%- when '4' -%}{%- section 'header-4' -%}
+	  	{%- when '5' -%}{%- section 'header-5' -%}
+	{%- endcase -%}
+{%- endcapture -%}
+
+{%- assign content = content | split: '[||]' -%}
+
+{%- capture compress -%}{{ content[1] }}{%- endcapture -%}
+{%- render 'compress', content: compress -%}

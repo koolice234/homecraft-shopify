@@ -1,0 +1,211 @@
+{%- liquid
+	assign currentProduct 	= product.selected_or_first_available_variant
+	assign hoverStyle 		= settings.product_card_hover_style
+	assign compare_price 	= currentProduct.compare_at_price
+	assign price         	= currentProduct.price
+-%}
+{%- case type -%}
+	{%- when 'price' -%}
+		<p class="product-price" data-item-price style="text-align: left;">
+			{%- if settings.show_range_price and product.has_only_default_variant == false and product.price_min < product.price_max -%}
+				<span class="price">{%- render 'money-format', price: product.price_min -%}</span>
+				<span class="price-label">{{- 'products.product.to' | t -}}</span>
+				<span class="price">{%- render 'money-format', price: product.price_max -%}</span>
+			{%- else -%}
+				{%- if currentProduct.available -%}
+					{%- if compare_price > price -%}
+          				 
+						<span class="price-sale"
+						style="color: #26539f;
+						font-weight: 500;
+						font-size: 1.8rem;">
+							{%- render 'money-format', price: price, product: product -%}
+							<!-- {% for tag in product.tags %}
+								{% if tag == 'Metre' %} 
+								<span class="prod-curre"> {{ '/metre' }} </span>
+								{% elsif tag == 'Roll' %} 
+								<span class="prod-curre"> {{ '/roll' }} </span>
+								{%- endif -%}
+							{% endfor %} -->
+						</span>
+					{%- else -%}
+						<span class="price"
+						style="color: #26539f;
+						font-weight: 500;
+						font-size: 1.8rem;">
+							{%- render 'money-format', price: price, product: product  -%}
+							<!-- {% for tag in product.tags %}
+
+								{% if tag == 'Metre' %} 
+									<span class="prod-curre"> {{ '/metre' }} </span>
+								{% elsif tag == 'Roll' %} 
+									<span class="prod-curre"> {{ '/roll' }} </span>
+								{%- endif -%}
+							{% endfor %} -->
+						</span>
+					{%- endif -%}
+				{%- else -%}
+					<span class="price soldout">{{- 'products.product.sold_out' | t -}}</span>
+				{%- endif -%}
+			{%- endif -%}
+		</p>
+
+  	{%- when 'preCart' -%}
+	  	<div class="card-button preCart-button cart-action">
+	  		<button class="btn btn-link-cart{% if hoverStyle == '3' %} btn-1{% endif %}{% unless currentProduct.available %} soldout{% endunless %}" title="{% if currentProduct.available %}{{- 'products.product.add_to_cart' | t -}}{% else %}{{- 'products.product.sold_out' | t -}}{% endif %}">
+	  			{%- if hoverStyle == '3'-%}
+	  				<span class="button-label">{% if currentProduct.available %}{{- 'products.product.add_to_cart' | t -}}{% else %}{{- 'products.product.sold_out' | t -}}{% endif %}</span>
+	  			{%- else -%}
+	  				<span class="svg-element-ui">{%- render 'svg', type: 'productCart' -%}</span>
+	  			{%- endif -%}
+	  		</button>
+	  	</div>
+
+	{%- when 'label' -%}
+		{%- liquid
+			assign currentProduct 	= product.selected_or_first_available_variant
+			assign hoverStyle 		= settings.product_card_hover_style
+			assign compare_price 	= currentProduct.compare_at_price
+			assign price         	= currentProduct.price
+		-%}
+		{%- capture productLabel -%}++{{ product.tags | join: '++' | downcase }}++{%- endcapture -%}
+
+		{%- if productLabel contains '++label new++' -%}
+			<span class="label_ui label_ui-new">{{- 'products.label.new' | t -}}</span>
+		{%- endif -%}
+
+		{%- if productLabel contains '++label hot++' -%}
+			<span class="label_ui label_ui-hot">{{- 'products.label.hot' | t -}}</span>
+		{%- endif -%}
+
+		{%- if compare_price > price -%}
+				<span class="label_ui label_ui-sale">{{- 'products.label.sale' | t -}}</span>
+				<span class="label_ui label_ui-sale label_ui-sale-percent">{{ compare_price | minus: price | times: 100.0 | divided_by: compare_price | round }}%</span>
+		{%- endif -%}
+
+  	{%- when 'inventory' -%}
+		{%- assign limitInventory = limitInventory | default: 30 -%}
+		{%- if currentProduct.inventory_quantity > 0 and currentProduct.inventory_quantity < limitInventory -%}
+			<div class="featured_product__item-inventory-wrapper">
+				<div class="featured_product__item-inventory-qty">
+					<span class="inventory-label">{{- 'products.product.card_inventory' | t | newline_to_br -}}</span>
+					<span class="inventory-number">{{ currentProduct.inventory_quantity }}</span>
+				</div>
+			</div>
+		{%- endif -%}
+
+	{%- when 'card_info' -%}
+		{%- liquid
+			assign currentProduct 	= product.selected_or_first_available_variant
+			assign image 			= currentProduct.featured_media | default: product.featured_image
+			assign compare_price 	= currentProduct.compare_at_price
+			assign price         	= currentProduct.price
+			assign metafield 		= product.metafields.c_f
+			assign collectionSelect = nil
+			assign hoverStyle 		= settings.product_card_hover_style
+		-%}
+
+		{%- if collection.handle != 'all' and collection.handle != 'frontpage' and collection.handle != 'all-products' -%}
+			{%- assign collectionSelect = collection -%}
+		{%- endif -%}
+
+		{%- if hoverStyle == '1' -%}{%- render 'product-item-snippets', product: product, type: 'inventory' -%}{%- endif -%}
+
+		<div class="featured_product__item-action cart-action">
+
+			{%- capture form_classes -%}product-form product-form-{{ product.id }}{%- endcapture -%}
+			{%- assign dateNow = 'now' | date: '%N' -%}
+			{%- capture uid -%}{{product.id | append: dateNow}}{%- endcapture -%}
+
+
+			{%- form 'product', product, class: form_classes, novalidate: 'novalidate', data-product-form: '', id: uid -%}
+
+				<select name="id" id="ProductSelect-{{ product.id }}" class="featured_product__item-form__variants d-none">
+					{%- for variant in product.variants -%}
+						<option value="{{ variant.id }}"{%- if variant == currentProduct %} selected="selected"{%- endif -%}>
+							{{- variant.title -}}  {%- if variant.available == false %} - {{ 'products.product.sold_out' | t }}{% endif -%}
+						</option>
+					{%- endfor -%}
+				</select>
+
+				{%- capture ariaLabel -%}
+					{%- unless currentProduct.available -%}
+						|soldout"
+						|aria-disabled="true"
+						|disabled="disabled"
+						|aria-label="{{ 'products.product.sold_out' | t }}
+					{%- else -%}"
+						|aria-label="{{ 'products.product.add_to_cart' | t }}
+					{%- endunless -%}
+				{%- endcapture -%}
+
+				{%- capture cartBtnLabel -%}
+					{%- unless currentProduct.available -%} {{- 'products.product.sold_out' | t -}}
+					{%- else -%} {{- 'products.product.add_to_cart' | t -}}
+					{%- endunless -%}
+				{%- endcapture -%}
+
+				{% comment %}<input type="submit" name="add" class="btn add-to-cart btn-1{{ariaLabel | strip | split: '|' | join: ' '}}" value="{{ cartBtnLabel }}">{% endcomment %}
+
+				<button type="submit" name="add" class="btn add-to-cart btn-1{{ariaLabel | strip | split: '|' | join: ' '}}">
+					<span class="cart-btn-label">{{ cartBtnLabel }}</span>
+					<span class="svg-element-ui">
+						{%- render 'svg', type: 'cart' -%}
+					</span>
+				</button>
+
+			{%- endform -%}
+
+		</div>
+
+		{%- if settings.show_swatches -%}
+			{%- capture _routes -%}{{routes.all_products_collection_url}}/products/{{product.handle}}?view={%- endcapture -%}
+			<div class="product-card-swatches{% unless request.design_mode %} lazyload" data-include="{{_routes}}include.swt{% endunless %}">
+				{%- if request.design_mode -%}
+					{%- render 'swatch-card', product: product -%}
+				{%- endif -%}
+			</div>
+		{%- endif -%}
+		{%- unless hoverStyle == '1' -%}{%- render 'product-item-snippets', type: 'inventory' -%}{%- endunless -%}
+
+	{%- when 'card_btn' -%}
+		<div class="card-button wlcp-target wl-target">
+			{%- render 'button', type: 'wishlist_add', product: product -%}
+		</div>
+
+		<div class="card-button wlcp-target cp-target">
+			{%- render 'button', type: 'compare_add', product: product -%}
+		</div>
+		{%- if settings.show_quickview -%}
+			<div class="card-button">
+				<button class="btn btn-quick-view" data-quick-view data-handle="{{ product.handle }}" title="{{- 'products.product.quick_view' | t -}}">
+					{%- liquid
+						assign svgIcon = settings.hicon_svg_quickview
+						assign imgIcon = settings.hicon_img_quickview
+					-%}
+
+					{%- if svgIcon != blank 	-%}{%- render 'svg', type: 'custom', name: svgIcon -%}
+					{%- elsif imgIcon != blank 	-%}<img src="{{ imgIcon | img_url: '30x' }}" alt="{{type | capitalize}}">
+					{%- else 					-%}<span class="svg-element-ui">{%- render 'svg', type: 'quickview' -%}</span>
+					{%- endif -%}
+				</button>
+			</div>
+		{%- endif -%}
+
+		{%- if settings.product_card_hover_style == '2' -%}
+			{%- render 'product-item-snippets', type: 'preCart', product: product -%}
+		{%- endif -%}
+
+{%- endcase -%}
+
+<script>
+	var obj = {};
+	$('.prod-curre').each(function(){
+		var text = $.trim($(this).text());
+		if(obj[text]){
+			$(this).remove();
+		} else {
+			obj[text] = true;
+		}
+	})
+</script>

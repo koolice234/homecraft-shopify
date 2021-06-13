@@ -1,0 +1,115 @@
+{%- liquid
+	assign currentProduct 			= product.selected_or_first_available_variant
+	assign compare_price 			= currentProduct.compare_at_price
+	assign price         			= currentProduct.price
+	assign metafield 				= product.metafields.c_f
+	assign collectionSelect 		= nil
+	assign hoverStyle 				= settings.product_card_hover_style
+	assign imageRatio 				= settings.product_image_ratio | remove: 'auto'
+	assign imageCrop 				= settings.product_image_crop
+	assign imageRatioCustom 		= settings.image_ratio_custom
+	assign media 					= product.media | first
+	assign productId                = product.id
+-%}
+
+{%- if media.media_type == 'image' -%}
+	{%- assign image = media -%}
+{%- else -%}
+	{%- assign image = media.preview_image -%}
+{%- endif -%}
+
+{%- if image == blank -%}
+	{%- assign image = 'default-image.png' | asset_img_url: 'master' -%}
+{%- endif -%}
+
+{%- unless imageRatioCustom == blank -%}
+	{%- assign imageRatio = 1 | divided_by: imageRatioCustom.aspect_ratio | times: 100 | append: '%' -%}
+{%- endunless -%}
+
+{%- if collection.handle != 'all' and collection.handle != 'frontpage' and collection.handle != 'all-products' -%}
+	{%- assign collectionSelect = collection -%}
+{%- endif -%}
+
+{%- if countdownPosition == 'top' -%}
+	{%- assign showCountDown = true -%}
+{%- endif -%}
+
+{%- capture _routes -%}{{routes.all_products_collection_url}}/products/{{product.handle}}?view{%- endcapture -%}
+
+{%- capture cardClass  -%}|hover-{{hoverStyle}}
+{%- if catalogMode 		-%}|catalog-{{catalogMode}}{%- endif -%}
+{%- if imageCrop 		-%}|imageCrop-{{imageCrop}}{%- endif -%}
+{%- if showInventory 	-%}|show-inventory{%- endif -%}
+{%- if showShortDes 	-%}|show-description{%- endif -%}
+{%- if salePercent 		-%}|show-saving{%- endif -%}
+{%- if showCountDown 	-%}|show-countdown{%- endif -%}
+{%- endcapture -%}{%- assign cardClass = cardClass | strip | split: '|' | join: ' ' -%}
+
+<div class="featured_product__item">
+	<div class="featured-product_wrapper{{cardClass}}" data-product-card>
+
+		{%- unless metafield.countdown_timer == blank -%}
+			<div class="featured-product-countdown">
+				{%- render 'block-custom', type: 'countdown', countdownDate: metafield.countdown_timer -%}
+			</div>
+		{%- endunless -%}
+
+		<div class="featured-product_header">
+			<div class="featured_product__item-header{% render 'image-style', image: image, imagePadding: imageRatio, heightByRatio: true, isp: true %}" data-item-image>
+
+				<a href="{{product.url | within: collectionSelect }}" class="overlay-ui w-100 h-100"></a>
+
+				<div class="featured_product__item-label label_ui-group{% unless request.design_mode %} lazyload" data-include="{{_routes}}=label{% endunless %}">
+					{%- if request.design_mode -%}
+						{%- render 'product-item-snippets', type: 'label', product: product -%}
+					{%- endif -%}
+				</div>
+
+				<div class="featured_product-overlay overlay-ui multi-button-overlay{% unless request.design_mode %} lazyload" data-include="{{_routes}}=card_btn{% endunless %}">
+					{%- if request.design_mode -%}
+						{%- render 'product-item-snippets', type: 'card_btn', product: product -%}
+					{%- endif -%}
+				</div>
+
+				{%- if hoverStyle == '3' -%}{%- render 'product-item-snippets', product: product, type: 'preCart' -%}{%- endif -%}
+			</div>
+		</div>
+
+		<div class="featured_product__item-info">
+
+			<div class="featured_product__item-body">
+				<div class="featured_product__item-row">
+					{%- if settings.show_vendor -%}
+						<small class="featured_product__item-vendor">
+							<a href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a>
+						</small>
+					{%- endif -%}
+
+					<p class="featured_product__item-name" style="font-weight: 500; font-size: 16px;">
+						<a href="{{product.url | within: collectionSelect }}">{{product.title}}</a>
+					</p>
+
+					{%- render 'product-item-snippets', product: product, type: 'price' -%}
+
+					{%- unless settings.review_app == 'none' -%}
+						<div class="featured_product__item-review lazyload" data-include="{{_routes}}=card_review"></div>
+					{%- endunless -%}
+
+					{%- if showShortDes and metafield.description_excerpt != blank -%}
+						<div class="featured_product__item-short-description short-description">{{ metafield.description_excerpt }}</div>
+					{%- endif -%}
+				</div>
+			</div>
+
+			<div class="featured_product__item-footer{% unless request.design_mode %} lazyload" data-include="{{_routes}}=card_info{% endunless %}">
+				{%- if request.design_mode -%}
+					{%- render 'product-item-snippets', type: 'card_info', product: product -%}
+				{%- endif -%}
+			</div>
+		</div>
+
+		<div class="featured_product__item-swatch">
+			{%- render 'swatch-collection-all', product: product, section_id: product.id -%}
+		</div>
+	</div>
+</div>
